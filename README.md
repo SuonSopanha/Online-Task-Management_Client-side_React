@@ -51,8 +51,8 @@ This project is licensed under the [ONTAME](link-to-license-file), which means y
 
 ## Acknowledgements
 
-Special thanks to [TouchNgounchhay] for tguidance and support to this project.
-Special thanks to [LengKola/LanyMalis/ArtSanin/MamSovanratana] for their support, and contributions to this project.
+Special thanks to Touch Ngounchhay for the guidance and support to this project.
+Special thanks to LengKola/LanyMalis/ArtSanin/MamSovanratana for their support, and contributions to this project.
 
 
 ## Demo
