@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# WCT-Y3-Semester2 Project - Online Task Management Client (React)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository contains the client-side codebase for an online task management website developed as part of the WCT (Web and Cloud Technology) module in the second semester of Year 3. Built using React, this project aims to provide a functional and user-friendly interface for managing tasks online.
 
-## Available Scripts
+## Scope and Functionality Overview
 
-In the project directory, you can run:
+### 1. User Registration and Authentication:
+   - Allow user registration with unique credentials and email verification.
+   - Implement JWT for secure authentication and handle password reset requests.
+   - Enable sign-in via third-party providers like Google OAuth.
 
-### `npm start`
+### 2. Task Creation and Organization:
+   - Users can create tasks with titles, descriptions, due dates, and priorities.
+   - Support organizing tasks into categories or projects with CRUD operations.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 3. Task Displaying:
+   - Present tasks in List, Calendar, and Board views for user convenience.
+   - Ensure responsiveness and allow seamless switching between views.
+   - Enable filtering, searching, and customizable display settings.
+   - Provide direct task actions like editing and marking as complete.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 4. Task Prioritization and Sorting:
+   - Allow task prioritization and sorting by various criteria.
 
-### `npm test`
+### 5. Real-Time Collaboration and Teamwork:
+   - Enable task collaboration with real-time updates and permissions management.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 6. Task Tracking and Progress Monitoring:
+   - Allow task completion tracking, progress monitoring, and time tracking.
 
-### `npm run build`
+### 7. Trend and Visualization:
+   - Offer visualizations like charts for task completion rates and team performance insights.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 8. Notifications and Reminders:
+   - Send notifications for deadlines, assignments, and reminders via multiple channels.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Technologies Used
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Frontend:** React.js, HTML, CSS, JavaScript
+- **Routing:** React Router
+- **Styling:** TailwindCSS
+- **API Integration:** Axios or Fetch API
 
-### `npm run eject`
+## Contributing
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Contributions to the project are welcome! Whether you want to report bugs, suggest new features, or submit code improvements, please feel free to create issues or pull requests.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## License
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+This project is licensed under the [ONTAME](link-to-license-file), which means you are free to use, modify, and distribute the code as per the terms outlined in the license.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Acknowledgements
 
-## Learn More
+Special thanks to [TouchNgounchhay] for tguidance and support to this project.
+Special thanks to [LengKola/LanyMalis/ArtSanin/MamSovanratana] for their support, and contributions to this project.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Demo
 
-### Code Splitting
+A live demo of the project can be accessed [here](link-to-live-demo), allowing you to explore the features and functionalities firsthand.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Installation
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+To run the project locally, follow these steps:
+1. Clone this repository to your local machine.
+2. Navigate to the project directory.
+3. Install dependencies using `npm install` or `yarn install`.
+4. Start the development server with `npm start` or `yarn start`.
+5. Access the project in your browser at `http://localhost:3000`.
