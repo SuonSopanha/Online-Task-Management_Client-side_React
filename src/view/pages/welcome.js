@@ -13,6 +13,8 @@ const Welcome = () => {
 
   const navigate = useNavigate();
 
+
+  //Old Stragtegy
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -45,8 +47,44 @@ const Welcome = () => {
       console.error("Error updating user:", error);
     }
 
-
   };
+
+  //New Strategy
+  
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     if (user) {
+  //       console.log("User is signed in:", user);
+  //     } else {
+  //       console.log("User is signed out");
+  //     }
+  //     setLoading(false);
+  //   });
+
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
+
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   try {
+  //     await axios.post("/api/update-fullname", {
+  //       userId: auth.currentUser.uid,
+  //       fullName: fullName,
+  //     });
+  //     console.log("User full name updated successfully");
+  //     navigate("/objective");
+  //   } catch (error) {
+  //     console.error("Error updating user full name:", error);
+  //   }
+  // };
+
+  // if (loading) {
+  //   return <LoadingBalls />;
+  // }
+
+
 
   if (loading) {
     return (

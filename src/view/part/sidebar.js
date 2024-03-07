@@ -23,14 +23,27 @@ import {
 } from "../../firebase/projectCRUD";
 import { getRtTeamsByUserId } from "../../firebase/teamCRUD";
 
+const mockProjectList = [
+  { project_id: 1, project_name: "Project 1" },
+  { project_id: 2, project_name: "Project 2" },
+  { project_id: 3, project_name: "Project 3" },
+];
+
+const mockTeamList = [
+  { team_id: 1, name: "Team 1" },
+  { team_id: 2, name: "Team 2" },
+  { team_id: 3, name: "Team 3" },
+];
+
+
 function Sidebar({ isOpen, TabNavigate }) {
   const [isOpendrop, setIsOpendrop] = useState(false);
   const [isOpendropInsight, setIsOpendropInsight] = useState(false);
   const [isOpendropProject, setIsOpendropProject] = useState(false);
   const [isOpendropTeam, setIsOpendropTeam] = useState(false);
 
-  const [projectList, setProjectList] = useState([]);
-  const [teamList, setTeamList] = useState([]);
+  const [projectList, setProjectList] = useState(mockProjectList);
+  const [teamList, setTeamList] = useState(mockTeamList);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -68,28 +81,23 @@ function Sidebar({ isOpen, TabNavigate }) {
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in, you can update the component state or perform other actions.
-        console.log("User is signed in:", user);
+  // Effect: Fetch project and team data based on the current user's ID.
+  // getProjectByMemberID,getProjectByOwnnerID
+  // getTeamByMemberID,getTeamByOwnerID
+  // This hook is triggered when the component mounts.
 
-        getRtProjectByMemberID(auth.currentUser.uid, setProjectList);
-        getRtTeamsByUserId(auth.currentUser.uid, setTeamList);
+  // Ideally, this hook would subscribe to changes in the user's authentication status,
+  // updating the component state accordingly.
 
-        setLoading(false);
-      } else {
-        // User is signed out.
-        setError(true);
-        console.log("User is signed out");
-      }
-    });
+  // In a real-world scenario, the following steps would be executed:
+  // 1. Check if the user is authenticated.
+  // 2. If the user is authenticated, fetch projects and teams associated with the user.
+  // 3. Update the component state with the fetched data.
+  // 4. Handle loading and error states accordingly.
 
-    return () => {
-      // Unsubscribe the listener when the component unmounts
-      unsubscribe();
-      const uniquelist = [...new Set(projectList)];
-      setProjectList(uniquelist);
-    };
+  // Cleanup function:
+  // Unsubscribe from any ongoing subscriptions to prevent memory leaks
+  // when the component unmounts.
   }, []);
 
 

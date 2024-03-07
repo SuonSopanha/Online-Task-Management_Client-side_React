@@ -8,7 +8,7 @@ import { getUserByID } from "../../firebase/usersCRUD";
 import { userSignin, providerLogin } from "../../firebase/appAuth";
 
 
-
+//Old method login with firebase
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,10 +33,39 @@ const googleLogin = async (e) =>{
   e.preventDefault();
   await providerLogin();
   navigate('/app')
-
-  
 }
 
+
+//New Login Strategy with Laravel API server
+
+// const onLogin = async (e) => {
+//   e.preventDefault();
+//   try {
+//     // Make an HTTP POST request to your Laravel backend's login endpoint
+//     const response = await axios.post("/api/login", {
+//       email,
+//       password,
+//     });
+//     // Assuming your backend returns a success message upon successful login
+//     console.log("Login successful:", response.data);
+//     // Redirect the user to the app or welcome page based on the response
+//     if (response.data.full_name) {
+//       navigate("/app");
+//     } else {
+//       navigate("/welcome");
+//     }
+//   } catch (error) {
+//     // Handle errors, such as validation errors or server errors
+//     console.error("Login error:", error);
+//     // You can display an error message to the user or handle the error accordingly
+//   }
+// };
+
+// const googleLogin = async (e) => {
+//   e.preventDefault();
+//   // Implement your Google login functionality if needed
+//   // You can integrate Google login with your Laravel backend's API as well
+// };
 
   return (
     <div class="max-w-[280px] mx-auto h-screen">

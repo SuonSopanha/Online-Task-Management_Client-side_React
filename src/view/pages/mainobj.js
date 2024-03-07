@@ -9,6 +9,7 @@ const Mainobj = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const navigate = useNavigate();
 
+  //Old Method
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     // You can perform additional actions here based on the selected option
@@ -18,6 +19,24 @@ const Mainobj = () => {
     navigate("/work");
 
   };
+
+  //New Strategy
+  // const handleOptionClick = async (option) => {
+  //   setSelectedOption(option);
+  //   try {
+  //     // Make an HTTP POST request to your Laravel backend's endpoint for updating the user's main objective
+  //     await axios.post("/api/update-objective", {
+  //       userId: auth.currentUser.uid,
+  //       objective: option,
+  //     });
+  //     // Redirect the user to the 'work' page upon successful update
+  //     navigate("/work");
+  //   } catch (error) {
+  //     console.error("Error updating main objective:", error);
+  //     // Handle errors, such as validation errors or server errors
+  //     // You can display an error message to the user or handle the error accordingly
+  //   }
+  // };
 
 
 

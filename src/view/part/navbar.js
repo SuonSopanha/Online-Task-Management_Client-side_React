@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 import { auth } from "../../firebase/config";
 import UserProfilePic from "../../utils/photoGenerator";
@@ -11,23 +12,41 @@ const Navbar = ({ toggleSidebar }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in, you can update the component state or perform other actions.
-        console.log("User is signed in:", user);
-      } else {
-        // User is signed out.
-        console.log("User is signed out");
-      }
-
-      setLoading(false);
-    });
-
-    return () => {
-      // Unsubscribe the listener when the component unmounts
-      unsubscribe();
-    };
-  }, []); // Empty dependency array to run the effect only once on component mount
+    // Effect: Check the authentication status using the API provided by the Laravel backend.
+  
+    // This hook sends an HTTP request to your Laravel backend's authentication endpoint to check the user's authentication status.
+    // The backend endpoint should return information about the authenticated user if the user is signed in,
+    // or an error response if the user is signed out or if there's an issue with the request.
+  
+    // The HTTP request is typically made using a library like axios or the fetch API.
+    // When the request completes, the provided callback function handles the response,
+    // updating component state or performing other actions based on the authentication status.
+  
+    // We're using the axios library to make the HTTP request.
+  
+    // Make an HTTP GET request to the authentication endpoint
+    axios.get('/api/user')
+      .then(response => {
+        // If the request is successful, the user is authenticated
+        const authenticatedUser = response.data;
+        console.log('Authenticated user:', authenticatedUser);
+        // Perform additional actions here, such as updating component state or fetching user data
+      })
+      .catch(error => {
+        // If there's an error (e.g., user not authenticated or network error),
+        // handle it here
+        console.error('Authentication error:', error);
+        // Perform additional actions here, such as redirecting the user or updating component state
+      })
+      .finally(() => {
+        // Set loading state to false once the authentication status is determined
+        setLoading(false);
+      });
+  
+    // No cleanup function is needed for HTTP requests
+  
+  }, []);
+  // Empty dependency array to run the effect only once on component mount
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">

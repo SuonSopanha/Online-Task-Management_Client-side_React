@@ -9,11 +9,31 @@ import { updateWork } from "../../firebase/usersCRUD";
 const Kindofwork = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const navigate = useNavigate();
+
+  //Old Method
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     updateWork(auth.currentUser.uid, option);
     navigate("/app");
   };
+
+  //New Strategy With laravel
+  // const handleOptionClick = async (option) => {
+  //   setSelectedOption(option);
+    
+  //   try {
+  //     // Make an HTTP POST request to your Laravel backend's endpoint for updating user's work option
+  //     await axios.post("/api/update-work", {
+  //       userId: auth.currentUser.uid,
+  //       option: option,
+  //     });
+  //     console.log("User work option updated successfully");
+  //     navigate("/app");
+  //   } catch (error) {
+  //     console.error("Error updating user work option:", error);
+  //     // Handle error accordingly
+  //   }
+  // };
 
   return (
     <>

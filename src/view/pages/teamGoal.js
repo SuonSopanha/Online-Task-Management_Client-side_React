@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createProject } from "../../firebase/projectCRUD";
 import { auth } from "../../firebase/config";
 
-const TeamMilestone = () => {
+const TeamGoal = () => {
   return (
     <div className="p-10 w-auto h-auto">
       <div>
@@ -57,4 +57,4 @@ const TeamMilestone = () => {
   );
 };
 
-export default TeamMilestone;
+export default TeamGoal;

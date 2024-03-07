@@ -13,6 +13,7 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
+  //Old Medthod Signp with Firebase
   const onSignup = async (e) =>{
     e.preventDefault();
     if(password === confirm){
@@ -22,6 +23,31 @@ const Signup = () => {
       alert("Passwords don't match");
     }
   } 
+
+
+  //New Auth Strategy with Laravel
+  // const onSignup = async (e) => {
+  //   e.preventDefault();
+  //   if (password === confirm) {
+  //     try {
+  //       // Make an HTTP POST request to your Laravel backend's signup endpoint
+  //       const response = await axios.post("/api/signup", {
+  //         email,
+  //         password,
+  //       });
+  //       // Assuming your backend returns a success message upon successful signup
+  //       console.log("Signup successful:", response.data);
+  //       // Redirect the user to the login page after successful signup
+  //       navigate("/login");
+  //     } catch (error) {
+  //       // Handle errors, such as validation errors or server errors
+  //       console.error("Signup error:", error);
+  //       // You can display an error message to the user or handle the error accordingly
+  //     }
+  //   } else {
+  //     alert("Passwords don't match");
+  //   }
+  // };
 
   return (
     <div class="max-w-[280px] mx-auto h-screen">
