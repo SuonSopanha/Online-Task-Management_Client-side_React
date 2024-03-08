@@ -97,6 +97,7 @@ function Sidebar({ isOpen, TabNavigate }) {
 
   // Cleanup function:
   // Unsubscribe from any ongoing subscriptions to prevent memory leaks
+  // and ensure that the effect is only triggered once.
   // when the component unmounts.
   }, []);
 
