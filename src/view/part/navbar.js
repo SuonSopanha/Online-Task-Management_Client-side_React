@@ -63,7 +63,7 @@ const Navbar = ({ toggleSidebar }) => {
             type="button"
             className="flex py-1 mx-3 items-center justify-center rounded-2xl bg-gray-100 font-semibold text-blue-500 border-1 border-blue-500 hover:bg-blue-600 sm:mx-0 sm:w-1/2 sm:px-2 sm:py-1 sm:text-sm"
           >
-            <span className="px-1">Create</span>
+            <span className="px-1">Created</span>
           </button>
         </div>
         <div className="px-5 xl:px-12 py-3 flex w-full items-center ">
