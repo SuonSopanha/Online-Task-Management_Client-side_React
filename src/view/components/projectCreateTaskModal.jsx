@@ -221,7 +221,7 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
           <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-48">
             {/* Content */}
-            <div className="relative flex flex-col w-full bg-sky-200 bg-opacity-75 backdrop-blur-12 border-0 rounded-lg outline-none focus:outline-none">
+            <div className="relative flex flex-col w-full bg-white border-0 rounded-lg outline-none focus:outline-none">
               {/* Header */}
               <div className="flex items-center justify-between p-2 border-b border-solid border-gray-500 rounded-t">
                 <CompleteBox
@@ -250,7 +250,7 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
               </div>
               {/* Body */}
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-cente text-sm sm:text-base">
-                <div className="w-24">Assignee</div>
+                <div className="w-24 font-semibold">Assignee</div>
                 {/* Conditionally render TaskAssignee only when members is available */}
                 {members.length > 0 && (
                   <TaskAssignee
@@ -263,12 +263,12 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                 )}
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-24">DueDate</div>
+                <div className="w-24 font-semibold">DueDate</div>
                 <TaskDueDate
                   DueDate={taskData.due_date}
                   OnChange={onDueDateChange}
                 />
-                <div className="w-28">Hour Required</div>
+                <div className="w-28 font-semibold">Hour Required</div>
                 <NumberInput
                   init={taskData.work_hour_required}
                   OnChange={onHourRequiredChange}
@@ -282,7 +282,7 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                 />
               </div>
               <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
-                <div className="w-24">Description</div>
+                <div className="w-24 font-semibold">Description</div>
                 <EditableBox
                   init={taskData.description}
                   OnChange={onDescriptionChange}
