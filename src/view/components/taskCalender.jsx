@@ -80,14 +80,14 @@ const TaskCalender = () => {
       <div className="flex justify-start items-center mb-4 ml-4 space-x-3">
         <button
           onClick={prevMonth}
-          className="flex items-center px-1 py-1 bg-blue-500 bg-opacity-80 text-white rounded"
+          className="flex items-center px-1 py-1 bg-blue-500 bg-opacity-80 text-white rounded hover:bg-blue-700"
         >
           <FaChevronLeft />
         </button>
 
         <button
           onClick={nextMonth}
-          className="flex items-center px-1 py-1 bg-blue-500 bg-opacity-80 text-white rounded"
+          className="flex items-center px-1 py-1 bg-blue-500 bg-opacity-80 text-white rounded hover:bg-blue-700"
         >
           <FaChevronRight />
         </button>
@@ -99,7 +99,7 @@ const TaskCalender = () => {
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div
             key={day}
-            className="text-center text-sm text-gray-500 font-semibold mb-2"
+            className="text-center text-sm text-gray-500 font-semibold mb-2 rounded-lg transition duration-300 transform hover:scale-110 hover:bg-blue-300 bg-opacity-20 "
           >
             {day}
           </div>
@@ -107,7 +107,7 @@ const TaskCalender = () => {
         {getDaysInMonth().map((date) => (
           <div
             key={date}
-            className="text-center border-1 border-gray-400 w-42 h-40 w-5/7 sm:w-1/7 overflow-hidden"
+            className="text-center border-1 border-gray-400 w-42 h-40 w-5/7 sm:w-1/7 overflow-hidden transition duration-300 transform hover:scale-110 hover:bg-gray-50 bg-opacity-20 hover:border hover:border-blue-500 hover:text-blue-500"
           >
             <div className="flex flex-col items-start p-2">
               <span className="text-sm font-semibold">{format(date, "d")}</span>
@@ -117,13 +117,13 @@ const TaskCalender = () => {
                   return (
                     <button
                       key={task.id}
-                      className="mt-1"
+                      className="mt-1 transform transition-transform hover:scale-105"
                       onClick={() => {
                         openModal();
                         setModalTask(task);
                       }}
                     >
-                      <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-sm whitespace-nowrap transition duration-300 transform hover:scale-105">
+                      <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 hover:bg-red-300 rounded-sm whitespace-nowrap transition duration-300 transform hover:scale-105">
                         {task.task_name}
                       </span>
                     </button>
