@@ -125,7 +125,7 @@ const HomeTab = () => {
             <div class="col-span-2 row-span-2 flex  flex-col items-center justify-center rounded-2xl bg-glasses backdrop-blur-12 bg-opacity-50 py-4">
               <button
                 onClick={handleChangeCreateProject}
-                class="flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1"
+                class="flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
               >
                 <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
                 <span class="ml-2 text-sm font-medium text-gray-500">
@@ -134,14 +134,14 @@ const HomeTab = () => {
               </button>
               <button
                 onClick={handleCompleteProfile}
-                class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1"
+                class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
               >
                 <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
                 <span class="ml-2 text-sm font-medium text-gray-500">
                   Complete your profile
                 </span>
               </button>
-              <button class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1">
+              <button class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105">
                 <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
                 <span class="ml-2 text-sm font-medium text-gray-500">
                   Continue project
@@ -152,7 +152,7 @@ const HomeTab = () => {
               <p class="ml-8 mt-4 text-xl font-medium">Project</p>
               <button
                 onClick={handleChangeCreateProject}
-                class="ml-12 mt-4 flex items-center"
+                class="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
               >
                 <div class="flex h-8 w-8 items-center justify-center rounded-2xl border-2 border-dashed border-sky-500">
                   <img
