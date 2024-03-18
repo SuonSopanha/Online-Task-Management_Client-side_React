@@ -26,10 +26,12 @@ const TaskCalender = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
+
   };
 
   const prevMonth = () => {
