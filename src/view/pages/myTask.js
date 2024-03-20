@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect, useContext, createContext } from "react";
 
-import { FaPlus } from "react-icons/fa";
+import { FaPlus,FaListUl,FaCalendarAlt,FaClipboard } from "react-icons/fa";
 
 import TaskList from "../components/taskList";
 import TaskCalender from "../components/taskCalender";
@@ -97,18 +97,19 @@ const MyTask = () => {
               <li className="me-2">
                 <a
                   href="#"
-                  className={`inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
+                  className={`flex items-center justify-center space-x-1  px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
                     activeTab === "List" ? "text-blue-600 border-blue-600" : ""
                   }`}
                   onClick={() => handleTabClick("List")}
                 >
+                  <FaListUl className="inline-block mr-1" />
                   List
                 </a>
               </li>
               <li className="me-2">
                 <a
                   href="#"
-                  className={`inline-block px-3  py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
+                  className={`flex items-center justify-center space-x-1 px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
                     activeTab === "Calender"
                       ? "text-blue-600 border-blue-600"
                       : ""
@@ -116,17 +117,19 @@ const MyTask = () => {
                   onClick={() => handleTabClick("Calender")}
                   aria-current={activeTab === "Calender"}
                 >
+                  <FaCalendarAlt className="inline-block mr-1" />
                   Calendar
                 </a>
               </li>
               <li className="me-2">
                 <a
                   href="#"
-                  className={`inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
+                  className={`flex items-center justify-center space-x-1  px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
                     activeTab === "Board" ? "text-blue-600 border-blue-600" : ""
                   }`}
                   onClick={() => handleTabClick("Board")}
                 >
+                  <FaClipboard className="inline-block mr-1" />
                   Board
                 </a>
               </li>
