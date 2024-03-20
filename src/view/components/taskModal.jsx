@@ -11,6 +11,7 @@ import {
   FaTimesCircle,
   FaTrash,
   FaTrashRestore,
+
 } from "react-icons/fa";
 
 import { auth } from "../../firebase/config";
@@ -24,6 +25,7 @@ import TaskDueDate from "./modalComponents/taskDueDate";
 import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
+import Timer from "./modalComponents/timer";
 
 import { updateRtTaskByID, deleteRtTaskByID } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
@@ -177,6 +179,9 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   init={task.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
+
+                <div className="w-10 font-semibold text-xs">Timer</div>
+                <Timer />
               </div>
               <div className="flex flex-row justify-start space-x-5  text-sm sm:text-base border-gray-500 p-3 items-center">
                 <TaskStatus
