@@ -19,7 +19,7 @@ const NumberInput = ({ init, OnChange }) => {
         type="number"
         value={numberValue}
         onChange={handleNumberChange}
-        className="p-2 border bg-blue-200 rounded-md w-16 focus:outline-none focus:border-blue-500 transition-all duration-300"
+        className="p-1 border bg-blue-200 rounded-md w-20 focus:outline-none focus:border-blue-500 transition-all duration-300"
       />
     </div>
   );
