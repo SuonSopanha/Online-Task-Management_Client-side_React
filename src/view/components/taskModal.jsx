@@ -40,15 +40,19 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
 
   useEffect(() => {
     setTask(taskData);
-    if (taskData && taskData.project_id !== undefined && taskData.project_id !== null) {
+    if (
+      taskData &&
+      taskData.project_id !== undefined &&
+      taskData.project_id !== null
+    ) {
       if (taskData.project_id.length === 20) {
         getprojecByID(taskData.project_id).then((project) => {
           setProjectOption(project);
         });
-      }else{
+      } else {
         setProjectOption(null);
       }
-    }else{
+    } else {
       setProjectOption(null);
     }
   }, [taskData]);
@@ -110,7 +114,7 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
 
   const onSaveButton = () => {
     console.log(task.id);
-    updateRtTaskByID(task.id,task);
+    updateRtTaskByID(task.id, task);
     handleClose();
   };
 
@@ -119,7 +123,6 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
     handleClose();
   };
 
-  
   return (
     <>
       {isModalOpen && (
@@ -129,7 +132,7 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
             {console.log(task)}
             <div className="relative flex flex-col w-full bg-white border-0 rounded-lg outline-none focus:outline-none">
               {/* Header */}
-              <div className="flex items-center justify-between p-2 border-b border-solid border-gray-500 rounded-t">
+              <div className="flex items-center justify-between p-2 border-b-2 border-solid border-gray-500 rounded-t">
                 <CompleteBox
                   IsComplete={task.complete}
                   OnChange={onCompletedChange}
@@ -142,7 +145,7 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   <FaTimesCircle className="w-6 h-6 hover:text-black" />
                 </button>
               </div>
-              <div className="flex items-center justify-between px-2 py-3 border-b border-solid border-gray-500 rounded-t">
+              <div className="flex items-center justify-between px-2 py-3 border-b-2 border-solid border-gray-500 rounded-t">
                 <TaskName
                   name={task.task_name}
                   onNameChange={handleTaskNameChange}
@@ -157,18 +160,25 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
               {/* Body */}
 
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-24 font-semibold">DueDate</div>
+                <div className="w-20 font-semibold">DueDate</div>
                 <TaskDueDate
                   DueDate={task.due_date}
                   OnChange={onDueDateChange}
                 />
-                <div className="w-28 font-semibold">Hour Required</div>
+                <div className="w-20 font-semibold ">StartDate</div>
+                <TaskDueDate
+                  DueDate={task.due_date}
+                  OnChange={onDueDateChange}
+                />
+              </div>
+              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
+                <div className="w-20 font-semibold text-xs">Hour Required</div>
                 <NumberInput
                   init={task.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
               </div>
-              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
+              <div className="flex flex-row justify-start space-x-5  text-sm sm:text-base border-gray-500 p-3 items-center">
                 <TaskStatus
                   StatusState={task.status}
                   PrioritySate={task.priority}
@@ -176,13 +186,17 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-24 font-semibold">Project</div>
-                <div className="flex flex-row items-center justify-between space-x-2">
+                <div className="w-10 font-semibold text-sm">Project</div>
+                <div className="flex flex-row items-center justify-between space-x-2 border-2 rounded-lg p-2 bg-gray-50">
                   <div className="flex w-6 h-6 items-center justify-center rounded-lg bg-sky-600 text-white">
                     <FaClipboardList className="w-4 h-4" />
                   </div>
 
-                  <span>{projectOption !== null ? projectOption.project_name : "No Project"}</span>
+                  <span>
+                    {projectOption !== null
+                      ? projectOption.project_name
+                      : "No Project"}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">

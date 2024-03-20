@@ -33,10 +33,10 @@ const TaskStatus = ({StatusState,PrioritySate,OnChange}) => {
 
   return (
     <div className="flex flex-row space-x-6">
-      <div className="w-24 font-semibold">Status</div>
+      <div className="w-10 font-semibold text-sm">Status</div>
       <DropdownButton type={"status"} initState={StatusState} handleChange={handleStatusChange}></DropdownButton>
 
-      <div className="w-10 font-semibold">Priority</div>
+      <div className="w-10 font-semibold text-sm">Priority</div>
       <DropdownButton type={"priority"} initState={PrioritySate} handleChange={handlePriorityChange}></DropdownButton>
     </div>
   );
