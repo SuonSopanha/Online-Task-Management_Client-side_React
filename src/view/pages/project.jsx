@@ -15,6 +15,18 @@ import { getprojecByID } from "../../firebase/projectCRUD";
 import { modalContext } from "../part/test";
 
 export const projectTaskContext = createContext(null);
+
+
+//mock data
+const mockProject = {
+  project_name: "Sample Project",
+  project_description: "This is a sample project for testing purposes.",
+  start_date: "2022-01-01",
+  end_date: "2022-12-31",
+  project_manager: "John Doe",
+  // Add more properties as needed
+};
+
 const Project = () => {
   const [activeTab, setActiveTab] = useState("List");
 
@@ -25,18 +37,21 @@ const Project = () => {
     setModalTask,
     opentCreateProjectTaskModal,
   } = useContext(modalContext);
-  const [project, setProject] = useState({});
+  const [project, setProject] = useState(mockProject);
   const [sortCriteria, setSortCriteria] = useState("Default");
 
   const onSortChange = (sort) => {
     setSortCriteria(sort);
   };
 
-  useEffect(() => {
-    getprojecByID(tabID).then((data) => {
-      setProject(data);
-    });
-  }, [tabID]);
+  //get projectData by ID
+  // useEffect(() => {
+  //   getprojecByID(tabID).then((data) => {
+  //     setProject(data);
+  //   });
+  // }, [tabID]);
+
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);

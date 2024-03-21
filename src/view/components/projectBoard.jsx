@@ -16,11 +16,43 @@ import { sortByPriority,sortByDueDate,sortByStatus,sortByWorkHoursRequired,sortB
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
 
+const mockTaskList = [
+  {
+    id: 1,
+    task_name: "Task 1",
+    project_id: 1,
+    task_category: "To Do",
+    priority: "High",
+    status: "In Progress",
+    due_date: "2024-03-25",
+  },
+  {
+    id: 2,
+    task_name: "Task 2",
+    project_id: 2,
+    task_category: "Working",
+    priority: "Medium",
+    status: "In Progress",
+    due_date: "2024-04-05",
+  },
+  {
+    id: 3,
+    task_name: "Task 3",
+    project_id: null,
+    task_category: "Done",
+    priority: "Low",
+    status: "Completed",
+    due_date: "2024-03-20",
+  },
+  // Add more tasks as needed
+];
+
+
 const ProjectBoard = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
 
-  const [taskList, setTaskList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [taskList, setTaskList] = useState(mockTaskList);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const {sortCriteria } = useContext(projectTaskContext) 
@@ -46,49 +78,52 @@ const ProjectBoard = () => {
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in
-        console.log("User is signed in:", user);
+  //get TaskByTabID
+
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     if (user) {
+  //       // User is signed in
+  //       console.log("User is signed in:", user);
   
-        getRtTaskByProjectID(tabID, async (tasks) => {
-          // Fetch additional data for each task
-          const tasksWithFullNames = await Promise.all(
-            tasks.map(async (task) => {
-              // Fetch user's full name based on assignee_id
-              const fullName = await getUserFullNameById(task.assignee_id);
-              return {
-                ...task,
-                assignee_full_name: fullName,
-              };
-            })
-          );
+  //       getRtTaskByProjectID(tabID, async (tasks) => {
+  //         // Fetch additional data for each task
+  //         const tasksWithFullNames = await Promise.all(
+  //           tasks.map(async (task) => {
+  //             // Fetch user's full name based on assignee_id
+  //             const fullName = await getUserFullNameById(task.assignee_id);
+  //             return {
+  //               ...task,
+  //               assignee_full_name: fullName,
+  //             };
+  //           })
+  //         );
   
-          // Set the modified taskList with assignee_full_name
-          setTaskList(tasksWithFullNames);
-          setLoading(false);
-        });
-      } else {
-        // User is signed out.
-        setError(true);
-        console.log("User is signed out");
-      }
-    });
+  //         // Set the modified taskList with assignee_full_name
+  //         setTaskList(tasksWithFullNames);
+  //         setLoading(false);
+  //       });
+  //     } else {
+  //       // User is signed out.
+  //       setError(true);
+  //       console.log("User is signed out");
+  //     }
+  //   });
   
-    return () => {
-      // Unsubscribe the listener when the component unmounts
-      unsubscribe();
-    };
-  }, [tabID]);// Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
+  //   return () => {
+  //     // Unsubscribe the listener when the component unmounts
+  //     unsubscribe();
+  //   };
+  // }, [tabID]);// Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
 
   let sortTask = [];
 
-  useEffect(() => {
+  //sort Task
+  // useEffect(() => {
 
-    sortTask = [...sortTasks(taskList,sortCriteria)]
-    setTaskList(sortTask)
-  },[sortCriteria])
+  //   sortTask = [...sortTasks(taskList,sortCriteria)]
+  //   setTaskList(sortTask)
+  // },[sortCriteria])
 
   if (loading) {
     return <LoadingBalls />;
