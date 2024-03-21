@@ -178,7 +178,7 @@ const Project = () => {
               >
                 <FaPlus className="w-3 h-3 md:w-4 md:h-4" />{" "}
                 {/* Adjust icon size */}
-                <div className="ml-1 md:ml-2">Add Milestone</div>{" "}
+                <div className="ml-1 md:ml-2">Project Stage</div>{" "}
                 {/* Adjust margin */}
               </button>
               <button
