@@ -15,11 +15,43 @@ import { sortByPriority,sortByDueDate,sortByStatus,sortByWorkHoursRequired,sortB
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
 
+
+//mockData
+const mockTaskList = [
+  {
+    id: 1,
+    task_name: "Task 1",
+    assignee: {
+      full_name: "John Doe",
+      photoURL: null, // URL to assignee's photo
+    },
+    status: "In Progress",
+    priority: "High",
+    due_date: "2024-03-31",
+    complete: false,
+  },
+  {
+    id: 2,
+    task_name: "Task 2",
+    assignee: {
+      full_name: "Jane Smith",
+      photoURL: null, // No photo URL provided
+    },
+    status: "Pending",
+    priority: "Medium",
+    due_date: "2024-04-15",
+    complete: false,
+  },
+  // Add more tasks as needed
+];
+
+
+
 const ProjectList = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
 
-  const [taskList, setTaskList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [taskList, setTaskList] = useState(mockTaskList);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
 
@@ -46,50 +78,50 @@ const ProjectList = () => {
         return sortByID(tasks) ;
     }
   };
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in
-        console.log("User is signed in:", user);
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     if (user) {
+  //       // User is signed in
+  //       console.log("User is signed in:", user);
   
-        getRtTaskByProjectID(tabID, async (tasks) => {
-          // Fetch additional data for each task
-          const tasksWithFullNames = await Promise.all(
-            tasks.map(async (task) => {
-              // Fetch user's full name based on assignee_id
-              const fullName = await getUserFullNameById(task.assignee_id);
-              return {
-                ...task,
-                assignee_full_name: fullName,
-              };
-            })
-          );
+  //       getRtTaskByProjectID(tabID, async (tasks) => {
+  //         // Fetch additional data for each task
+  //         const tasksWithFullNames = await Promise.all(
+  //           tasks.map(async (task) => {
+  //             // Fetch user's full name based on assignee_id
+  //             const fullName = await getUserFullNameById(task.assignee_id);
+  //             return {
+  //               ...task,
+  //               assignee_full_name: fullName,
+  //             };
+  //           })
+  //         );
   
-          // Set the modified taskList with assignee_full_name
-          setTaskList(tasksWithFullNames);
-          setLoading(false);
-        });
-      } else {
-        // User is signed out.
-        setError(true);
-        console.log("User is signed out");
-      }
-    });
+  //         // Set the modified taskList with assignee_full_name
+  //         setTaskList(tasksWithFullNames);
+  //         setLoading(false);
+  //       });
+  //     } else {
+  //       // User is signed out.
+  //       setError(true);
+  //       console.log("User is signed out");
+  //     }
+  //   });
   
-    return () => {
-      // Unsubscribe the listener when the component unmounts
-      unsubscribe();
-    };
-  }, [tabID]); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
+  //   return () => {
+  //     // Unsubscribe the listener when the component unmounts
+  //     unsubscribe();
+  //   };
+  // }, [tabID]); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
 
   let sortTask = []
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    sortTask = [...sortTasks(taskList,sortCriteria)]
-    setTaskList(sortTask)
-  },[sortCriteria])
+  //   sortTask = [...sortTasks(taskList,sortCriteria)]
+  //   setTaskList(sortTask)
+  // },[sortCriteria])
 
   if (loading) {
     return <LoadingBalls />;
@@ -101,7 +133,6 @@ const ProjectList = () => {
 
   return (
     <>
-      {console.log(tabID)}
       <section class="container mx-auto px-6 pb-2 font-mono">
         <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
           <div class="w-full overflow-x-auto">

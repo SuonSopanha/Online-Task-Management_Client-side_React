@@ -90,217 +90,216 @@ const MyDashboard = () => {
     return order[month] || 999; // Use 999 for unknown months
   };
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserName(user.displayName);
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     if (user) {
+  //       setUserName(user.displayName);
 
-        getRtTaskByUserID(auth.currentUser.uid, setTaskList);
-        setLoading(false);
-      } else {
-        setError(true);
-        console.log("User is signed out");
-      }
-    });
+  //       getRtTaskByUserID(auth.currentUser.uid, setTaskList);
+  //       setLoading(false);
+  //     } else {
+  //       setError(true);
+  //       console.log("User is signed out");
+  //     }
+  //   });
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    // Calculate task counts when taskList changes
-    const calculateTaskCounts = () => {
-      setTaskCount(taskList.length);
+  // useEffect(() => {
+  //   // Calculate task counts when taskList changes
+  //   const calculateTaskCounts = () => {
+  //     setTaskCount(taskList.length);
 
-      const completedTasks = taskList.filter((task) => task.complete);
-      setCompletedTaskCount(completedTasks.length);
+  //     const completedTasks = taskList.filter((task) => task.complete);
+  //     setCompletedTaskCount(completedTasks.length);
 
-      setUncompletedTaskCount(taskList.length - completedTasks.length);
-    };
+  //     setUncompletedTaskCount(taskList.length - completedTasks.length);
+  //   };
 
-    const calculateTaskStatusCounts = () => {
-      const statusCounts = taskList.reduce((counts, task) => {
-        const status = task.status || "Unknown"; // Use 'Unknown' if status is not defined
-        counts[status] = (counts[status] || 0) + 1;
-        return counts;
-      }, {});
+  //   const calculateTaskStatusCounts = () => {
+  //     const statusCounts = taskList.reduce((counts, task) => {
+  //       const status = task.status || "Unknown"; // Use 'Unknown' if status is not defined
+  //       counts[status] = (counts[status] || 0) + 1;
+  //       return counts;
+  //     }, {});
 
-      const countsArray = Object.entries(statusCounts).map(
-        ([status, count]) => ({
-          status,
-          count,
-        })
-      );
+  //     const countsArray = Object.entries(statusCounts).map(
+  //       ([status, count]) => ({
+  //         status,
+  //         count,
+  //       })
+  //     );
 
-      setTaskStatusCounts(countsArray);
-    };
+  //     setTaskStatusCounts(countsArray);
+  //   };
 
-    // Calculate task category counts when taskList changes
-    const calculateTaskCategoryCounts = () => {
-      const categoryCounts = taskList.reduce((counts, task) => {
-        const category = task.task_category || "Unknown"; // Use 'Unknown' if category is not defined
-        counts[category] = (counts[category] || 0) + 1;
-        return counts;
-      }, {});
+  //   // Calculate task category counts when taskList changes
+  //   const calculateTaskCategoryCounts = () => {
+  //     const categoryCounts = taskList.reduce((counts, task) => {
+  //       const category = task.task_category || "Unknown"; // Use 'Unknown' if category is not defined
+  //       counts[category] = (counts[category] || 0) + 1;
+  //       return counts;
+  //     }, {});
 
-      const countsArray = Object.entries(categoryCounts).map(
-        ([category, count]) => ({
-          category,
-          count,
-        })
-      );
+  //     const countsArray = Object.entries(categoryCounts).map(
+  //       ([category, count]) => ({
+  //         category,
+  //         count,
+  //       })
+  //     );
 
-      setTaskCategoryCounts(countsArray);
-    };
+  //     setTaskCategoryCounts(countsArray);
+  //   };
 
-    // Calculate completed task counts when taskList changes
-    const calculateCompletedTaskCounts = () => {
-      const priorityCounts = taskList.reduce((counts, task) => {
-        const priority = task.priority || "Unknown"; // Use 'Unknown' if priority is not defined
+  //   // Calculate completed task counts when taskList changes
+  //   const calculateCompletedTaskCounts = () => {
+  //     const priorityCounts = taskList.reduce((counts, task) => {
+  //       const priority = task.priority || "Unknown"; // Use 'Unknown' if priority is not defined
 
-        if (task.complete) {
-          counts[priority] = (counts[priority] || 0) + 1;
-        }
+  //       if (task.complete) {
+  //         counts[priority] = (counts[priority] || 0) + 1;
+  //       }
 
-        return counts;
-      }, {});
+  //       return counts;
+  //     }, {});
 
-      const countsArray = Object.entries(priorityCounts).map(
-        ([priority, count]) => ({
-          priority,
-          count,
-        })
-      );
+  //     const countsArray = Object.entries(priorityCounts).map(
+  //       ([priority, count]) => ({
+  //         priority,
+  //         count,
+  //       })
+  //     );
 
-      setCompletedTaskCountsInPriority(countsArray);
-    };
-    const calculateTaskPriorityCounts = () => {
-      const priorityCounts = taskList.reduce((counts, task) => {
-        const priority = task.priority || "Unknown"; // Use 'Unknown' if priority is not defined
+  //     setCompletedTaskCountsInPriority(countsArray);
+  //   };
+  //   const calculateTaskPriorityCounts = () => {
+  //     const priorityCounts = taskList.reduce((counts, task) => {
+  //       const priority = task.priority || "Unknown"; // Use 'Unknown' if priority is not defined
 
-        counts[priority] = (counts[priority] || 0) + 1;
+  //       counts[priority] = (counts[priority] || 0) + 1;
 
-        return counts;
-      }, {});
+  //       return counts;
+  //     }, {});
 
-      const countsArray = Object.entries(priorityCounts).map(
-        ([priority, count]) => ({
-          priority,
-          count,
-        })
-      );
+  //     const countsArray = Object.entries(priorityCounts).map(
+  //       ([priority, count]) => ({
+  //         priority,
+  //         count,
+  //       })
+  //     );
 
-      setTaskPriorityCounts(countsArray);
-    };
+  //     setTaskPriorityCounts(countsArray);
+  //   };
 
-    const calculateTaskassignee_dateCounts = () => {
-      const assignee_dateCounts = taskList.reduce((counts, task) => {
-        const assignee_date = task.due_date || "Unknown"; // Use 'Unknown' if due date is not defined
-        const monthNumber = parseInt(assignee_date.split("/")[0], 10); // Extract month number from due date
-        const monthName = convertMonthNumberToName(monthNumber);
+  //   const calculateTaskassignee_dateCounts = () => {
+  //     const assignee_dateCounts = taskList.reduce((counts, task) => {
+  //       const assignee_date = task.due_date || "Unknown"; // Use 'Unknown' if due date is not defined
+  //       const monthNumber = parseInt(assignee_date.split("/")[0], 10); // Extract month number from due date
+  //       const monthName = convertMonthNumberToName(monthNumber);
 
-        counts[monthName] = (counts[monthName] || 0) + 1;
+  //       counts[monthName] = (counts[monthName] || 0) + 1;
 
-        return counts;
-      }, {});
+  //       return counts;
+  //     }, {});
 
-      const sortedCountsArray = Object.entries(assignee_dateCounts)
-        .map(([month, count]) => ({ month, count }))
-        .sort((a, b) => getMonthOrder(a.month) - getMonthOrder(b.month));
+  //     const sortedCountsArray = Object.entries(assignee_dateCounts)
+  //       .map(([month, count]) => ({ month, count }))
+  //       .sort((a, b) => getMonthOrder(a.month) - getMonthOrder(b.month));
 
-      setTaskassignee_dateCounts(sortedCountsArray);
-    };
+  //     setTaskassignee_dateCounts(sortedCountsArray);
+  //   };
 
-    const calculateTaskCompleteDueDateCounts = () => {
-      const dueDateCounts = taskList.reduce((counts, task) => {
-        const dueDate = task.due_date || 'Unknown';
-        const monthNumber = parseInt(dueDate.split('/')[0], 10);
-        const monthName = convertMonthNumberToName(monthNumber);
+  //   const calculateTaskCompleteDueDateCounts = () => {
+  //     const dueDateCounts = taskList.reduce((counts, task) => {
+  //       const dueDate = task.due_date || 'Unknown';
+  //       const monthNumber = parseInt(dueDate.split('/')[0], 10);
+  //       const monthName = convertMonthNumberToName(monthNumber);
 
-        counts[monthName] = counts[monthName] || { total: 0, completed: 0 };
+  //       counts[monthName] = counts[monthName] || { total: 0, completed: 0 };
 
-        counts[monthName].total += 1;
+  //       counts[monthName].total += 1;
 
-        if (task.complete) {
-          counts[monthName].completed += 1;
-        }
+  //       if (task.complete) {
+  //         counts[monthName].completed += 1;
+  //       }
 
-        return counts;
-      }, {});
+  //       return counts;
+  //     }, {});
 
-      const sortedCountsArray = Object.entries(dueDateCounts)
-        .map(([month, { total, completed }]) => ({ month, total, completed }))
-        .sort((a, b) => getMonthOrder(a.month) - getMonthOrder(b.month));
+  //     const sortedCountsArray = Object.entries(dueDateCounts)
+  //       .map(([month, { total, completed }]) => ({ month, total, completed }))
+  //       .sort((a, b) => getMonthOrder(a.month) - getMonthOrder(b.month));
 
-      setTaskDueDateCompleteCounts(sortedCountsArray);
-    };
+  //     setTaskDueDateCompleteCounts(sortedCountsArray);
+  //   };
 
-    const calculateTaskCategoryAverages = () => {
-      const taskCategoryTotals = taskList.reduce((totals, task) => {
-        const category = task.task_category || 'Unknown';
-        totals[category] = totals[category] || { total: 0, sum: 0 };
+  //   const calculateTaskCategoryAverages = () => {
+  //     const taskCategoryTotals = taskList.reduce((totals, task) => {
+  //       const category = task.task_category || 'Unknown';
+  //       totals[category] = totals[category] || { total: 0, sum: 0 };
 
-        totals[category].total += 1;
-        totals[category].sum += task.work_hour_required || 0;
+  //       totals[category].total += 1;
+  //       totals[category].sum += task.work_hour_required || 0;
 
-        return totals;
-      }, {});
+  //       return totals;
+  //     }, {});
 
-      const averagesArray = Object.entries(taskCategoryTotals)
-        .map(([category, { total, sum }]) => ({ category, average: sum / total }))
-        .sort((a, b) => b.average - a.average); // Sort by average in descending order
+  //     const averagesArray = Object.entries(taskCategoryTotals)
+  //       .map(([category, { total, sum }]) => ({ category, average: sum / total }))
+  //       .sort((a, b) => b.average - a.average); // Sort by average in descending order
 
-      setTaskCategoryAverages(averagesArray);
-    };
+  //     setTaskCategoryAverages(averagesArray);
+  //   };
 
-    const calculateMonthlyWorkHours = () => {
-      const monthlyWorkHourTotals = taskList.reduce((totals, task) => {
-        const month = task.due_date ? new Date(task.due_date).getMonth() : -1;
-        totals[month] = totals[month] || { work_hour_required: 0, hour_spend: 0 };
+  //   const calculateMonthlyWorkHours = () => {
+  //     const monthlyWorkHourTotals = taskList.reduce((totals, task) => {
+  //       const month = task.due_date ? new Date(task.due_date).getMonth() : -1;
+  //       totals[month] = totals[month] || { work_hour_required: 0, hour_spend: 0 };
 
-        totals[month].work_hour_required += task.work_hour_required || 0;
+  //       totals[month].work_hour_required += task.work_hour_required || 0;
 
-        task.tracking.forEach((tracking) => {
-          totals[month].hour_spend += tracking.hours || 0;
-        });
+  //       task.tracking.forEach((tracking) => {
+  //         totals[month].hour_spend += tracking.hours || 0;
+  //       });
 
-        return totals;
-      }, {});
+  //       return totals;
+  //     }, {});
 
-      const resultArray = Object.entries(monthlyWorkHourTotals)
-        .map(([month, { work_hour_required, hour_spend }]) => ({
-          month: convertMonthNumberToName(month),
-          work_hour_required,
-          hour_spend,
-        }))
-        .sort((a, b) => getMonthOrder(a.month) - getMonthOrder(b.month)); // Sort by month order
+  //     const resultArray = Object.entries(monthlyWorkHourTotals)
+  //       .map(([month, { work_hour_required, hour_spend }]) => ({
+  //         month: convertMonthNumberToName(month),
+  //         work_hour_required,
+  //         hour_spend,
+  //       }))
+  //       .sort((a, b) => getMonthOrder(a.month) - getMonthOrder(b.month)); // Sort by month order
 
-      setMonthlyWorkHours(resultArray);
-    };
+  //     setMonthlyWorkHours(resultArray);
+  //   };
 
-    calculateMonthlyWorkHours();
+  //   calculateMonthlyWorkHours();
 
-    calculateTaskCategoryAverages();
+  //   calculateTaskCategoryAverages();
 
-    calculateTaskassignee_dateCounts();
+  //   calculateTaskassignee_dateCounts();
     
-    calculateTaskCompleteDueDateCounts();
+  //   calculateTaskCompleteDueDateCounts();
 
-    calculateTaskPriorityCounts();
+  //   calculateTaskPriorityCounts();
 
-    calculateCompletedTaskCounts();
+  //   calculateCompletedTaskCounts();
 
-    calculateTaskCategoryCounts();
+  //   calculateTaskCategoryCounts();
 
-    calculateTaskStatusCounts();
+  //   calculateTaskStatusCounts();
 
-    calculateTaskCounts();
-  }, [taskList]);
+  //   calculateTaskCounts();
+  // }, [taskList]);
 
   return (
     <div className="flex flex-col">
-      {console.log(monthlyWorkHours)}
       <div className=" flex justify-between items-center text-2xl bg-glasses backdrop-blur-12 font-semibold p-4 m-2 rounded-lg">
         <div className="flex items-center justify-start">
           <div class="relative w-12 h-12 rounded-full md:block">
