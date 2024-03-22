@@ -106,18 +106,19 @@ const HomeTab = () => {
           </svg>
         </span>
       </div> */}
-      
+
       <NotificationBar type="success" message="Your account has been saved." />
       <NotificationBar type="error" message="Your email address is invalid." />
 
-
       <div className="container w-full">
-        <div class="mt-8 text-center">
+        <div class="mt-8 text-center animate-in duration-300 ease-in-out">
           <p class="font-medium">{formattedDate}</p>
-          <p class="text-3xl font-medium">Good morning,{user.full_name}</p>
+          <p class="text-3xl font-medium">Good morning, {user.full_name}</p>
         </div>
         <div class="ml-6 mt-12">
-          <p class="text-xl font-medium">Steps to get start</p>
+          <p class="text-xl font-medium animate-pulse ">
+            Steps to get started
+          </p>
         </div>
 
         <div class="ml-6 mr-2 mt-8 mx-auto flex flex-col lg:flex-row lg:space-x-4 ">
@@ -125,7 +126,7 @@ const HomeTab = () => {
             <div class="col-span-2 row-span-2 flex  flex-col items-center justify-center rounded-2xl bg-glasses backdrop-blur-12 bg-opacity-50 py-4">
               <button
                 onClick={handleChangeCreateProject}
-                class="flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1"
+                class="flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
               >
                 <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
                 <span class="ml-2 text-sm font-medium text-gray-500">
@@ -134,14 +135,14 @@ const HomeTab = () => {
               </button>
               <button
                 onClick={handleCompleteProfile}
-                class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1"
+                class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
               >
                 <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
                 <span class="ml-2 text-sm font-medium text-gray-500">
                   Complete your profile
                 </span>
               </button>
-              <button class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1">
+              <button class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105">
                 <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
                 <span class="ml-2 text-sm font-medium text-gray-500">
                   Continue project
@@ -152,7 +153,7 @@ const HomeTab = () => {
               <p class="ml-8 mt-4 text-xl font-medium">Project</p>
               <button
                 onClick={handleChangeCreateProject}
-                class="ml-12 mt-4 flex items-center"
+                class="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
               >
                 <div class="flex h-8 w-8 items-center justify-center rounded-2xl border-2 border-dashed border-sky-500">
                   <img
@@ -165,7 +166,7 @@ const HomeTab = () => {
                 <span class="ml-4 text-sm font-medium"> Create projects </span>
               </button>
               {projectList.map((project) => (
-                <div class="ml-12 mt-4 flex items-center">
+                <div class="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105">
                   <div class="flex h-8 w-8 items-center justify-center rounded-2xl">
                     <img
                       width="96"
@@ -327,6 +328,7 @@ const HomeTab = () => {
             </section>
             <div className="w-full flex items-center justify-center -mt-6 mb-4">
               <button
+                className="transition-transform duration-300 transform hover:scale-105 hover:text-blue-500"
                 onClick={() => {
                   setTab("MyTask");
                 }}

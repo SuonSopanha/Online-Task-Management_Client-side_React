@@ -24,6 +24,12 @@ const Signup = () => {
     }
   } 
 
+  const googleLogin = async (e) =>{
+    e.preventDefault();
+    await providerLogin();
+    navigate('/app')
+  }
+
 
   //New Auth Strategy with Laravel
   // const onSignup = async (e) => {
@@ -53,7 +59,7 @@ const Signup = () => {
     <div class="max-w-[280px] mx-auto h-screen">
       <div class="flex flex-col items-center pt-10">
         <h2 class="mb-5 text-gray-900 font-mono font-bold text-xl">Sign Up</h2>
-        <button class="flex items-center mb-2 justify-center transition ease-in-out delay-50 px-3 py-2.5 space-x-2 bg-white border border-slate-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:ring-opacity-50">
+        <button onClick={googleLogin} class="flex items-center mb-2 justify-center transition ease-in-out delay-50 px-3 py-2.5 space-x-2 bg-white border border-slate-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:ring-opacity-50">
           <svg
             viewBox="0 0 48 48"
             width="24"

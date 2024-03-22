@@ -48,18 +48,6 @@ export default function HomePage() {
 
   return (
     <div className="w-full h-fit bg-gradient-to-r from-[#65A0FD] via-[#E8CCCC] to-[#FFA9F1B5]">
-      <ul class="circles">
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-			</ul>
       <header className="fixed top-0 left-0 right-0 z-50">
         <nav className="flex justify-between w-screen  h-12 bg-transparent">
           <div className="flex flex-row ml-[-30px] sm:space-x-3 px-5 xl:px-10 py-3 justify-between items-center">
@@ -124,8 +112,20 @@ export default function HomePage() {
           </a>
         </nav>
       </header>
+      <ul class="circles">
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
       <body className="bg-transparent">
-        <div className="text-center w-full">
+        <div className="text-center w-full h-fit">
           <div className="pt-40 pb-32">
             <h1 className="text-3xl font-bold p-4 animate-fadeIn">
               The best platform for<br></br> cross-functional work
@@ -194,7 +194,7 @@ export default function HomePage() {
 
           <div class="items-center max-w-screen-xl px-4 py-8 mx-auto lg:grid lg:grid-cols-4 lg:gap-16 xl:gap-24 lg:py-24 lg:px-6">
             <div class="col-span-2 mb-8 bg-glasses bg-opacity-50 p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-1 hover:shadow-lg">
-              <p class="text-lg font-medium text-purple-600 dark:text-purple-500">
+              <p class="text-lg font-medium ">
                 Trusted Worldwide
               </p>
               <h2 class="mt-3 mb-4 text-3xl font-extrabold tracking-tight text-gray-900 md:text-3xl ">
@@ -209,7 +209,7 @@ export default function HomePage() {
                 <div>
                   <a
                     href="#"
-                    class="inline-flex items-center text-base font-medium text-purple-600 hover:text-purple-800 dark:text-purple-500 dark:hover:text-purple-700"
+                    class="inline-flex items-center text-base font-medium hover:text-purple-800  dark:hover:text-purple-700"
                   >
                     Explore Legality Guide
                     <svg
@@ -229,7 +229,7 @@ export default function HomePage() {
                 <div>
                   <a
                     href="#"
-                    class="inline-flex items-center text-base font-medium text-purple-600 hover:text-purple-800 dark:text-purple-500 dark:hover:text-purple-700"
+                    class="inline-flex items-center text-base font-medium hover:text-purple-800  dark:hover:text-purple-700"
                   >
                     Visit the Trust Center
                     <svg
@@ -251,7 +251,7 @@ export default function HomePage() {
             <div class="col-span-2 space-y-8 md:grid md:grid-cols-2 md:gap-12 md:space-y-0">
               <div class="bg-glasses bg-opacity-50 p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-1 hover:shadow-lg">
                 <svg
-                  class="w-10 h-10 mb-2 text-purple-600 md:w-12 md:h-12 dark:text-purple-500"
+                  class="w-10 h-10 mb-2 md:w-12 md:h-12 "
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -271,7 +271,7 @@ export default function HomePage() {
               </div>
               <div class="bg-glasses bg-opacity-50 p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-1 hover:shadow-lg">
                 <svg
-                  class="w-10 h-10 mb-2 text-purple-600 md:w-12 md:h-12 dark:text-purple-500"
+                  class="w-10 h-10 mb-2 md:w-12 md:h-12 "
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -287,7 +287,7 @@ export default function HomePage() {
               </div>
               <div class="bg-glasses bg-opacity-50 p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-1 hover:shadow-lg">
                 <svg
-                  class="w-10 h-10 mb-2 text-purple-600 md:w-12 md:h-12 dark:text-purple-500"
+                  class="w-10 h-10 mb-2 md:w-12 md:h-12 "
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -307,7 +307,7 @@ export default function HomePage() {
               </div>
               <div class="bg-glasses bg-opacity-50 p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-1 hover:shadow-lg">
                 <svg
-                  class="w-10 h-10 mb-2 text-purple-600 md:w-12 md:h-12 dark:text-purple-500"
+                  class="w-10 h-10 mb-2 md:w-12 md:h-12 "
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"

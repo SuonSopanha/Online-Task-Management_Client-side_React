@@ -137,7 +137,7 @@ const TeamOverview = ({ team }) => {
 
             <ul className="flex flex-col space-y-4 ">
               <li>
-                <div class="flex items-center text-sm border-b border-gray-900 px-1 pb-2">
+                <div class="flex items-center text-sm border-b border-gray-900 px-1 pb-2 transition-transform duration-300 transform hover:scale-105">
                   <div class="relative w-10 h-10 mr-3 rounded-full md:block flex items-center justify-center text-sky-400">
                     <FaPlusSquare className="w-full h-full"></FaPlusSquare>
                     <div
@@ -154,7 +154,7 @@ const TeamOverview = ({ team }) => {
               {teamProjects &&
                 teamProjects.map((project) => (
                   <li className="flex flex-row justify-between border-b border-gray-700 w-full items-center">
-                    <div class="flex items-center text-sm  px-1 pb-2">
+                    <div class="flex items-center text-sm  px-1 pb-2 transition-transform duration-300 transform hover:scale-105">
                       <div class="relative w-10 h-10 mr-3 rounded-full md:block">
                         <button className="object-cover w-full h-full rounded-lg flex flex-row items-center justify-center bg-sky-300">
                           <FaClipboardList className="text-white w-6 h-6" />

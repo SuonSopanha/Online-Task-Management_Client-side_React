@@ -37,7 +37,7 @@ const TaskDueDate = ({ DueDate,OnChange }) => {
 
 
   return (
-    <div className="flex flex-row items-center justify-between space-x-2">
+    <div className="flex flex-row items-center justify-between space-x-2 p-1 border-2 rounded-lg bg-gray-50 pl-4">
       <FaClock />
 
       <DatePicker
@@ -45,7 +45,7 @@ const TaskDueDate = ({ DueDate,OnChange }) => {
         onChange={(date) => handleDateChange(date)}
         placeholderText="No Due Date"
         dateFormat="MM/dd/yyyy"
-        className="w-full bg-transparent"
+        className="w-full bg-transparent "
       />
     </div>
   );

@@ -27,7 +27,7 @@ const Dropdown = ({ parent,children,OnChange }) => {
         <button
           onClick={toggleDropdown}
           type="button"
-          className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-blue-500 bg-opacity-70 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-blue-500 bg-opacity-70 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-blue-700"
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
