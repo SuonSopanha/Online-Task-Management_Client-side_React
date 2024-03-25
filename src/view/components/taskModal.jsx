@@ -11,7 +11,6 @@ import {
   FaTimesCircle,
   FaTrash,
   FaTrashRestore,
-
 } from "react-icons/fa";
 
 import { auth } from "../../firebase/config";
@@ -131,10 +130,7 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
       {isModalOpen && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
           <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-48">
-            {/* Content */}
-            {console.log(task)}
             <div className="relative flex flex-col w-full bg-white border-0 rounded-lg outline-none focus:outline-none">
-              {/* Header */}
               <div className="flex items-center justify-between p-2 border-b-2 border-solid border-gray-500 rounded-t">
                 <CompleteBox
                   IsComplete={task.complete}
@@ -153,15 +149,12 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   name={task.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-
                 <DropdownButton
                   type={"category"}
                   initState={task.task_category}
                   handleChange={onCategoryChange}
                 />
               </div>
-              {/* Body */}
-
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <div className="w-20 font-semibold">DueDate</div>
                 <TaskDueDate
@@ -180,7 +173,6 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   init={task.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
-
                 <div className="w-10 font-semibold text-xs">Timer</div>
                 <Timer />
               </div>
@@ -197,17 +189,14 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   <div className="flex w-6 h-6 items-center justify-center rounded-lg bg-sky-600 text-white">
                     <FaClipboardList className="w-4 h-4" />
                   </div>
-
                   <span>
                     {projectOption !== null
                       ? projectOption.project_name
                       : "No Project"}
                   </span>
                 </div>
-
-                <div className="w-10 font-semibold text-sm">Assignee</div>
+                <div className="w-6 font-semibold text-sm">Tags</div>
                 <TagInput />
-
               </div>
               <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
                 <div className="w-24 font-semibold">Description</div>
@@ -217,7 +206,6 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   className="w-full"
                 ></EditableBox>
               </div>
-              {/* Footer */}
               <div className="flex items-center justify-end space-x-2 p-6 border-t border-solid border-gray-300 rounded-b">
                 <div className="flex flex-row px-2 py-1 justify-center items-center bg-rose-600 rounded-lg">
                   <FaTrash className="w-3 h-3 text-white" />
