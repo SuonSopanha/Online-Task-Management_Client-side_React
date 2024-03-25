@@ -26,6 +26,7 @@ import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
 import Timer from "./modalComponents/timer";
+import TagInput from "./modalComponents/taskTag";
 
 import { updateRtTaskByID, deleteRtTaskByID } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
@@ -203,6 +204,10 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                       : "No Project"}
                   </span>
                 </div>
+
+                <div className="w-10 font-semibold text-sm">Assignee</div>
+                <TagInput />
+
               </div>
               <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
                 <div className="w-24 font-semibold">Description</div>
