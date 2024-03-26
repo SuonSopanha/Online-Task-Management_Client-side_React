@@ -102,47 +102,44 @@ const TaskBoard = () => {
               .map((task) => (
                 <button
                   key={task.id}
-                  class="flex justify-center items-center transition duration-300 transform hover:scale-105"
+                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
                     openModal();
                   }}
                 >
-                  <div class="flex flex-col bg-blue-400 pt-3 pb-2 px-3 rounded-xl text-white w-full mx-auto my-auto">
-                    <div class="flex flex-row space-x-1 items-center">
+                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                    <div className="flex flex-row space-x-1 items-center">
                       <span>
                         {task.project_id !== null ? (
-                          <FaUsers class="text-white text-xs" />
+                          <FaUsers className="text-white text-xs" />
                         ) : (
-                          <FaUser class="text-white text-xs" />
+                          <FaUser className="text-white text-xs" />
                         )}
                       </span>
-
                       {task.project_id !== null ? (
-                        <span class="text-xs">
-                          {task.project ? task.project.project_name : Team}
+                        <span className="text-xs">
+                          {task.project ? task.project.project_name : "Team"}
                         </span>
                       ) : (
-                        <span class="text-xs">Only Me</span>
+                        <span className="text-xs">Only Me</span>
                       )}
                     </div>
                     <div>
-                      <p class="flex justify-start text-xl font-bold mt-1 mb-2">
+                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
                         {task.task_name}
                       </p>
                     </div>
-
                     <div className="mb-1 flex flex-row justify-start left-0"></div>
-                    <div class="text-xs flex space-x-1">
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-sm">
+                    <div className="text-xs flex space-x-1">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
                         {task.priority}
                       </span>
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-sm">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
                         {task.status}
                       </span>
                     </div>
-
-                    <div className="text-xs pt-1 items-end flex justify-end">
+                    <div className="text-xs pt-0.5 items-end flex justify-end">
                       DueDate: {task.due_date}
                     </div>
                   </div>
@@ -158,47 +155,44 @@ const TaskBoard = () => {
               .map((task) => (
                 <button
                   key={task.id}
-                  class="flex justify-center items-center transition duration-300 transform hover:scale-105"
+                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
                     openModal();
                   }}
                 >
-                  <div class="flex flex-col bg-violet-400 pt-3 pb-2 px-3 rounded-xl text-white w-full mx-auto my-auto">
-                    <div class="flex flex-row space-x-1 items-center">
+                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                    <div className="flex flex-row space-x-1 items-center">
                       <span>
                         {task.project_id !== null ? (
-                          <FaUsers class="text-white text-xs" />
+                          <FaUsers className="text-white text-xs" />
                         ) : (
-                          <FaUser class="text-white text-xs" />
+                          <FaUser className="text-white text-xs" />
                         )}
                       </span>
-
                       {task.project_id !== null ? (
-                        <span class="text-xs">
-                          {task.project ? task.project.project_name : Team}
+                        <span className="text-xs">
+                          {task.project ? task.project.project_name : "Team"}
                         </span>
                       ) : (
-                        <span class="text-xs">Only Me</span>
+                        <span className="text-xs">Only Me</span>
                       )}
                     </div>
                     <div>
-                      <p class="flex text-xl font-bold mt-1 mb-2 justify-start">
+                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
                         {task.task_name}
                       </p>
                     </div>
-
-                    <div class="mb-1 flex flex-row justify-start left-0"></div>
-                    <div class="text-xs flex space-x-1">
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-sm">
+                    <div className="mb-1 flex flex-row justify-start left-0"></div>
+                    <div className="text-xs flex space-x-1">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
                         {task.priority}
                       </span>
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-sm">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
                         {task.status}
                       </span>
                     </div>
-
-                    <div className="text-xs pt-1 items-end flex justify-end">
+                    <div className="text-xs pt-0.5 items-end flex justify-end">
                       DueDate: {task.due_date}
                     </div>
                   </div>
@@ -214,47 +208,44 @@ const TaskBoard = () => {
               .map((task) => (
                 <button
                   key={task.id}
-                  class="flex justify-center items-center transition duration-300 transform hover:scale-105"
+                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
                     openModal();
                   }}
                 >
-                  <div class="flex flex-col bg-green-400 pt-3 pb-2 px-3 rounded-xl text-white w-full mx-auto my-auto">
-                    <div class="flex flex-row space-x-1 items-center">
+                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                    <div className="flex flex-row space-x-1 items-center">
                       <span>
                         {task.project_id !== null ? (
-                          <FaUsers class="text-white text-xs" />
+                          <FaUsers className="text-white text-xs" />
                         ) : (
-                          <FaUser class="text-white text-xs" />
+                          <FaUser className="text-white text-xs" />
                         )}
                       </span>
-
                       {task.project_id !== null ? (
-                        <span class="text-xs">
-                          {task.project ? task.project.project_name : Team}
+                        <span className="text-xs">
+                          {task.project ? task.project.project_name : "Team"}
                         </span>
                       ) : (
-                        <span class="text-xs">Only Me</span>
+                        <span className="text-xs">Only Me</span>
                       )}
                     </div>
                     <div>
-                      <p class="flex justify-start text-xl font-bold mt-1 mb-2">
+                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
                         {task.task_name}
                       </p>
                     </div>
-
-                    <div class="mb-1 flex flex-row justify-start left-0"></div>
-                    <div class="text-xs flex space-x-1">
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-sm">
+                    <div className="mb-1 flex flex-row justify-start left-0"></div>
+                    <div className="text-xs flex space-x-1">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
                         {task.priority}
                       </span>
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-sm">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
                         {task.status}
                       </span>
                     </div>
-
-                    <div className="text-xs pt-1 items-end flex justify-end">
+                    <div className="text-xs pt-0.5 items-end flex justify-end">
                       DueDate: {task.due_date}
                     </div>
                   </div>
