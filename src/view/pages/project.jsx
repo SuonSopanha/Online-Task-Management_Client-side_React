@@ -2,6 +2,13 @@ import React from "react";
 import { useState, useContext, useEffect, createContext } from "react";
 
 import { FaClipboardList, FaPlus } from "react-icons/fa";
+import {
+  FaList,
+  FaCalendar,
+  FaClipboard,
+  FaChartBar,
+  FaUsers,
+} from "react-icons/fa";
 
 import ProjectList from "../components/projectList";
 import ProjectCalender from "../components/projectCalender";
@@ -15,7 +22,6 @@ import { getprojecByID } from "../../firebase/projectCRUD";
 import { modalContext } from "../part/test";
 
 export const projectTaskContext = createContext(null);
-
 
 //mock data
 const mockProject = {
@@ -50,8 +56,6 @@ const Project = () => {
   //     setProject(data);
   //   });
   // }, [tabID]);
-
-
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -97,21 +101,21 @@ const Project = () => {
                   }`}
                   onClick={() => handleTabClick("List")}
                 >
-                  List
+                  <FaList className="inline-block mr-2" /> List
                 </a>
               </li>
               <li className="me-2">
                 <a
                   href="#"
                   className={`inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
-                    activeTab === "Calender"
+                    activeTab === "Calendar"
                       ? "text-blue-600 border-blue-600"
                       : ""
                   }`}
-                  onClick={() => handleTabClick("Calender")}
-                  aria-current={activeTab === "Calender"}
+                  onClick={() => handleTabClick("Calendar")}
+                  aria-current={activeTab === "Calendar"}
                 >
-                  Calendar
+                  <FaCalendar className="inline-block mr-2" /> Calendar
                 </a>
               </li>
               <li className="me-2">
@@ -122,18 +126,20 @@ const Project = () => {
                   }`}
                   onClick={() => handleTabClick("Board")}
                 >
-                  Board
+                  <FaClipboard className="inline-block mr-2" /> Board
                 </a>
               </li>
               <li className="me-2">
                 <a
                   href="#"
                   className={`inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
-                    activeTab === "Board" ? "text-blue-600 border-blue-600" : ""
+                    activeTab === "Dashboard"
+                      ? "text-blue-600 border-blue-600"
+                      : ""
                   }`}
                   onClick={() => handleTabClick("Dashboard")}
                 >
-                  Dashboard
+                  <FaChartBar className="inline-block mr-2" /> Dashboard
                 </a>
               </li>
               <li className="me-2">
@@ -146,7 +152,7 @@ const Project = () => {
                   }`}
                   onClick={() => handleTabClick("Member")}
                 >
-                  Member
+                  <FaUsers className="inline-block mr-2" /> Member
                 </a>
               </li>
             </ul>
