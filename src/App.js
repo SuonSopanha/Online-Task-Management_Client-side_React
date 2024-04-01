@@ -16,6 +16,8 @@ import Teamates from './view/pages/teamates';
 import TeamCreate from './view/pages/teamCreate';
 import TeamMember from './view/pages/teamMember';
 import TeamGoal from './view/pages/teamGoal';
+import Error404 from './view/pages/error404';
+import EmailVerifySuccess from './view/pages/emailVerifySuccess';
 
 function App() {
   return (
@@ -35,6 +37,9 @@ function App() {
           <Route path='/teamCreate' element={<TeamCreate/>}/>
           <Route path='/teamMember' element={<TeamMember/>}/>
           <Route path='/teamGoal' element={<TeamGoal/>}/>
+          <Route path='/error' element={<Error404/>}/>
+          <Route path="/verifySuccess" element={<EmailVerifySuccess/>}/>
+          <Route path="*" element={<HomePage/>}/>
         </Routes>
       </BrowserRouter>
       
