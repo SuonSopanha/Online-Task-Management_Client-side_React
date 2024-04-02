@@ -18,6 +18,8 @@ import TeamMember from './view/pages/teamMember';
 import TeamGoal from './view/pages/teamGoal';
 import Error404 from './view/pages/error404';
 import EmailVerifySuccess from './view/pages/emailVerifySuccess';
+import ForgotPassword from './view/pages/forgotPassword';
+import PasswordReset from './view/pages/resetPassword';
 
 function App() {
   return (
@@ -39,7 +41,9 @@ function App() {
           <Route path='/teamGoal' element={<TeamGoal/>}/>
           <Route path='/error' element={<Error404/>}/>
           <Route path="/verifySuccess" element={<EmailVerifySuccess/>}/>
-          <Route path="*" element={<HomePage/>}/>
+          <Route path="/forgotPassword" element={<ForgotPassword/>}/>
+          <Route path="/resetPassword" element={<PasswordReset/>}/>
+          <Route path="*" element={<Error404/>}/>
         </Routes>
       </BrowserRouter>
       
