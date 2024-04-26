@@ -24,6 +24,7 @@ import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
 import Timer from "./modalComponents/timer";
 import TagInput from "./modalComponents/taskTag";
+import MemberDropdown from "./memberDropdown";
 
 import { auth } from "../../firebase/config";
 import {
@@ -247,10 +248,8 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <div className="w-24 font-semibold">Assignee</div>
-                <TaskAssignee
-                  Assignee={{ assignee_id: "", name: "User" }}
-                  OnChange={onAssigneeChange}
-                />
+                  <MemberDropdown 
+                    members={[]}></MemberDropdown>
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <div className="w-20 font-semibold">DueDate</div>

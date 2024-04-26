@@ -14,13 +14,32 @@ import { getUserByID } from "../../firebase/usersCRUD";
 
 import { modalContext } from "../part/test";
 import UserProfilePic from "../../utils/photoGenerator";
+
+import MilestoneModal from "../components/milestoneModal";
 export const mytaskContext = createContext(null);
+
+const mockMilestone = {
+  milestoneName: "Launch Website",
+  startDate: "2024-05-01",
+  endDate: "2024-05-15",
+};
 
 const MyTask = () => {
   const [activeTab, setActiveTab] = useState("List");
   const [user, setUser] = useState({});
-  const { setModalTask, openCreateModal } = useContext(modalContext);
+  const { setModalTask, openCreateModal} = useContext(modalContext)
   const [sortCriteria, setSortCriteria] = useState("Defualt");
+  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+
+  const onMilestoneModalClose = () => {
+    setIsMilestoneModalOpen(false);
+  };
+
+  const onMilestoneModalOpen = () => {
+    setIsMilestoneModalOpen(true);
+  };
+
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -67,7 +86,7 @@ const MyTask = () => {
   };
 
   return (
-    <div className="w-full h-fit bg-glasses backdrop-blur-12 rounded-lg">
+    <div className="w-full h-full bg-glasses backdrop-blur-12 rounded-lg">
       {/* Header */}
       <div className="flex flex-row justify-start border-b border-gray-500  ">
         <div className="flex items-center p-3 ml-1">
@@ -177,8 +196,7 @@ const MyTask = () => {
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
             <button
               onClick={() => {
-                openCreateModal();
-                setModalTask(taskSample);
+                onMilestoneModalOpen();
               }}
               type="button"
               className="px-2 py-2 gap-x-1 md:px-3 md:py-2 md:gap-x-1.5 rounded-md text-white bg-blue-500 bg-opacity-80 hover:bg-blue-600 flex items-center text-sm font-semibold md:text-base shadow-sm ring-1 ring-inset ring-gray-300"
@@ -203,12 +221,21 @@ const MyTask = () => {
           </div>
         </div>
 
+        {isMilestoneModalOpen && (
+          <MilestoneModal
+            onClose={onMilestoneModalClose}
+            initialValue={mockMilestone}
+          />
+        )}
+
         <mytaskContext.Provider value={{ sortCriteria }}>
           {activeTab === "List" && <TaskList />}
           {activeTab === "Calender" && <TaskCalender />}
           {activeTab === "Board" && <TaskBoard />}
         </mytaskContext.Provider>
       </div>
+
+    
     </div>
   );
 };

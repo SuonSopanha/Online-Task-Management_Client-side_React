@@ -30,9 +30,37 @@ const mockProjectList = [
 ];
 
 const mockTeamList = [
-  { team_id: 1, name: "Team 1" },
-  { team_id: 2, name: "Team 2" },
-  { team_id: 3, name: "Team 3" },
+{
+    name: "Sample Team",
+    description: "This is a sample team description.",
+    milestone: "Sample Milestone",
+    members: [
+      {
+        user_id: "1",
+        full_name: "John Doe",
+        role: "Developer",
+        photoURL: "https://via.placeholder.com/150",
+      },
+      {
+        user_id: "2",
+        full_name: "Jane Smith",
+        role: "Designer",
+        photoURL: "https://via.placeholder.com/150",
+      },
+      // Add more mock team members as needed
+    ],
+    projects: [
+      {
+        project_id: "1",
+        project_name: "Sample Project 1",
+      },
+      {
+        project_id: "2",
+        project_name: "Sample Project 2",
+      },
+      // Add more mock projects as needed
+    ],
+  }
 ];
 
 

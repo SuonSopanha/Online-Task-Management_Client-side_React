@@ -16,6 +16,7 @@ import CreateTaskModal from "../components/createTaskModal";
 import SendMessageModal from "../components/sendMessageModal";
 import ProjectModal from "../components/projectModal";
 import ProjectCreateTaskModal from "../components/projectCreateTaskModal";
+import MilestoneModal from "../components/milestoneModal";
 
 export const modalContext = createContext(null);
 
@@ -30,6 +31,7 @@ const Main = () => {
   const [isCreateProjectTaskModalOpen, setIsCreateProjectTaskModalOpen] = useState(false);
   const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
   const [modalTask, setModalTask] = useState({});
+
 
 
   const openModal = () => {
@@ -124,6 +126,7 @@ const Main = () => {
               setIsCreateProjectTaskModalOpen,
               opentCreateProjectTaskModal,
               closeCreateProjectTaskModal,
+
               tabID,
               setTabID,
               setTab,
@@ -162,6 +165,7 @@ const Main = () => {
                 isClose={closeCreateProjectTaskModal}
                 taskData={modalTask}
               />
+
             </div>
           </modalContext.Provider>
         </div>
