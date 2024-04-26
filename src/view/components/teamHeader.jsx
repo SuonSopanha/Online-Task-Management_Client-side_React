@@ -8,21 +8,60 @@ import TeamDashboard from "./teamDashboard";
 import { getTeamByID } from "../../firebase/teamCRUD";
 import { modalContext } from "../part/test";
 
+const mockTeam = {
+  name: "Sample Team",
+  description: "This is a sample team description.",
+  milestone: "Sample Milestone",
+  members: [
+    {
+      user_id: "1",
+      full_name: "John Doe",
+      role: "Developer",
+      photoURL: "https://via.placeholder.com/150",
+    },
+    {
+      user_id: "2",
+      full_name: "Jane Smith",
+      role: "Designer",
+      photoURL: "https://via.placeholder.com/150",
+    },
+    // Add more mock team members as needed
+  ],
+  projects: [
+    {
+      project_id: "1",
+      project_name: "Sample Project 1",
+    },
+    {
+      project_id: "2",
+      project_name: "Sample Project 2",
+    },
+    // Add more mock projects as needed
+  ],
+  milestones: [
+    {
+      milestone_name: "Sample Milestone",
+      due_date: "2024-05-01", // Sample due date
+    },
+    // Add more mock milestones as needed
+  ],
+};
+
 const TeamHeader = () => {
   const [activeTab, setActiveTab] = useState("Overview");
   const {tabID} = useContext(modalContext);
 
-  const [team,setTeam] = useState({});
+  const [team,setTeam] = useState(mockTeam);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  useEffect(() => {
-    getTeamByID(tabID).then((data) => {
-      setTeam(data);
-    });
-  }, [tabID]);
+  // useEffect(() => {
+  //   getTeamByID(tabID).then((data) => {
+  //     setTeam(data);
+  //   });
+  // }, [tabID]);
 
 
   console.log(team);

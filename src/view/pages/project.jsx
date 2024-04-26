@@ -15,6 +15,7 @@ import ProjectCalender from "../components/projectCalender";
 import ProjectBoard from "../components/projectBoard";
 import ProjectDashboard from "../components/projectDashboard";
 import ProjectMember from "../components/projectMember";
+import ProjectStageModal from "../components/projectStageModal";
 import Dropdown from "../components/dropDown";
 
 import { getprojecByID } from "../../firebase/projectCRUD";
@@ -35,6 +36,15 @@ const mockProject = {
 
 const Project = () => {
   const [activeTab, setActiveTab] = useState("List");
+  const [isOpenStageModal, setIsOpenStageModal] = useState(false);
+
+  const openStageModal = () => {
+    setIsOpenStageModal(true);
+  };
+
+  const closeStageModal = () => {
+    setIsOpenStageModal(false);
+  };
 
   const {
     tabID,
@@ -79,7 +89,7 @@ const Project = () => {
   };
 
   return (
-    <div className="w-full h-fit bg-glasses backdrop-blur-12 rounded-lg">
+    <div className="w-full h-[1200px] bg-glasses backdrop-blur-12 rounded-lg">
       {/* Header */}
       <div className="flex flex-row justify-start border-b border-gray-500  ">
         <div className="flex items-center p-3 ml-1">
@@ -176,8 +186,7 @@ const Project = () => {
             <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
               <button
                 onClick={() => {
-                  opentCreateProjectTaskModal();
-                  setModalTask(taskSample);
+                  openStageModal();
                 }}
                 type="button"
                 className="px-2 py-2 gap-x-1 md:px-3 md:py-2 md:gap-x-1.5 rounded-md text-white bg-blue-500 bg-opacity-80 hover:bg-blue-600 flex items-center text-sm font-semibold md:text-base shadow-sm ring-1 ring-inset ring-gray-300"
@@ -204,6 +213,11 @@ const Project = () => {
           </div>
         )}
 
+        {isOpenStageModal && (
+          <ProjectStageModal
+            onClose={closeStageModal}
+          />
+        )}
         <projectTaskContext.Provider value={{ sortCriteria }}>
           {activeTab === "List" && <ProjectList />}
           {activeTab === "Calender" && <ProjectCalender />}

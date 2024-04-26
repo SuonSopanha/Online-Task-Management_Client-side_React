@@ -22,6 +22,7 @@ import TaskDueDate from "./modalComponents/taskDueDate";
 import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
+import MemberDropdown from "./memberDropdown";
 
 import { auth } from "../../firebase/config";
 import {
@@ -41,6 +42,7 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
   const [members, setMembers] = useState([]);
   const [project, setProject] = useState({});
   const [userName,setUserName] = useState("");
+  
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
@@ -229,13 +231,8 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
               {/* Body */}
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-cente text-sm sm:text-base">
                 <div className="w-24">Assignee</div>
-                <TaskAssignee
-                  Assignee={{
-                    assignee_id: taskData.assignee_id,
-                    name: taskData.assignee_full_name,
-                  }}
-                  OnChange={onAssigneeChange}
-                />
+                    <MemberDropdown 
+                      members={[]}/>
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <div className="w-24">DueDate</div>
