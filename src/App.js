@@ -20,10 +20,12 @@ import Error404 from './view/pages/error404';
 import EmailVerifySuccess from './view/pages/emailVerifySuccess';
 import ForgotPassword from './view/pages/forgotPassword';
 import PasswordReset from './view/pages/resetPassword';
-
+import AdminDashboard from './view/pages/adminDashboard';
+import AdminOrg from './view/components/adminOrg';
+import AdminUser from './view/components/adminUser';
 function App() {
   return (
-    <div className="w-full h-screen bg-gradient-to-r from-[#65A0FD] via-[#E8CCCC] to-[#FFA9F1B5] ">
+    <div className="w-full h-full bg-gradient-to-r from-[#65A0FD] via-[#E8CCCC] to-[#FFA9F1B5] ">
       
       <BrowserRouter>
         <Routes>
@@ -43,6 +45,9 @@ function App() {
           <Route path="/verifySuccess" element={<EmailVerifySuccess/>}/>
           <Route path="/forgotPassword" element={<ForgotPassword/>}/>
           <Route path="/resetPassword" element={<PasswordReset/>}/>
+          <Route path="/adminDashboard" element={<AdminDashboard/>}/>
+          <Route path="/adminOrg" element={<AdminOrg/>}/>
+          <Route path="/adminUser" element={<AdminUser/>}/>
           <Route path="*" element={<Error404/>}/>
         </Routes>
       </BrowserRouter>
