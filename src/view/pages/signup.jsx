@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { userSignup } from "../../firebase/appAuth";
+import { userSignin, providerLogin } from "../../firebase/appAuth";
 
 
 
@@ -13,7 +14,7 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  //Old Medthod Signp with Firebase
+  // Old Medthod Signp with Firebase
   const onSignup = async (e) =>{
     e.preventDefault();
     if(password === confirm){
@@ -31,7 +32,7 @@ const Signup = () => {
   }
 
 
-  //New Auth Strategy with Laravel
+  // New Auth Strategy with Laravel
   // const onSignup = async (e) => {
   //   e.preventDefault();
   //   if (password === confirm) {
@@ -59,7 +60,7 @@ const Signup = () => {
     <div class="max-w-[280px] mx-auto h-screen">
       <div class="flex flex-col items-center pt-10">
         <h2 class="mb-5 text-gray-900 font-mono font-bold text-xl">Sign Up</h2>
-        <button onClick={googleLogin} class="flex items-center mb-2 justify-center transition ease-in-out delay-50 px-3 py-2.5 space-x-2 bg-white border border-slate-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:ring-opacity-50">
+        <button class="flex items-center mb-2 justify-center transition ease-in-out delay-50 px-3 py-2.5 space-x-2 bg-white border border-slate-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:ring-opacity-50">
           <svg
             viewBox="0 0 48 48"
             width="24"
@@ -126,7 +127,7 @@ const Signup = () => {
           <span class="text-gray-700 font-medium">Continue with Google</span>
         </button>
         <span class="mb-2 text-gray-900">Or</span>
-        <form onSubmit={onSignup}>
+        <form >
           <input
             type="email"
             class="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
