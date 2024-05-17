@@ -1,7 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
-import { FaCheckCircle, FaClipboard, FaClipboardList, FaUsers, FaProjectDiagram, FaChartLine } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaClipboard,
+  FaClipboardList,
+  FaUsers,
+  FaProjectDiagram,
+  FaChartLine,
+} from "react-icons/fa";
+
+import BarChart from "../components/chartComponents/barChart";
+import BarChartCompare from "../components/chartComponents/barChartCompare";
+import PieChart from "../components/chartComponents/pieChart";
+import LineChart from "../components/chartComponents/lineChart";
+import LineChartCompare from "../components/chartComponents/lineChartCompare";
+import RadarChart from "../components/chartComponents/radarChart";
+import LineAverage from "../components/chartComponents/lineAverage";
 
 const AdminDashboard = () => {
   return (
@@ -66,17 +81,17 @@ const AdminDashboard = () => {
           </nav>
         </div>
 
-        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-2 p-4 mt-0">
-          <li className="bg-glasses backdrop-blur-12 px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-2 p-4 mt-0 text-white">
+          <li className="bg-gradient-to-r from-blue-600 to-blue-400 px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
             <span className="mr-2">
               <FaUsers />
             </span>
-            <span className="text-sm m-1">Teams :</span>
+            <span className="text-sm m-1">User :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
               1
             </span>
           </li>
-          <li className="bg-glasses backdrop-blur-12 px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
+          <li className="bg-gradient-to-r from-green-600 to-green-500 backdrop-blur-md px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
             <span className="mr-2">
               <FaProjectDiagram />
             </span>
@@ -85,16 +100,40 @@ const AdminDashboard = () => {
               1
             </span>
           </li>
-          <li className="bg-glasses backdrop-blur-12 px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
+
+          <li className="bg-gradient-to-r from-orange-600 to-orange-400 px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
             <span className="mr-2">
               <FaChartLine />
             </span>
-            <span className="text-sm m-1">Reports :</span>
+            <span className="text-sm m-1">Organization :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
               1
             </span>
           </li>
         </ul>
+
+        <div className="w-full -mt-4 p-2 items-center">
+          <ul className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <li className=" bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
+              <BarChart Data={[]} />
+            </li>
+            <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
+              <BarChartCompare Data1={[]} Data2={[]} />
+            </li>
+            <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
+              <PieChart Data={[]} />
+            </li>
+            <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
+              <LineChart Data={[]} />
+            </li>
+            <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
+              <LineChartCompare Data={[]} />
+            </li>
+            <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
+              <LineAverage Data={[]} />
+            </li>
+          </ul>
+        </div>
       </div>
     </>
   );
