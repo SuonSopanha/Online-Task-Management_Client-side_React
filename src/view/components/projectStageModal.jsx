@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import MemberDropdown from "./memberDropdown";
 
-
 const mockMembers = [
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
-    { id: 3, name: "Alice Johnson" },
-    { id: 4, name: "Bob Brown" },
-    { id: 5, name: "Emily Davis" },
-  ];
-  
+  { id: 1, name: "John Doe" },
+  { id: 2, name: "Jane Smith" },
+  { id: 3, name: "Alice Johnson" },
+  { id: 4, name: "Bob Brown" },
+  { id: 5, name: "Emily Davis" },
+];
 
 const ProjectStageModal = ({ onClose, initialValue }) => {
   const [stageName, setStageName] = useState("");
@@ -69,111 +67,98 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
 
   return (
     <>
-      <div className="fixed z-10 inset-0 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-          </div>
-          <span
-            className="hidden sm:inline-block sm:align-middle sm:h-screen"
-            aria-hidden="true"
-          >
-            &#8203;
-          </span>
-          <div
-            className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-headline"
-          >
-            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div className="sm:flex sm:items-start">
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3
-                    className="text-lg leading-6 font-medium text-gray-900"
-                    id="modal-headline"
-                  >
-                    Project Stage
-                  </h3>
-                  <div className="mt-2">
-                    <input
-                      type="text"
-                      value={stageName}
-                      onChange={handleNameChange}
-                      className="border rounded-md p-2 w-full mb-2"
-                      placeholder="Enter stage name"
-                    />
-                    <div className="flex flex-wrap -mx-3 mb-2">
-                      <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Start Date:
-                        </label>
-                        <input
-                          type="date"
-                          value={startDate}
-                          onChange={handleStartDateChange}
-                          className="border rounded-md p-2 w-full"
-                        />
-                      </div>
-                      <div className="w-full md:w-1/2 px-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          End Date:
-                        </label>
-                        <input
-                          type="date"
-                          value={endDate}
-                          onChange={handleEndDateChange}
-                          className="border rounded-md p-2 w-full"
-                        />
-                      </div>
-                    </div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Period:
-                    </label>
-                    <input
-                      type="text"
-                      value={period}
-                      onChange={handlePeriodChange}
-                      className="border rounded-md p-2 w-full mb-2"
-                      placeholder="Enter period"
-                    />
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Complete:
-                    </label>
-                    <input
-                      type="checkbox"
-                      checked={complete}
-                      onChange={handleCompleteChange}
-                      className="mr-2"
-                    />
-                    <label className="mr-2">Yes</label>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Complete Date:
-                    </label>
-                    <input
-                      type="date"
-                      value={completeDate}
-                      onChange={handleCompleteDateChange}
-                      className="border rounded-md p-2 w-full mb-2"
-                    />
-                  </div>
-
-                  <MemberDropdown members={mockMembers}/>
+      <div className="fixed z-10 inset-0 overflow-y-auto ">
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="bg-white rounded-lg overflow-hidden shadow-xl max-w-md w-full">
+            <div className="bg-blue-500 text-white py-4 px-6">
+              <h3 className="text-lg font-semibold">Project Stage</h3>
+            </div>
+            <div className="p-6">
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-1">
+                  Stage Name:
+                </label>
+                <input
+                  type="text"
+                  value={stageName}
+                  onChange={handleNameChange}
+                  className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter stage name"
+                />
+              </div>
+              <MemberDropdown members={mockMembers} />
+              <div className="flex flex-wrap -mx-3 mb-4 mt-2">
+                <div className="w-full md:w-1/2 px-3">
+                  <label className="block text-sm font-semibold mb-1">
+                    Start Date:
+                  </label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={handleStartDateChange}
+                    className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="w-full md:w-1/2 px-3">
+                  <label className="block text-sm font-semibold mb-1">
+                    End Date:
+                  </label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={handleEndDateChange}
+                    className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  />
                 </div>
               </div>
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-1">
+                  Period:
+                </label>
+                <input
+                  type="text"
+                  value={period}
+                  onChange={handlePeriodChange}
+                  className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter period"
+                />
+              </div>
+              <div className="mb-4 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={complete}
+                  onChange={handleCompleteChange}
+                  className="mr-2 border border-gray-400 rounded cursor-pointer"
+                />
+                <label className="text-sm">Complete</label>
+              </div>
+              {complete && (
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold mb-1">
+                    Complete Date:
+                  </label>
+                  <input
+                    type="date"
+                    value={completeDate}
+                    onChange={handleCompleteDateChange}
+                    className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              )}
+
             </div>
-            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <div className="bg-gray-100 py-3 px-4 flex justify-end">
               <button
                 type="button"
                 onClick={handleSave}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
               >
                 Save
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md ml-2 hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
               >
                 Close
               </button>
