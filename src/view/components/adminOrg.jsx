@@ -64,7 +64,7 @@ const AdminOrg = () => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="w-full flex flex-col min-h-full">
         <div className="flex justify-between items-center text-2xl bg-glasses backdrop-blur-12 font-semibold p-4 m-2 rounded-lg">
           <div className="flex items-center justify-start">
             <div className="relative w-12 h-12 rounded-full md:block">
@@ -90,19 +90,34 @@ const AdminOrg = () => {
         </div>
         <div className="flex justify-between items-center bg-glasses backdrop-blur-12 font-semibold p-4 mx-2 mb-1 rounded-lg">
           <nav className="flex space-x-4">
-            <Link to="/overview" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/overview"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Overview
             </Link>
-            <Link to="/reports" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/reports"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Reports
             </Link>
-            <Link to="/adminOrg" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/adminOrg"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Organization
             </Link>
-            <Link to="/adminUser" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/adminUser"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Users
             </Link>
-            <Link to="/support" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/support"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Support
             </Link>
           </nav>
@@ -140,114 +155,126 @@ const AdminOrg = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-between bg-glasses backdrop-blur-12 font-semibold p-4 m-2 rounded-lg">
-          <h3 className="text-lg text-start pl-4 mb-4">Users</h3>
-          <table className="w-full divide-y divide-gray-500 overflow-x-auto rounded-lg">
-            <thead className="bg-glasses">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Name
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Title
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Role
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Email
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-glasses divide-y divide-gray-500">
-              {currentUsers.map((user) => (
-                <tr key={user.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <img
-                          className="h-10 w-10 rounded-full"
-                          src={user.image}
-                          alt={user.name}
-                        />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {user.name}
-                        </div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.title}</div>
-                    <div className="text-sm text-gray-500">{user.department}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {user.role}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {user.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                      Edit
-                    </a>
-                    <a href="#" className="ml-2 text-red-600 hover:text-red-900">
-                      Delete
-                    </a>
-                  </td>
+        <div className="container w-full overflow-hidden">
+          <div className="w-full overflow-x-auto bg-glasses backdrop-blur-12 font-semibold p-4 m-2 rounded-lg">
+            <h3 className="text-lg text-start pl-4 mb-4">Users</h3>
+            <table className="w-full divide-y divide-gray-500">
+              <thead className="bg-glasses">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Name
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Owner
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Industry
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Member
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Created At
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="flex justify-between items-center p-4">
-            <button
-              onClick={handlePrevious}
-              disabled={currentPage === 1}
-              className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <p className="text-sm">
-              Page {currentPage} of {totalPages}
-            </p>
-            <button
-              onClick={handleNext}
-              disabled={currentPage === totalPages}
-              className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
-            >
-              Next
-            </button>
+              </thead>
+              <tbody className="bg-glasses divide-y divide-gray-500">
+                {currentUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <img
+                            className="h-10 w-10 rounded-full"
+                            src={user.image}
+                            alt={user.name}
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {user.email}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{user.title}</div>
+                      <div className="text-sm text-gray-500">
+                        {user.department}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        {user.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {user.role}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {user.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <a
+                        href="#"
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        Edit
+                      </a>
+                      <a
+                        href="#"
+                        className="ml-2 text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="flex justify-between items-center p-4">
+              <button
+                onClick={handlePrevious}
+                disabled={currentPage === 1}
+                className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <p className="text-sm">
+                Page {currentPage} of {totalPages}
+              </p>
+              <button
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+                className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

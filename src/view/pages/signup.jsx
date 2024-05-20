@@ -24,7 +24,7 @@ const Signup = () => {
       if (password === confirm) {
         setIsLoggingIn(true);
         const response = await apiRequest("post", "/api/v1/register", {
-          name: name,
+          full_name: name,
           email: email,
           password: password,
           password_confirmation: confirm,
