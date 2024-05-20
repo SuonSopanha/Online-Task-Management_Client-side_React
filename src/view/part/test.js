@@ -91,7 +91,7 @@ const Main = () => {
       <Navbar toggleSidebar={toggleSidebar} />
 
       {/* Body content */}
-      <div className="flex bg-gradient-to-r from-[#65A0FD] via-[#E8CCCC] to-[#FFA9F1B5] ">
+      <div className="flex bg-gradient-to-r from-[#65A0FD] via-[#E8CCCC] to-[#FFA9F1B5]">
         {/* Sidebar */}
         <Sidebar isOpen={isOpen} TabNavigate={setActiveTab} />
 

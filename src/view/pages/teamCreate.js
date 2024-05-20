@@ -23,7 +23,7 @@ const TeamCreate = () => {
   };
 
   return (
-    <div className="p-10 w-auto h-auto">
+    <div className="p-10 w-auto h-screen">
       <div>
         <p className="mb-4 text-3xl font-medium">What's your Team Name?</p>
       </div>

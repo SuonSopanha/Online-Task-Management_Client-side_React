@@ -5,7 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { userSignup } from "../../firebase/appAuth";
 import { userSignin, providerLogin } from "../../firebase/appAuth";
 
+import { redirectToGoogle } from "../../utils/authService";
+import { apiRequest } from "../../api/api";
+
 const Signup = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -16,21 +20,36 @@ const Signup = () => {
   // Old Medthod Signp with Firebase
   const onSignup = async (e) => {
     e.preventDefault();
-    if (password === confirm) {
-      await userSignup(email, password);
-      navigate("/login");
-    } else {
-      alert("Passwords don't match");
+    try {
+      if (password === confirm) {
+        setIsLoggingIn(true);
+        const response = await apiRequest("post", "/api/v1/register", {
+          name: name,
+          email: email,
+          password: password,
+          password_confirmation: confirm,
+        });
+        if (response) {
+          setIsLoggingIn(false);
+          console.log("Signup successful:", response);
+          sessionStorage.setItem("token", response.data.token);
+          navigate("/app");
+        }
+      } else {
+        alert("Passwords don't match");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
   const googleLogin = async (e) => {
     e.preventDefault();
-    await providerLogin();
-    navigate("/app");
+    redirectToGoogle();
   };
 
-  // New Auth Strategy with Laravel
   // const onSignup = async (e) => {
   //   e.preventDefault();
   //   if (password === confirm) {
@@ -121,7 +140,14 @@ const Signup = () => {
           <span>Continue with Google</span>
         </button>
         <span class="mb-2 text-gray-900">Or</span>
-        <form>
+        <form onSubmit={onSignup}>
+          <input
+            type="text"
+            className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
+            placeholder="UserName"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <input
             type="email"
             class="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "

@@ -1,7 +1,4 @@
-import React from "react";
-import { useState, useContext, useEffect } from "react";
-
-import axios from "axios";
+import React, { useState, useContext, useEffect } from "react";
 import {
   FaCheckCircle,
   FaMinusCircle,
@@ -12,20 +9,11 @@ import {
 import TaskModal from "./taskModal";
 import SendMessageModal from "./sendMessageModal";
 
-import { auth } from "../../firebase/config";
-
-import {
-  getRtTaskByUserID,
-  getRtTaskByAssigneeID,
-} from "../../firebase/taskCRUD";
-
-import { getprojecByID } from "../../firebase/projectCRUD";
 import LoadingBalls from "../../utils/loading";
 import {
   sortByPriority,
   sortByDueDate,
   sortByStatus,
-  sortByWorkHoursRequired,
   sortByTaskName,
   sortByID,
 } from "../../utils/sortTask";
@@ -45,6 +33,53 @@ const mockMilestone = [
     startDate: "2024-05-02",
     endDate: "2024-05-03",
   },
+];
+
+const mockTaskList = [
+  {
+    id: "1",
+    task_name: "Task 1",
+    complete: false,
+    priority: "High",
+    due_date: "2024-05-30",
+    project_id: "project1",
+    project: {
+      project_name: "Project A",
+    },
+  },
+  {
+    id: "1",
+    task_name: "Task 2",
+    complete: true,
+    priority: "Low",
+    due_date: "2024-06-15",
+    project_id: null,
+  },
+  {
+    id: "1",
+    task_name: "Task 2",
+    complete: true,
+    priority: "Low",
+    due_date: "2024-06-15",
+    project_id: null,
+  },
+  {
+    id: "1",
+    task_name: "Task 2",
+    complete: true,
+    priority: "Low",
+    due_date: "2024-06-15",
+    project_id: null,
+  },
+  {
+    id: "1",
+    task_name: "Task 2",
+    complete: true,
+    priority: "Low",
+    due_date: "2024-06-15",
+    project_id: null,
+  },
+  // Add more mock tasks as needed
 ];
 
 const TaskList = () => {
@@ -76,41 +111,22 @@ const TaskList = () => {
     }
   };
 
-  let defaultTask = [];
-
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in, you can update the component state or perform other actions.
-        console.log("User is signed in:", user);
-        setTaskList([]);
-        getRtTaskByUserID(auth.currentUser.uid, setTaskList);
-        //getRtTaskByAssigneeID(auth.currentUser.uid, setTaskList)
-        setLoading(false);
-      } else {
-        // User is signed out.
-        setError(true);
-        console.log("User is signed out");
-      }
-    });
+    // Simulate loading data from API
+    setTimeout(() => {
+      setTaskList(mockTaskList);
+      setLoading(false);
+    }, 1000); // Simulating 1 second delay
+  }, []);
 
-    return () => {
-      // Unsubscribe the listener when the component unmounts
-      unsubscribe();
-    };
-  }, [isModalOpen, closeCreateModal]); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
-
-  let sortTask = [];
-
-  useEffect(() => {
-    sortTask = [...sortTasks(taskList, sortCriteria)];
-    setTaskList(sortTask);
-  }, [sortCriteria]);
-
-  const Team = "Team";
+  let sortedTaskList = sortTasks(taskList, sortCriteria);
 
   if (loading) {
-    return <LoadingBalls />;
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
   }
 
   if (error) {
@@ -118,179 +134,185 @@ const TaskList = () => {
   }
 
   const priorityColor = (priority) => {
-    if (priority === "High") {
-      return "yellow";
-    } else if (priority === "Medium") {
-      return "green";
-    } else if (priority === "Low") {
-      return "blue";
-    } else if (priority === "Very High") {
-      return "red";
-    }
+    // Your priority color logic
   };
 
   return (
     <>
-      <section class="container mx-auto px-6 pb-2 font-mono">
-        <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-          <div class="w-full overflow-x-auto">
-            <table class="w-full">
+      <section className="container mx-auto px-6 pb-2 font-mono">
+        <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+          <div className="w-full overflow-x-auto">
+            <table className="w-full">
               <thead>
-                <tr class="text-md font-semibold tracking-wide text-left text-gray-900 uppercase border-b bg- border-gray-600">
-                  <th class="px-4 py-3">Task Name</th>
-                  <th class="px-4 py-3 w-1/6">Visibility</th>
-                  <th class="px-4 py-3 w-1/6">Priority</th>
-                  <th class="px-4 py-3 w-1/4">Due Date</th>
+                <tr className="text-md font-semibold tracking-wide text-left text-gray-900 uppercase border-b bg- border-gray-600">
+                  <th className="px-4 py-3">Task Name</th>
+                  <th className="px-4 py-3 w-1/6">Visibility</th>
+                  <th className="px-4 py-3 w-1/6">Priority</th>
+                  <th className="px-4 py-3 w-1/4">Due Date</th>
                 </tr>
               </thead>
-              {taskList.map((task) => (
-                <tr class="text-gray-700">
-                  <td class="px-4 py-2 border">
-                    <button
-                      onClick={() => {
-                        openModal();
-                        setModalTask(task);
-                      }}
-                    >
-                      <div class="flex justify-center items-center text-sm">
-                        {task.complete ? (
-                          <FaCheckCircle className="text-emerald-500 mr-2" />
+              <tbody>
+                {sortedTaskList.map((task, index) => (
+                  <tr key={index} className="text-gray-700">
+                    <td className="px-4 py-2 border">
+                      <button
+                        onClick={() => {
+                          openModal();
+                          setModalTask(task);
+                        }}
+                      >
+                        <div className="flex justify-center items-center text-sm">
+                          {task.complete ? (
+                            <FaCheckCircle className="text-emerald-500 mr-2" />
+                          ) : (
+                            <FaMinusCircle className=" text-violet-600 mr-2" />
+                          )}
+
+                          <div className="flex flex-col justify-center items-center">
+                            <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
+                              {task.task_name}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    </td>
+
+                    <td className="px-4 py-2 text-ms font-semibold border">
+                      <div className="flex items-center text-sm">
+                        <div className="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
+                          {task.project_id !== null ? <FaUsers /> : <FaUser />}
+                          <div
+                            className="absolute inset-0 rounded-full shadow-inner"
+                            aria-hidden="true"
+                          ></div>
+                        </div>
+                        {task.project_id !== null ? (
+                          <span className="text-x whitespace-nowrap">
+                            {task.project ? task.project.project_name : "Team"}
+                          </span>
                         ) : (
-                          <FaMinusCircle className=" text-violet-600 mr-2" />
+                          <span className="text-xs">Only Me</span>
                         )}
-
-                        <div className="flex flex-col justify-center items-center">
-                          <p class="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
-                            {task.task_name}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  </td>
-
-                  <td class="px-4 py-2 text-ms font-semibold border">
-                    <div class="flex items-center text-sm">
-                      <div class="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
-                        {task.project_id !== null ? <FaUsers /> : <FaUser />}
-                        <div
-                          class="absolute inset-0 rounded-full shadow-inner"
-                          aria-hidden="true"
-                        ></div>
-                      </div>
-                      {task.project_id !== null ? (
-                        <span className="text-x whitespace-nowrap">
-                          {task.project ? task.project.project_name : Team}
-                        </span>
-                      ) : (
-                        <span className="text-xs">Only Me</span>
-                      )}
-                    </div>
-                  </td>
-                  <td class="px-4 py-2 text-xs border">
-                    <span
-                      class={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
-                        task.priority
-                      )}-700 rounded-sm bg-${priorityColor(task.priority)}-100`}
-                    >
-                      {task.priority}
-                    </span>
-                  </td>
-                  <td class="px-4 py-2 text-sm border">{task.due_date}</td>
-                </tr>
-              ))}
-
-              {mockMilestone.map((milestone) => (
-                <tbody>
-                  <tr className="text-gray-700">
-                    <td colSpan="4">
-                      <div className="flex justify-between items-center">
-                        <h1 className="px-4 py-2 text-xxl font-semibold">
-                          {milestone.milestoneName}
-                        </h1>
-                        <div className="px-4 py-2">
-                          <button className="">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-6 w-6 text-gray-500"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          </button>
-                        </div>
                       </div>
                     </td>
+                    <td className="px-4 py-2 text-xs border">
+                      <span
+                        className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
+                          task.priority
+                        )}-700 rounded-sm bg-${priorityColor(
+                          task.priority
+                        )}-100`}
+                      >
+                        {task.priority}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 text-sm border">
+                      {task.due_date}
+                    </td>
                   </tr>
-                  {taskList.map((task) => (
-                    <tr class="text-gray-700">
-                      <td class="px-4 py-2 border">
-                        <button
-                          onClick={() => {
-                            openModal();
-                            setModalTask(task);
-                          }}
-                        >
-                          <div class="flex justify-center items-center text-sm">
-                            {task.complete ? (
-                              <FaCheckCircle className="text-emerald-500 mr-2" />
-                            ) : (
-                              <FaMinusCircle className=" text-violet-600 mr-2" />
-                            )}
-
-                            <div className="flex flex-col justify-center items-center">
-                              <p class="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
-                                {task.task_name}
-                              </p>
-                            </div>
+                ))}
+                {/* Render milestone */}
+                {mockMilestone.map((milestone, index) => (
+                  <React.Fragment key={index}>
+                    <tr className="text-gray-700">
+                      <td colSpan="4">
+                        <div className="flex justify-between items-center">
+                          <h1 className="px-4 py-2 text-xxl font-semibold">
+                            {milestone.milestoneName}
+                          </h1>
+                          <div className="px-4 py-2">
+                            <button className="">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-gray-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            </button>
                           </div>
-                        </button>
-                      </td>
-
-                      <td class="px-4 py-2 text-ms font-semibold border">
-                        <div class="flex items-center text-sm">
-                          <div class="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
-                            {task.project_id !== null ? (
-                              <FaUsers />
-                            ) : (
-                              <FaUser />
-                            )}
-                            <div
-                              class="absolute inset-0 rounded-full shadow-inner"
-                              aria-hidden="true"
-                            ></div>
-                          </div>
-                          {task.project_id !== null ? (
-                            <span className="text-x whitespace-nowrap">
-                              {task.project ? task.project.project_name : Team}
-                            </span>
-                          ) : (
-                            <span className="text-xs">Only Me</span>
-                          )}
                         </div>
                       </td>
-                      <td class="px-4 py-2 text-xs border">
-                        <span
-                          class={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
-                            task.priority
-                          )}-700 rounded-sm bg-${priorityColor(
-                            task.priority
-                          )}-100`}
-                        >
-                          {task.priority}
-                        </span>
-                      </td>
-                      <td class="px-4 py-2 text-sm border">{task.due_date}</td>
                     </tr>
-                  ))}
-                </tbody>
-              ))}
+                    {/* Render tasks under milestone */}
+                    {sortedTaskList.map((task, taskIndex) => (
+                      <React.Fragment key={taskIndex}>
+                        {/* Render tasks */}
+                        <tr className="text-gray-700">
+                          <td className="px-4 py-2 border">
+                            <button
+                              onClick={() => {
+                                openModal();
+                                setModalTask(task);
+                              }}
+                            >
+                              <div className="flex justify-center items-center text-sm">
+                                {task.complete ? (
+                                  <FaCheckCircle className="text-emerald-500 mr-2" />
+                                ) : (
+                                  <FaMinusCircle className=" text-violet-600 mr-2" />
+                                )}
+
+                                <div className="flex flex-col justify-center items-center">
+                                  <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
+                                    {task.task_name}
+                                  </p>
+                                </div>
+                              </div>
+                            </button>
+                          </td>
+
+                          <td className="px-4 py-2 text-ms font-semibold border">
+                            <div className="flex items-center text-sm">
+                              <div className="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
+                                {task.project_id !== null ? (
+                                  <FaUsers />
+                                ) : (
+                                  <FaUser />
+                                )}
+                                <div
+                                  className="absolute inset-0 rounded-full shadow-inner"
+                                  aria-hidden="true"
+                                ></div>
+                              </div>
+                              {task.project_id !== null ? (
+                                <span className="text-x whitespace-nowrap">
+                                  {task.project
+                                    ? task.project.project_name
+                                    : "Team"}
+                                </span>
+                              ) : (
+                                <span className="text-xs">Only Me</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-2 text-xs border">
+                            <span
+                              className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
+                                task.priority
+                              )}-700 rounded-sm bg-${priorityColor(
+                                task.priority
+                              )}-100`}
+                            >
+                              {task.priority}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2 text-sm border">
+                            {task.due_date}
+                          </td>
+                        </tr>
+                      </React.Fragment>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>

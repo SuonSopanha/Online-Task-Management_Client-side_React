@@ -198,15 +198,6 @@ function Sidebar({ isOpen, TabNavigate }) {
               <div className="flex flex-col items-center w-full">
                 {/* Dropdown content */}
                 <button
-                  className="flex items-center w-full h-8 px-3 mt-1 rounded  hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
-                  onClick={() => NavigateTab("Reporting")}
-                >
-                  <FaChartArea className="w-3 h-3 stroke-current text-blue-900" />
-                  <span className="ml-2 text-sm font-medium text-gray-700">
-                    Reporting
-                  </span>
-                </button>
-                <button
                   className="flex items-center w-full h-8 px-3 mt-1 rounded hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
                   onClick={() => NavigateTab("Dashboard")}
                 >
