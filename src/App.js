@@ -55,7 +55,6 @@ function App() {
           <Route path='/auth/callback' element={<AuthCallback/>}/>
         </Routes>
       </BrowserRouter>
-      
     </div>
   );
 }

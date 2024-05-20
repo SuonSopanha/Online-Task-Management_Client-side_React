@@ -1,52 +1,3 @@
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import Cookies from 'js-cookie';
-// import axios from "axios";
-
-// const Login = () => {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [isLoggingIn, setIsLoggingIn] = useState(false); // State to track login process
-//   const navigate = useNavigate();
-
-//   const onLogin = async (e) => {
-//     e.preventDefault();
-//     try {
-//       setIsLoggingIn(true); // Set isLoggingIn to true when starting the login process
-//       await axios.get("http://localhost:8000/sanctum/csrf-cookie", {
-//         withCredentials: true,
-//       });
-
-//       const xsrfToken = Cookies.get("XSRF-TOKEN");
-//       const response = await axios.post(
-//         "http://localhost:8000/login",
-//         {
-//           email,
-//           password,
-//         },
-//         {
-//           withCredentials: true,
-//           headers: {
-//             "Content-Type": "application/json",
-//             "X-XSRF-TOKEN": xsrfToken,
-//           },
-//         }
-//       );
-
-//       //check if login success or not
-//       console.log("Login successful:", response.data);
-//       // if (response.data.full_name) {
-//       //   navigate("/app");
-//       // } else {
-//       //   navigate("/welcome");
-//       // }
-//     } catch (error) {
-//       console.error("Login error:", error);
-//     } finally {
-//       setIsLoggingIn(false); // Set isLoggingIn to false when the login process finishes
-//     }
-//   };
-
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -54,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/config";
 import { getUserByID } from "../../firebase/usersCRUD";
 
-import { userSignin, providerLogin } from "../../firebase/appAuth";
 import { redirectToGoogle } from "../../utils/authService";
 
 import { apiRequest } from "../../api/api";
@@ -77,11 +27,15 @@ const Login = () => {
         password,
       });
 
-      if(response) {
+      if (response) {
         console.log("Login successful:", response);
         //store the token in session storage
         sessionStorage.setItem("token", response.data.token);
-        navigate('/app');
+        if (response.data.user.role === "admin") {
+          navigate("/adminDashboard");
+        } else {
+          navigate("/app");
+        }
       }
       // Check if login is successful
       // Redirect to the app if login is successful

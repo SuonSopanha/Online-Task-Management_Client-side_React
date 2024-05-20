@@ -11,7 +11,7 @@ const AuthCallback = () => {
       sessionStorage.setItem("token", token);
 
       // Fetch user info with token
-      window.location.href = "/";
+      window.location.href = "/app";
     }
   }, []);
 
