@@ -24,6 +24,7 @@ import AdminDashboard from './view/pages/adminDashboard';
 import AdminOrg from './view/components/adminOrg';
 import AdminUser from './view/components/adminUser';
 import UserProfile from './view/pages/userProfile';
+import AuthCallback from './view/pages/authCallback';
 function App() {
   return (
     <div className="w-full h-full bg-gradient-to-r from-[#65A0FD] via-[#E8CCCC] to-[#FFA9F1B5] ">
@@ -51,6 +52,7 @@ function App() {
           <Route path="/adminUser" element={<AdminUser/>}/>
           <Route path="*" element={<Error404/>}/>
           <Route path="/userProfile" element={<UserProfile/>}/>
+          <Route path='/auth/callback' element={<AuthCallback/>}/>
         </Routes>
       </BrowserRouter>
       
