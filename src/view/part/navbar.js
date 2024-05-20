@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from "react";
 import UserProfilePic from "../../utils/photoGenerator";
+import apiRequest from "../../api/api";
 
 const Navbar = ({ toggleSidebar }) => {
+
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleClick = () => {
     toggleSidebar(true);
   };
 
-  useEffect(() => {
-    // Simulate loading for 1.5 seconds
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+  // useEffect(() => {
+  //   // Simulate loading for 1.5 seconds
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1500);
 
-    // Cleanup timer
-    return () => clearTimeout(timer);
-  }, []);
+  //   // Cleanup timer
+  //   return () => clearTimeout(timer);
+  // }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/users");
+        setData(response.data);
+        setLoading(false);
+        console.log(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">

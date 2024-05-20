@@ -1,38 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formattedDate } from "../../utils/formatDate";
 import { Link } from "react-router-dom";
+import apiRequest from "../../api/api";
 
 const AdminOrg = () => {
-  const users = [
-    {
-      id: 1,
-      name: "Jane Cooper",
-      title: "Regional Paradigm Technician",
-      department: "Optimization",
-      status: "Active",
-      role: "Admin",
-      email: "jane.cooper@example.com",
-      image: "https://i.pravatar.cc/150?img=1",
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      title: "Lead Developer",
-      department: "Development",
-      status: "Inactive",
-      role: "User",
-      email: "john.doe@example.com",
-      image: "https://i.pravatar.cc/150?img=2",
-    },
-    // Add more user objects as needed
-  ];
+  // const users = [
+  //   {
+  //     id: 1,
+  //     name: "Jane Cooper",
+  //     title: "Regional Paradigm Technician",
+  //     department: "Optimization",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "jane.cooper@example.com",
+  //     image: "https://i.pravatar.cc/150?img=1",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "John Doe",
+  //     title: "Lead Developer",
+  //     department: "Development",
+  //     status: "Inactive",
+  //     role: "User",
+  //     email: "john.doe@example.com",
+  //     image: "https://i.pravatar.cc/150?img=2",
+  //   },
+  //   // Add more user objects as needed
+  // ];
 
+  const [users, setUsers] = useState([]);
+  const [loading, setloading] = useState(true);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiRequest("get", "api/admin/organizations");
+        setUsers(response.data);
+        console.log(response);
+        setloading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -90,19 +107,34 @@ const AdminOrg = () => {
         </div>
         <div className="flex justify-between items-center bg-glasses backdrop-blur-12 font-semibold p-4 mx-2 mb-1 rounded-lg">
           <nav className="flex space-x-4">
-            <Link to="/overview" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/overview"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Overview
             </Link>
-            <Link to="/reports" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/reports"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Reports
             </Link>
-            <Link to="/adminOrg" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/adminOrg"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Organization
             </Link>
-            <Link to="/adminUser" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/adminUser"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Users
             </Link>
-            <Link to="/support" className="text-sm text-gray-700 hover:text-gray-900">
+            <Link
+              to="/support"
+              className="text-sm text-gray-700 hover:text-gray-900"
+            >
               Support
             </Link>
           </nav>
@@ -199,13 +231,17 @@ const AdminOrg = () => {
                         <div className="text-sm font-medium text-gray-900">
                           {user.name}
                         </div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="text-sm text-gray-500">
+                          {user.email}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{user.title}</div>
-                    <div className="text-sm text-gray-500">{user.department}</div>
+                    <div className="text-sm text-gray-500">
+                      {user.department}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -219,10 +255,16 @@ const AdminOrg = () => {
                     {user.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                    <a
+                      href="#"
+                      className="text-indigo-600 hover:text-indigo-900"
+                    >
                       Edit
                     </a>
-                    <a href="#" className="ml-2 text-red-600 hover:text-red-900">
+                    <a
+                      href="#"
+                      className="ml-2 text-red-600 hover:text-red-900"
+                    >
                       Delete
                     </a>
                   </td>
