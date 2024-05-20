@@ -27,11 +27,15 @@ const Login = () => {
         password,
       });
 
-      if(response) {
+      if (response) {
         console.log("Login successful:", response);
         //store the token in session storage
         sessionStorage.setItem("token", response.data.token);
-        navigate('/app');
+        if (response.data.user.role === "admin") {
+          navigate("/adminDashboard");
+        } else {
+          navigate("/app");
+        }
       }
       // Check if login is successful
       // Redirect to the app if login is successful
