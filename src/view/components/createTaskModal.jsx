@@ -10,6 +10,8 @@ import {
   FaTimesCircle,
   FaTrash,
   FaTrashRestore,
+  FaCalendarAlt,
+  FaClipboardList
 } from "react-icons/fa";
 
 import EditableBox from "./editableBox";
@@ -21,6 +23,9 @@ import TaskDueDate from "./modalComponents/taskDueDate";
 import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
+import Timer from "./modalComponents/timer";
+import TagInput from "./modalComponents/taskTag";
+
 
 import { auth } from "../../firebase/config";
 import { updateRtTaskByID, deleteRtTaskByID ,createRtTask} from "../../firebase/taskCRUD";
@@ -205,12 +210,10 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
   return (
     <>
       {isModalOpen && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-48">
-            {/* Content */}
+        <div className="fixed inset-0 z-10 top-12 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="w-full sm:w-screen max-h-3xl max-w-2xl mx-auto my-4 mt-48">
             <div className="relative flex flex-col w-full bg-white border-0 rounded-lg outline-none focus:outline-none">
-              {/* Header */}
-              <div className="flex items-center justify-between p-2 border-b border-solid border-gray-500 rounded-t">
+              <div className="flex items-center justify-between p-2 border-b-2 border-solid border-gray-500 rounded-t">
                 <CompleteBox
                   IsComplete={taskData.complete}
                   OnChange={onCompletedChange}
@@ -220,50 +223,75 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   className="p-1 ml-auto bg-transparent border-0 text-gray-600 text-lg leading-none font-semibold items-center"
                   onClick={handleClose}
                 >
-                  <FaTimesCircle className="w-6 h-6" />
+                  <FaTimesCircle className="w-6 h-6 hover:text-black" />
                 </button>
               </div>
-              <div className="flex items-center justify-start px-2 py-3 border-b border-solid border-gray-500 rounded-t">
+              <div className="flex items-center justify-between px-2 py-3 border-b-2 border-solid border-gray-500 rounded-t">
                 <TaskName
                   name={taskData.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-
                 <DropdownButton
                   type={"category"}
                   initState={taskData.task_category}
                   handleChange={onCategoryChange}
                 />
               </div>
-              {/* Body */}
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-24 font-semibold">DueDate</div>
+                <FaCalendarAlt size={16} className="-mr-2" />
+                <div className="flex items-center w-20 font-semibold">
+                  DueDate
+                </div>
                 <TaskDueDate
                   DueDate={taskData.due_date}
                   OnChange={onDueDateChange}
                 />
-                <div className="w-28 font-semibold">Hour Required</div>
+                <FaCalendarAlt size={16} className="-mr-4" />
+                <div className="flex items-center w-20 font-semibold ">
+                  StartDate
+                </div>
+                <TaskDueDate
+                  DueDate={taskData.due_date}
+                  OnChange={onDueDateChange}
+                />
+              </div>
+              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
+                <div className="flex items-center w-20 font-semibold text-xs">
+                  Hour Required
+                </div>
                 <NumberInput
                   init={taskData.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
+                <div className="flex items-center w-10 font-semibold text-xs">
+                  Timer
+                </div>
+                <Timer />
               </div>
-              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
+              <div className="flex flex-row justify-start space-x-5  text-sm sm:text-base border-gray-500 p-3 items-center">
                 <TaskStatus
                   StatusState={taskData.status}
                   PrioritySate={taskData.priority}
                   OnChange={onChangeStatusAndPrority}
                 />
               </div>
-              <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
-                <div className="w-24 font-semibold">Description</div>
+              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
+
+                <div className="flex items-center w-6 font-semibold text-sm">
+                  Tags
+                </div>
+                <TagInput />
+              </div>
+              <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
+                <div className="flex items-center w-24 font-semibold">
+                  Description
+                </div>
                 <EditableBox
                   init={taskData.description}
                   OnChange={onDescriptionChange}
                   className="w-full"
                 ></EditableBox>
               </div>
-              {/* Footer */}
               <div className="flex items-center justify-end space-x-2 p-6 border-t border-solid border-gray-300 rounded-b">
                 <div className="flex flex-row px-2 py-1 justify-center items-center bg-blue-500 hover:bg-blue-800 rounded-lg">
                   <FaSave className="w-3 h-3 text-white" />
