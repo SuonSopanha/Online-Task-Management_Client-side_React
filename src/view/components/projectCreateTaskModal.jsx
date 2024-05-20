@@ -10,6 +10,7 @@ import {
   FaTimesCircle,
   FaTrash,
   FaTrashRestore,
+  FaClipboardList,
 } from "react-icons/fa";
 
 import EditableBox from "./editableBox";
@@ -21,6 +22,9 @@ import TaskDueDate from "./modalComponents/taskDueDate";
 import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
+import Timer from "./modalComponents/timer";
+import TagInput from "./modalComponents/taskTag";
+import MemberDropdown from "./memberDropdown";
 
 import { auth } from "../../firebase/config";
 import {
@@ -59,9 +63,9 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
     setIsModalOpen(isOpen);
   }, [isOpen]);
 
-  let newData = {}
+  let newData = {};
 
-  useEffect(() =>{
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       // The user object will be null if no user is logged in
       newData = {
@@ -70,7 +74,9 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
         task_name: taskData.task_name ? taskData.task_name : "",
         description: taskData.description ? taskData.description : "",
         due_date: taskData.due_date ? taskData.due_date : "",
-        task_category: taskData.task_category ? taskData.task_category : "To Do",
+        task_category: taskData.task_category
+          ? taskData.task_category
+          : "To Do",
         tracking: [],
         work_hour_required: taskData.work_hour_required
           ? taskData.work_hour_required
@@ -81,14 +87,12 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
         assignee_dates: taskData.assignee_dates ? taskData.assignee_dates : "",
         complete: taskData.complete ? taskData.complete : false,
         complete_date: taskData.complete_date ? taskData.complete_date : "",
-    
-      }
+      };
       setTask(newData);
     });
 
     return () => unsubscribe();
-
-  }, [])
+  }, []);
 
   const refresh = () => {
     setInterval(() => {
@@ -126,7 +130,7 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
 
   const onDueDateChange = (newDueDate) => {
     newData.due_date = formatDate(newDueDate);
-    setTask({ ...task, due_date: formatDate(newDueDate)});
+    setTask({ ...task, due_date: formatDate(newDueDate) });
     console.log(task.due_date);
   };
 
@@ -161,21 +165,20 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
     }
   };
 
+  const currentDate = new Date();
+  // Get the current time in 12-hour format with AM/PM
+  const currentTime = currentDate.toLocaleTimeString("en-KH", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
 
-    const currentDate = new Date();
-    // Get the current time in 12-hour format with AM/PM
-    const currentTime = currentDate.toLocaleTimeString("en-KH", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
-  
-    // Get the current date in MM/DD/YYYY format
-    const currentDateFormatted = currentDate.toLocaleDateString("en-KH", {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
-    });
+  // Get the current date in MM/DD/YYYY format
+  const currentDateFormatted = currentDate.toLocaleDateString("en-KH", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  });
 
   const onSaveButton = async () => {
     const assignID = task.assignee_id ? task.assignee_id.assignee_id : null;
@@ -202,12 +205,11 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
       user_id: task.assignee_id.assignee_id,
       notification_type: "task assign",
       notification_content: task.task_name + " has been assign",
-      source : {
+      source: {
         id: task.assignee_id.assignee_id,
-        type: 2
-      }
-
-    }
+        type: 2,
+      },
+    };
     console.log(task);
     await createRtTask(task);
     await createNotification(newNoti);
@@ -218,83 +220,83 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
   return (
     <>
       {isModalOpen && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+        <div className="fixed inset-0 top-12 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto rounded-sm">
           <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-48">
-            {/* Content */}
-            <div className="relative flex flex-col w-full bg-white border-0 rounded-lg outline-none focus:outline-none">
-              {/* Header */}
-              <div className="flex items-center justify-between p-2 border-b border-solid border-gray-500 rounded-t">
+            <div className="relative flex flex-col w-full bg-white border-0 rounded-lg">
+              <div className="flex items-center justify-between p-2 border-b border-gray-500">
                 <CompleteBox
                   IsComplete={taskData.complete}
                   OnChange={onCompletedChange}
-                  className="ml-2"
                 />
                 <button
-                  className="p-1 ml-auto bg-transparent border-0 text-gray-600 text-lg leading-none font-semibold items-center"
+                  className="p-1 bg-transparent border-0 text-gray-600 text-lg leading-none font-semibold"
                   onClick={handleClose}
                 >
                   <FaTimesCircle className="w-6 h-6" />
                 </button>
               </div>
-              <div className="flex items-center justify-start px-2 py-3 border-b border-solid border-gray-500 rounded-t">
+              <div className="flex items-center justify-between px-2 py-3 border-b border-gray-500">
                 <TaskName
                   name={taskData.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-
                 <DropdownButton
-                  type={"category"}
+                  type="category"
                   initState={taskData.task_category}
                   handleChange={onCategoryChange}
                 />
               </div>
-              {/* Body */}
-              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-cente text-sm sm:text-base">
+              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <div className="w-24 font-semibold">Assignee</div>
-                {/* Conditionally render TaskAssignee only when members is available */}
-                {members.length > 0 && (
-                  <TaskAssignee
-                    Assignee={{
-                    assignee_id: "",
-                    name: "User",
-                  }}
-                    OnChange={onAssigneeChange}
-                  />
-                )}
+                  <MemberDropdown 
+                    members={[]}></MemberDropdown>
               </div>
-              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-24 font-semibold">DueDate</div>
-                <TaskDueDate
-                  DueDate={taskData.due_date}
-                  OnChange={onDueDateChange}
-                />
-                <div className="w-28 font-semibold">Hour Required</div>
+              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
+                <div className="w-20 font-semibold">DueDate</div>
+                <TaskDueDate DueDate="04/10/2023" OnChange={onDueDateChange} />
+                <div className="w-20 font-semibold">StartDate</div>
+                <TaskDueDate DueDate="04/10/2023" OnChange={onDueDateChange} />
+              </div>
+              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
+                <div className="w-20 font-semibold text-xs">Hour Required</div>
                 <NumberInput
-                  init={taskData.work_hour_required}
+                  init={task.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
+                <div className="w-10 font-semibold text-xs">Timer</div>
+                <Timer />
               </div>
-              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
+              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <TaskStatus
-                  StatusState={taskData.status}
-                  PrioritySate={taskData.priority}
+                  StatusState={task.status}
+                  PrioritySate={task.priority}
                   OnChange={onChangeStatusAndPrority}
                 />
               </div>
-              <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
+              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
+                <div className="w-10 font-semibold text-sm">Project</div>
+                <div className="flex flex-row items-center justify-between space-x-2 border-2 rounded-lg p-2 bg-gray-50">
+                  <div className="flex w-6 h-6 items-center justify-center rounded-lg bg-sky-600 text-white">
+                    <FaClipboardList className="w-4 h-4" />
+                  </div>
+                  <span>No Project</span>
+                </div>
+                <div className="w-6 font-semibold text-sm">Tags</div>
+                <TagInput />
+              </div>
+              <div className="flex flex-col justify-start space-y-3 border-b border-gray-500 p-3 items-start">
                 <div className="w-24 font-semibold">Description</div>
                 <EditableBox
-                  init={taskData.description}
+                  init={task.description}
                   OnChange={onDescriptionChange}
                   className="w-full"
-                ></EditableBox>
+                />
               </div>
-              {/* Footer */}
-              <div className="flex items-center justify-end space-x-2 p-6 border-t border-solid border-gray-300 rounded-b">
+              <div className="flex items-center justify-end space-x-2 p-6 border-t border-gray-300 rounded-b">
                 <div className="flex flex-row px-2 py-1 justify-center items-center bg-blue-500 hover:bg-blue-800 rounded-lg">
                   <FaSave className="w-3 h-3 text-white" />
                   <button
-                    className="text-white background-transparent font-bold uppercase px-1 py-1 text-sm outline-none focus:outline-none  ease-linear transition-all duration-150"
+                    className="text-white font-bold uppercase px-1 py-1 text-sm outline-none focus:outline-none"
                     type="button"
                     onClick={onSaveButton}
                   >

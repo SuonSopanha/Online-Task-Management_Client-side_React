@@ -11,7 +11,7 @@ import {
   FaTimesCircle,
   FaTrash,
   FaTrashRestore,
-
+  FaCalendarAlt,
 } from "react-icons/fa";
 
 import { auth } from "../../firebase/config";
@@ -26,6 +26,7 @@ import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
 import Timer from "./modalComponents/timer";
+import TagInput from "./modalComponents/taskTag";
 
 import { updateRtTaskByID, deleteRtTaskByID } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
@@ -128,12 +129,9 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
   return (
     <>
       {isModalOpen && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-48">
-            {/* Content */}
-            {console.log(task)}
+        <div className="fixed inset-0 z-10 top-12 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="w-full sm:w-screen max-h-3xl max-w-2xl mx-auto my-4 mt-48">
             <div className="relative flex flex-col w-full bg-white border-0 rounded-lg outline-none focus:outline-none">
-              {/* Header */}
               <div className="flex items-center justify-between p-2 border-b-2 border-solid border-gray-500 rounded-t">
                 <CompleteBox
                   IsComplete={task.complete}
@@ -152,35 +150,38 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   name={task.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-
                 <DropdownButton
                   type={"category"}
                   initState={task.task_category}
                   handleChange={onCategoryChange}
                 />
               </div>
-              {/* Body */}
-
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-20 font-semibold">DueDate</div>
+                <FaCalendarAlt size={16} className="-mr-2" />
+                <div className="flex items-center w-20 font-semibold">
+                  DueDate
+                </div>
                 <TaskDueDate
                   DueDate={task.due_date}
                   OnChange={onDueDateChange}
                 />
-                <div className="w-20 font-semibold ">StartDate</div>
+                <FaCalendarAlt size={16} className="-mr-4" />
+                <div className="flex items-center w-20 font-semibold ">
+                  StartDate
+                </div>
                 <TaskDueDate
                   DueDate={task.due_date}
                   OnChange={onDueDateChange}
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-20 font-semibold text-xs">Hour Required</div>
+                
+                <div className="flex items-center w-20 font-semibold text-xs"><FaCalendarAlt size={16} className="mr-2" />Hour Required</div>
                 <NumberInput
                   init={task.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
-
-                <div className="w-10 font-semibold text-xs">Timer</div>
+                <div className="flex items-center w-10 font-semibold text-xs"><FaCalendarAlt size={16} className="mr-2" />Timer</div>
                 <Timer />
               </div>
               <div className="flex flex-row justify-start space-x-5  text-sm sm:text-base border-gray-500 p-3 items-center">
@@ -191,28 +192,31 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-10 font-semibold text-sm">Project</div>
+              <FaCalendarAlt size={16} className="mr-2" />
+                <div className="flex items-center w-10 font-semibold text-sm">Project</div>
                 <div className="flex flex-row items-center justify-between space-x-2 border-2 rounded-lg p-2 bg-gray-50">
                   <div className="flex w-6 h-6 items-center justify-center rounded-lg bg-sky-600 text-white">
                     <FaClipboardList className="w-4 h-4" />
                   </div>
-
                   <span>
                     {projectOption !== null
                       ? projectOption.project_name
                       : "No Project"}
                   </span>
                 </div>
+                <FaCalendarAlt size={16} className="mr-2" />
+                <div className="flex items-center w-6 font-semibold text-sm">Tags</div>
+                <TagInput />
               </div>
-              <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
-                <div className="w-24 font-semibold">Description</div>
+              <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
+              <FaCalendarAlt size={16} className="mr-2" />
+                <div className="flex items-center w-24 font-semibold">Description</div>
                 <EditableBox
                   init={task.description}
                   OnChange={onDescriptionChange}
                   className="w-full"
                 ></EditableBox>
               </div>
-              {/* Footer */}
               <div className="flex items-center justify-end space-x-2 p-6 border-t border-solid border-gray-300 rounded-b">
                 <div className="flex flex-row px-2 py-1 justify-center items-center bg-rose-600 rounded-lg">
                   <FaTrash className="w-3 h-3 text-white" />

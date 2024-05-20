@@ -1,7 +1,7 @@
 // TaskBoard.js
 import React, { useState, useEffect, useContext } from "react";
 
-import { FaUser,FaUsers } from "react-icons/fa";
+import { FaUser, FaUsers } from "react-icons/fa";
 
 import { auth } from "../../firebase/config";
 
@@ -9,9 +9,14 @@ import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
 import { getUserFullNameById } from "../../firebase/usersCRUD";
 import LoadingBalls from "../../utils/loading";
 
-
-import { sortByPriority,sortByDueDate,sortByStatus,sortByWorkHoursRequired,sortByTaskName,sortByID } from "../../utils/sortTask";
-
+import {
+  sortByPriority,
+  sortByDueDate,
+  sortByStatus,
+  sortByWorkHoursRequired,
+  sortByTaskName,
+  sortByID,
+} from "../../utils/sortTask";
 
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
@@ -47,16 +52,15 @@ const mockTaskList = [
   // Add more tasks as needed
 ];
 
-
 const ProjectBoard = () => {
-  const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
+  const { tabID, setTabID, openProjectModal, setModalTask } =
+    useContext(modalContext);
 
   const [taskList, setTaskList] = useState(mockTaskList);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const {sortCriteria } = useContext(projectTaskContext) 
-
+  const { sortCriteria } = useContext(projectTaskContext);
 
   const sortTasks = (tasks, criteria) => {
     switch (criteria) {
@@ -70,11 +74,11 @@ const ProjectBoard = () => {
         console.log("Status sort");
         return sortByStatus(tasks);
       case "Name":
-        console.log("naem sort")
+        console.log("naem sort");
         return sortByTaskName(tasks);
       // Add more cases for other criteria as needed
       default:
-        return sortByID(tasks) ;
+        return sortByID(tasks);
     }
   };
 
@@ -85,7 +89,7 @@ const ProjectBoard = () => {
   //     if (user) {
   //       // User is signed in
   //       console.log("User is signed in:", user);
-  
+
   //       getRtTaskByProjectID(tabID, async (tasks) => {
   //         // Fetch additional data for each task
   //         const tasksWithFullNames = await Promise.all(
@@ -98,7 +102,7 @@ const ProjectBoard = () => {
   //             };
   //           })
   //         );
-  
+
   //         // Set the modified taskList with assignee_full_name
   //         setTaskList(tasksWithFullNames);
   //         setLoading(false);
@@ -109,7 +113,7 @@ const ProjectBoard = () => {
   //       console.log("User is signed out");
   //     }
   //   });
-  
+
   //   return () => {
   //     // Unsubscribe the listener when the component unmounts
   //     unsubscribe();
@@ -132,10 +136,10 @@ const ProjectBoard = () => {
   if (error) {
     return <p>Error: {error.message}</p>;
   }
-  const Team = "Team"
+  const Team = "Team";
 
   return (
-    <div className="container mx-auto mt-10"> 
+    <div className="container mx-auto mt-10">
       <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
         <div className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3">
           <h2 className="text-lg font-semibold mb-4">To Do</h2>
@@ -145,50 +149,44 @@ const ProjectBoard = () => {
               .map((task) => (
                 <button
                   key={task.id}
-                  class="flex justify-center items-center"
+                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
                     openProjectModal();
                   }}
                 >
-                  <div class="flex flex-col bg-blue-400 pt-3 pb-2 px-3 rounded-xl text-white w-full mx-auto my-auto">
-                    <div class="flex flex-row space-x-1 items-center">
+                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                    <div className="flex flex-row space-x-1 items-center">
                       <span>
                         {task.project_id !== null ? (
-                          <FaUsers class="text-white text-xs" />
+                          <FaUsers className="text-white text-xs" />
                         ) : (
-                          <FaUser class="text-white text-xs" />
+                          <FaUser className="text-white text-xs" />
                         )}
                       </span>
-
                       {task.project_id !== null ? (
-                        <span class="text-xs">
-                          {task.project ? task.project.project_name : Team}
+                        <span className="text-xs">
+                          {task.project ? task.project.project_name : "Team"}
                         </span>
                       ) : (
-                        <span class="text-xs">Only Me</span>
+                        <span className="text-xs">Only Me</span>
                       )}
                     </div>
                     <div>
-                      <p class="flex justify-start text-xl font-bold mt-1 mb-2">
+                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
                         {task.task_name}
                       </p>
                     </div>
-
-                    <div className="mb-1 flex flex-row justify-start left-0">
-                      <div className="mb-1 flex flex-row justify-start left-0">
-                      </div>
-                    </div>
-                    <div class="text-xs flex space-x-1">
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-sm">
+                    <div className="mb-1 flex flex-row justify-start left-0"></div>
+                    <div className="text-xs flex space-x-1">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
                         {task.priority}
                       </span>
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-sm">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
                         {task.status}
                       </span>
                     </div>
-
-                    <div className="text-xs pt-1 items-end flex justify-end">
+                    <div className="text-xs pt-0.5 items-end flex justify-end">
                       DueDate: {task.due_date}
                     </div>
                   </div>
@@ -200,52 +198,48 @@ const ProjectBoard = () => {
           <h2 className="text-lg font-semibold mb-4">To Do</h2>
           <div className="flex flex-col space-y-2">
             {taskList
-              .filter((task) => task.task_category === "Working")
+              .filter((task) => task.task_category === "To Do")
               .map((task) => (
                 <button
                   key={task.id}
-                  class="flex justify-center items-center"
+                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
                     openProjectModal();
                   }}
                 >
-                  <div class="flex flex-col bg-violet-400 pt-3 pb-2 px-3 rounded-xl text-white w-full mx-auto my-auto">
-                    <div class="flex flex-row space-x-1 items-center">
+                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                    <div className="flex flex-row space-x-1 items-center">
                       <span>
                         {task.project_id !== null ? (
-                          <FaUsers class="text-white text-xs" />
+                          <FaUsers className="text-white text-xs" />
                         ) : (
-                          <FaUser class="text-white text-xs" />
+                          <FaUser className="text-white text-xs" />
                         )}
                       </span>
-
                       {task.project_id !== null ? (
-                        <span class="text-xs">
-                          {task.project ? task.project.project_name : Team}
+                        <span className="text-xs">
+                          {task.project ? task.project.project_name : "Team"}
                         </span>
                       ) : (
-                        <span class="text-xs">Only Me</span>
+                        <span className="text-xs">Only Me</span>
                       )}
                     </div>
                     <div>
-                      <p class="flex text-xl font-bold mt-1 mb-2 justify-start">
+                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
                         {task.task_name}
                       </p>
                     </div>
-
-                    <div class="mb-1 flex flex-row justify-start left-0">
-                    </div>
-                    <div class="text-xs flex space-x-1">
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-sm">
+                    <div className="mb-1 flex flex-row justify-start left-0"></div>
+                    <div className="text-xs flex space-x-1">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
                         {task.priority}
                       </span>
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-sm">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
                         {task.status}
                       </span>
                     </div>
-
-                    <div className="text-xs pt-1 items-end flex justify-end">
+                    <div className="text-xs pt-0.5 items-end flex justify-end">
                       DueDate: {task.due_date}
                     </div>
                   </div>
@@ -257,52 +251,48 @@ const ProjectBoard = () => {
           <h2 className="text-lg font-semibold mb-4">Done</h2>
           <div className="flex flex-col space-y-2">
             {taskList
-              .filter((task) => task.task_category === "Done")
+              .filter((task) => task.task_category === "To Do")
               .map((task) => (
                 <button
                   key={task.id}
-                  class="flex justify-center items-center"
+                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
                     openProjectModal();
                   }}
                 >
-                  <div class="flex flex-col bg-green-400 pt-3 pb-2 px-3 rounded-xl text-white w-full mx-auto my-auto">
-                    <div class="flex flex-row space-x-1 items-center">
+                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                    <div className="flex flex-row space-x-1 items-center">
                       <span>
                         {task.project_id !== null ? (
-                          <FaUsers class="text-white text-xs" />
+                          <FaUsers className="text-white text-xs" />
                         ) : (
-                          <FaUser class="text-white text-xs" />
+                          <FaUser className="text-white text-xs" />
                         )}
                       </span>
-
                       {task.project_id !== null ? (
-                        <span class="text-xs">
-                          {task.project ? task.project.project_name : Team}
+                        <span className="text-xs">
+                          {task.project ? task.project.project_name : "Team"}
                         </span>
                       ) : (
-                        <span class="text-xs">Only Me</span>
+                        <span className="text-xs">Only Me</span>
                       )}
                     </div>
                     <div>
-                      <p class="flex justify-start text-xl font-bold mt-1 mb-2">
+                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
                         {task.task_name}
                       </p>
                     </div>
-
-                    <div class="mb-1 flex flex-row justify-start left-0">
-                    </div>
-                    <div class="text-xs flex space-x-1">
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-sm">
+                    <div className="mb-1 flex flex-row justify-start left-0"></div>
+                    <div className="text-xs flex space-x-1">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
                         {task.priority}
                       </span>
-                      <span class="px-2 py-1 w-fit font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-sm">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
                         {task.status}
                       </span>
                     </div>
-
-                    <div className="text-xs pt-1 items-end flex justify-end">
+                    <div className="text-xs pt-0.5 items-end flex justify-end">
                       DueDate: {task.due_date}
                     </div>
                   </div>
