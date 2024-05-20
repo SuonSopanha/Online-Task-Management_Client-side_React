@@ -95,6 +95,37 @@ const AdminDashboard = () => {
             <span className="mr-2">
               <FaProjectDiagram />
             </span>
+            <span className="text-sm m-1">Active User :</span>
+            <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
+              1
+            </span>
+          </li>
+
+          <li className="bg-gradient-to-r from-orange-600 to-orange-400 px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
+            <span className="mr-2">
+              <FaChartLine />
+            </span>
+            <span className="text-sm m-1">New User :</span>
+            <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
+              1
+            </span>
+          </li>
+        </ul>
+
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-2 p-4 mt-0 text-white">
+          <li className="bg-gradient-to-r from-blue-600 to-blue-400 px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
+            <span className="mr-2">
+              <FaUsers />
+            </span>
+            <span className="text-sm m-1">Task :</span>
+            <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
+              1
+            </span>
+          </li>
+          <li className="bg-gradient-to-r from-green-600 to-green-500 backdrop-blur-md px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
+            <span className="mr-2">
+              <FaProjectDiagram />
+            </span>
             <span className="text-sm m-1">Projects :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
               1
