@@ -1,4 +1,3 @@
-// Calendar.js
 import React, { useState, useEffect, useContext } from "react";
 import {
   format,
@@ -11,27 +10,33 @@ import {
 
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-import { auth } from "../../firebase/config";
-
-import {
-  getRtTaskByUserID,
-  getRtTaskByAssigneeID,
-} from "../../firebase/taskCRUD";
 import LoadingBalls from "../../utils/loading";
 
 import { modalContext } from "../part/test";
+
+const mockTaskList = [
+  {
+    id: 1,
+    task_name: "Task 1",
+    due_date: "05/10/2024", // Format: MM/DD/YYYY
+  },
+  {
+    id: 2,
+    task_name: "Task 2",
+    due_date: "05/15/2024",
+  },
+  // Add more mock tasks as needed
+];
 
 const TaskCalender = () => {
   const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
-
   };
 
   const prevMonth = () => {
@@ -44,33 +49,22 @@ const TaskCalender = () => {
     return eachDayOfInterval({ start, end });
   };
 
-  const { openModal, isModalOpen, setModalTask } = useContext(modalContext);
+  const { openModal, setModalTask } = useContext(modalContext);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in, you can update the component state or perform other actions.
-        console.log("User is signed in:", user);
-
-        getRtTaskByUserID(auth.currentUser.uid, setTaskList);
-        getRtTaskByAssigneeID(auth.currentUser.uid, setTaskList);
-
-        setLoading(false);
-      } else {
-        // User is signed out.
-        setError(true);
-        console.log("User is signed out");
-      }
-    });
-
-    return () => {
-      // Unsubscribe the listener when the component unmounts
-      unsubscribe();
-    };
-  }, []); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
+    // Simulating loading data from API
+    setTimeout(() => {
+      setTaskList(mockTaskList);
+      setLoading(false);
+    }, 1000); // Simulating 1 second delay
+  }, []);
 
   if (loading) {
-    return <LoadingBalls />;
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
   }
 
   if (error) {
@@ -112,7 +106,9 @@ const TaskCalender = () => {
             className="text-center border-1 border-gray-400 w-42 h-40 w-5/7 sm:w-1/7 overflow-hidden transition duration-300 transform hover:scale-110 hover:bg-gray-50 bg-opacity-20 hover:border hover:border-blue-500 hover:text-blue-500"
           >
             <div className="flex flex-col items-start p-2">
-              <span className="text-sm font-semibold">{format(date, "d")}</span>
+              <span className="text-sm font-semibold">
+                {format(date, "d")}
+              </span>
               {taskList.map((task) => {
                 let calenderDate = format(date, "MM/dd/yyyy");
                 if (task.due_date === calenderDate) {
@@ -125,7 +121,7 @@ const TaskCalender = () => {
                         setModalTask(task);
                       }}
                     >
-                      <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 hover:bg-red-300 rounded-sm whitespace-nowrap transition duration-300 transform hover:scale-105">
+                      <span className="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 hover:bg-red-300 rounded-sm whitespace-nowrap transition duration-300 transform hover:scale-105">
                         {task.task_name}
                       </span>
                     </button>

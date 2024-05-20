@@ -67,7 +67,7 @@ const Teamates = () => {
 
   return (
     <>
-      <div className="p-10">
+      <div className="p-10 h-screen">
         <div>
           <p className="mb-4 text-3xl font-medium">
             Invite a teammate to try PAS together

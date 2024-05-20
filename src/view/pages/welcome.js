@@ -94,7 +94,7 @@ const Welcome = () => {
 
   return (
     <>
-      <div class="p-10">
+      <div class="p-10 h-screen">
         <form onSubmit={handleSubmit}>
           <div>
             <p class="mb-4 text-3xl font-medium">Welcome to PAS!</p>

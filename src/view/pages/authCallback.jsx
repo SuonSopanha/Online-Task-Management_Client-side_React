@@ -8,7 +8,7 @@ const AuthCallback = () => {
 
     if (token) {
       // Store token in local storage or context for future authenticated requests
-      localStorage.setItem("token", token);
+      sessionStorage.setItem("token", token);
 
       // Fetch user info with token
       window.location.href = "/";

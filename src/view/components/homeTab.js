@@ -1,79 +1,69 @@
 import React from "react";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-// import env from "dotenv/config"
 import NotificationBar from "./notificationBar";
-
-import { auth } from "../../firebase/config";
-import { formattedDate } from "../../utils/formatDate";
-import { getAllTaskByID } from "../../firebase/taskCRUD";
-import {
-  getRtProjectByMemberID,
-  getRtProjectByOwnerID,
-} from "../../firebase/projectCRUD";
-import { addAllMessages } from "../../firebase/messageCRUD";
-import { addAllNotification } from "../../firebase/notification";
-import { addAllTeam } from "../../firebase/teamCRUD";
-import { getUserByID } from "../../firebase/usersCRUD";
-import TaskList from "./taskList";
-import MyTask from "../pages/myTask";
-
 import { FaCheckCircle, FaMinusCircle, FaUser, FaUsers } from "react-icons/fa";
-
 import LoadingBalls from "../../utils/loading";
 import UserProfilePic from "../../utils/photoGenerator";
-
 import { modalContext } from "../part/test";
 
-const HomeTab = () => {
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [taskList, setTaskList] = useState([]);
-  const [projectList, setProjectList] = useState([]);
+const mockUser = {
+  full_name: "John Doe",
+  photoURL: null,
+};
 
-  const { openModal, isModalOpen, setModalTask, setTab } =
-    useContext(modalContext);
+const mockTasks = [
+  {
+    id: 1,
+    task_name: "Mock Task 1",
+    complete: false,
+    project_id: null,
+    priority: "High",
+    due_date: "2024-05-25",
+  },
+  {
+    id: 2,
+    task_name: "Mock Task 2",
+    complete: true,
+    project_id: 1,
+    priority: "Medium",
+    due_date: "2024-05-26",
+    project: {
+      project_name: "Mock Project",
+    },
+  },
+];
+
+const mockProjects = [
+  {
+    project_name: "Mock Project 1",
+  },
+  {
+    project_name: "Mock Project 2",
+  },
+];
+
+const HomeTab = () => {
+  const [user, setUser] = useState(mockUser);
+  const [loading, setLoading] = useState(false); // Directly set to false since we're using mock data
+  const [taskList, setTaskList] = useState(mockTasks);
+  const [projectList, setProjectList] = useState(mockProjects);
+
+  const { openModal, setModalTask, setTab } = useContext(modalContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userData = await getUserByID(auth.currentUser.uid);
-        setUser(userData);
-        console.log("User is signed in:", userData);
-
-        getRtProjectByMemberID(auth.currentUser.uid, setProjectList);
-        const tasks = await getAllTaskByID(auth.currentUser.uid);
-        setTaskList(tasks);
-        setLoading(false);
-      } else {
-        // User is signed out.
-        console.log("User is signed out");
-      }
-    });
-
-    // No need to return an unsubscribe function, as onAuthStateChanged directly returns it
-
-    // Cleanup logic (optional): Unsubscribe when the component unmounts
-    return () => {
-      unsubscribe();
-    };
-  }, []); // Empty dependency array to run the effect only once on component mount
-
-  if (loading) {
-    return <LoadingBalls />;
-  }
-
   const priorityColor = (priority) => {
-    if (priority === "High") {
-      return "yellow";
-    } else if (priority === "Medium") {
-      return "green";
-    } else if (priority === "Low") {
-      return "blue";
-    } else if (priority === "Very High") {
-      return "red";
+    switch (priority) {
+      case "High":
+        return "yellow";
+      case "Medium":
+        return "green";
+      case "Low":
+        return "blue";
+      case "Very High":
+        return "red";
+      default:
+        return "gray";
     }
   };
 
@@ -85,77 +75,62 @@ const HomeTab = () => {
     navigate("/welcome");
   };
 
+  if (loading) {
+    return <LoadingBalls />;
+  }
+
   const Team = "Team";
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      {/* <div
-        class="bg-red-100 bg-opacity-50 border border-red-400 text-red-700 px-4 py-2 rounded relative w-full"
-        role="alert"
-      >
-        <strong class="font-bold">Holy smokes!</strong>
-        <span class="block sm:inline">Something seriously bad happened.</span>
-        <span class="absolute top-0 bottom-0 right-0 px-4 py-3 flex items-center">
-          <svg
-            class="fill-current h-6 w-6 text-red-500"
-            role="button"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <title>Close</title>
-            <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-          </svg>
-        </span>
-      </div> */}
-
       <NotificationBar type="success" message="Your account has been saved." />
       <NotificationBar type="error" message="Your email address is invalid." />
 
       <div className="container w-full">
-        <div class="mt-8 text-center animate-in duration-300 ease-in-out">
-          <p class="font-medium">{formattedDate}</p>
-          <p class="text-3xl font-medium">Good morning, {user.full_name}</p>
+        <div className="mt-8 text-center animate-in duration-300 ease-in-out">
+          <p className="font-medium">{new Date().toLocaleDateString()}</p>
+          <p className="text-3xl font-medium">Good morning, {user.full_name}</p>
         </div>
-        <div class="ml-6 mt-12">
-          <p class="text-xl font-medium animate-pulse ">
+        <div className="ml-6 mt-12">
+          <p className="text-xl font-medium animate-pulse">
             Steps to get started
           </p>
         </div>
 
-        <div class="ml-6 mr-2 mt-8 mx-auto flex flex-col lg:flex-row lg:space-x-4 ">
+        <div className="ml-6 mr-2 mt-8 mx-auto flex flex-col lg:flex-row lg:space-x-4 ">
           <div className="w-full lg:w-4/12 flex flex-col mt-0 mb-2 lg:mt-0">
-            <div class="col-span-2 row-span-2 flex  flex-col items-center justify-center rounded-2xl bg-glasses backdrop-blur-12 bg-opacity-50 py-4">
+            <div className="col-span-2 row-span-2 flex flex-col items-center justify-center rounded-2xl bg-glasses backdrop-blur-12 bg-opacity-50 py-4">
               <button
                 onClick={handleChangeCreateProject}
-                class="flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
+                className="flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
               >
-                <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
-                <span class="ml-2 text-sm font-medium text-gray-500">
+                <div className="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
+                <span className="ml-2 text-sm font-medium text-gray-500">
                   Create new project
                 </span>
               </button>
               <button
                 onClick={handleCompleteProfile}
-                class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
+                className="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105"
               >
-                <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
-                <span class="ml-2 text-sm font-medium text-gray-500">
+                <div className="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
+                <span className="ml-2 text-sm font-medium text-gray-500">
                   Complete your profile
                 </span>
               </button>
-              <button class="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105">
-                <div class="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
-                <span class="ml-2 text-sm font-medium text-gray-500">
+              <button className="mt-4 flex w-4/5 items-center rounded-2xl border-2 border-sky-600 bg-blue-100 p-1 transition-transform duration-300 transform hover:scale-105">
+                <div className="ml-2 h-4 w-4 rounded-full bg-slate-500"></div>
+                <span className="ml-2 text-sm font-medium text-gray-500">
                   Continue project
                 </span>
               </button>
             </div>
-            <div class="col-span-2 mt-10 rounded-lg bg-glasses backdrop-blur-12 bg-opacity-50 pb-4">
-              <p class="ml-8 mt-4 text-xl font-medium">Project</p>
+            <div className="col-span-2 mt-10 rounded-lg bg-glasses backdrop-blur-12 bg-opacity-50 pb-4">
+              <p className="ml-8 mt-4 text-xl font-medium">Project</p>
               <button
                 onClick={handleChangeCreateProject}
-                class="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
+                className="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
               >
-                <div class="flex h-8 w-8 items-center justify-center rounded-2xl border-2 border-dashed border-sky-500">
+                <div className="flex h-8 w-8 items-center justify-center rounded-2xl border-2 border-dashed border-sky-500">
                   <img
                     width="40"
                     height="40"
@@ -163,11 +138,17 @@ const HomeTab = () => {
                     alt="plus-math"
                   />
                 </div>
-                <span class="ml-4 text-sm font-medium"> Create projects </span>
+                <span className="ml-4 text-sm font-medium">
+                  {" "}
+                  Create projects{" "}
+                </span>
               </button>
-              {projectList.map((project) => (
-                <div class="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105">
-                  <div class="flex h-8 w-8 items-center justify-center rounded-2xl">
+              {projectList.map((project, index) => (
+                <div
+                  key={index}
+                  className="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-2xl">
                     <img
                       width="96"
                       height="96"
@@ -175,17 +156,16 @@ const HomeTab = () => {
                       alt="personal-video-recorder-menu"
                     />
                   </div>
-                  <span class="ml-4 text-sm font-medium">
-                    {" "}
-                    {project.project_name}{" "}
+                  <span className="ml-4 text-sm font-medium">
+                    {project.project_name}
                   </span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="w-full lg:w-8/12 flex flex-col bg-glasses backdrop-blur-12 bg-opacity-50 rounded-lg ">
-            <div className="flex flex-row justify-start border-b border-gray-500  ">
+          <div className="w-full lg:w-8/12 flex flex-col bg-glasses backdrop-blur-12 bg-opacity-50 rounded-lg">
+            <div className="flex flex-row justify-start border-b border-gray-500">
               <div className="flex items-center p-3 ml-1">
                 {user.photoURL === null ? (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full">
@@ -195,11 +175,10 @@ const HomeTab = () => {
                     ></UserProfilePic>
                   </div>
                 ) : (
-                  // You can replace this with the desired content for true condition
                   <div className="flex h-10 w-10 items-center justify-center rounded-full">
                     <img
                       src={user.photoURL}
-                      alt="plus-math"
+                      alt="profile-pic"
                       className="rounded-full"
                     />
                   </div>
@@ -207,7 +186,6 @@ const HomeTab = () => {
               </div>
               <div className="text-sm font-medium text-gray-500 flex flex-col justify-between">
                 <div>
-                  {" "}
                   <h1 className="text-lg font-semibold text-gray-500 pt-3 pb-1 px-1">
                     My Task
                   </h1>
@@ -218,7 +196,7 @@ const HomeTab = () => {
                           href="#"
                           className="inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
                         >
-                          Upcomming
+                          Upcoming
                         </a>
                       </li>
                       <li className="me-2">
@@ -226,7 +204,7 @@ const HomeTab = () => {
                           href="#"
                           className="inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
                         >
-                          OverDue
+                          Overdue
                         </a>
                       </li>
                       <li className="me-2">
@@ -242,30 +220,29 @@ const HomeTab = () => {
                 </div>
               </div>
             </div>
-            <section class="container mx-auto px-6 pb-2 font-mono">
-              <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-                <div class="w-full overflow-x-auto">
-                  <table class="w-full">
+            <section className="container mx-auto px-6 pb-2 font-mono">
+              <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+                <div className="w-full overflow-x-auto">
+                  <table className="w-full">
                     <thead>
-                      <tr class="text-md font-semibold tracking-wide text-left text-gray-900 uppercase border-b bg- border-gray-600">
-                        <th class="px-4 py-3">Task Name</th>
-                        <th class="px-4 py-3 w-1/6">Visibility</th>
-                        <th class="px-4 py-3 w-1/6">Priority</th>
-                        <th class="px-4 py-3 w-1/4">Due Date</th>
+                      <tr className="text-md font-semibold tracking-wide text-left text-gray-900 uppercase border-b bg- border-gray-600">
+                        <th className="px-4 py-3">Task Name</th>
+                        <th className="px-4 py-3 w-1/6">Visibility</th>
+                        <th className="px-4 py-3 w-1/6">Priority</th>
+                        <th className="px-4 py-3 w-1/4">Due Date</th>
                       </tr>
                     </thead>
-                    <tbody class="">
-                      {console.log(taskList)}
+                    <tbody className="">
                       {taskList.map((task) => (
-                        <tr key={task.id} class="text-gray-700">
-                          <td class="px-4 py-2 border">
+                        <tr key={task.id} className="text-gray-700">
+                          <td className="px-4 py-2 border">
                             <button
                               onClick={() => {
                                 openModal();
                                 setModalTask(task);
                               }}
                             >
-                              <div class="flex justify-center items-center text-sm">
+                              <div className="flex justify-center items-center text-sm">
                                 {task.complete ? (
                                   <FaCheckCircle className="text-emerald-500 mr-2" />
                                 ) : (
@@ -273,7 +250,7 @@ const HomeTab = () => {
                                 )}
 
                                 <div className="flex flex-col justify-center items-center">
-                                  <p class="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
+                                  <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
                                     {task.task_name}
                                   </p>
                                 </div>
@@ -281,16 +258,16 @@ const HomeTab = () => {
                             </button>
                           </td>
 
-                          <td class="px-4 py-2 text-ms font-semibold border">
-                            <div class="flex items-center text-sm">
-                              <div class="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
+                          <td className="px-4 py-2 text-ms font-semibold border">
+                            <div className="flex items-center text-sm">
+                              <div className="flex items-center relative w-4 h-4 mr-3 rounded-full md:block">
                                 {task.project_id !== null ? (
                                   <FaUsers />
                                 ) : (
                                   <FaUser />
                                 )}
                                 <div
-                                  class="absolute inset-0 rounded-full shadow-inner"
+                                  className="absolute inset-0 rounded-full shadow-inner"
                                   aria-hidden="true"
                                 ></div>
                               </div>
@@ -305,9 +282,9 @@ const HomeTab = () => {
                               )}
                             </div>
                           </td>
-                          <td class="px-4 py-2 text-xs border">
+                          <td className="px-4 py-2 text-xs border">
                             <span
-                              class={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
+                              className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
                                 task.priority
                               )}-700 rounded-sm bg-${priorityColor(
                                 task.priority
@@ -316,7 +293,7 @@ const HomeTab = () => {
                               {task.priority}
                             </span>
                           </td>
-                          <td class="px-4 py-2 text-sm border">
+                          <td className="px-4 py-2 text-sm border">
                             {task.due_date}
                           </td>
                         </tr>
