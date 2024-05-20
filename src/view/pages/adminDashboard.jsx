@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
+import { useEffect, useState } from "react";
+import  LoadingBalls from "../../utils/loading";
 import {
   FaCheckCircle,
   FaClipboard,
@@ -9,6 +11,8 @@ import {
   FaProjectDiagram,
   FaChartLine,
 } from "react-icons/fa";
+
+import { apiRequest } from "../../api/api";
 
 import BarChart from "../components/chartComponents/barChart";
 import BarChartCompare from "../components/chartComponents/barChartCompare";
@@ -19,6 +23,33 @@ import RadarChart from "../components/chartComponents/radarChart";
 import LineAverage from "../components/chartComponents/lineAverage";
 
 const AdminDashboard = () => {
+
+  const [data, setData] = useState([]);
+  const [loading, setloading] = useState(false);
+  
+  useEffect(() => { 
+    const fetchData = async () => {
+        try{
+            setloading(true);
+            const data = await apiRequest("get", "api/admin/statistics");
+            setData(data);
+            setloading(false);
+            console.log(data);
+        }catch(error){
+            console.error("Error fetching data:", error);
+        }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LoadingBalls />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex flex-col h-fit">

@@ -25,6 +25,7 @@ import NumberInput from "./modalComponents/numberInput";
 import Timer from "./modalComponents/timer";
 import TagInput from "./modalComponents/taskTag";
 import MemberDropdown from "./memberDropdown";
+import ProjectDropdown from "./projectDropdown";
 
 import { auth } from "../../firebase/config";
 import {
@@ -220,8 +221,8 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
   return (
     <>
       {isModalOpen && (
-        <div className="fixed inset-0 top-12 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto rounded-sm">
-          <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-48">
+        <div className="fixed inset-0 z-10 top-12 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-64">
             <div className="relative flex flex-col w-full bg-white border-0 rounded-lg">
               <div className="flex items-center justify-between p-2 border-b border-gray-500">
                 <CompleteBox
@@ -275,12 +276,9 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <div className="w-10 font-semibold text-sm">Project</div>
-                <div className="flex flex-row items-center justify-between space-x-2 border-2 rounded-lg p-2 bg-gray-50">
-                  <div className="flex w-6 h-6 items-center justify-center rounded-lg bg-sky-600 text-white">
-                    <FaClipboardList className="w-4 h-4" />
-                  </div>
-                  <span>No Project</span>
-                </div>
+                
+                  <ProjectDropdown projects={[{id: 1, name: "Project 1"}, {id: 2, name: "Project 2"}]}></ProjectDropdown>
+              
                 <div className="w-6 font-semibold text-sm">Tags</div>
                 <TagInput />
               </div>
