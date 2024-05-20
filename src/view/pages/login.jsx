@@ -48,20 +48,24 @@
 //   };
 
 import React from "react";
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 import { auth } from "../../firebase/config";
 import { getUserByID } from "../../firebase/usersCRUD";
 
 import { userSignin, providerLogin } from "../../firebase/appAuth";
+import { redirectToGoogle } from "../../utils/authService";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+
   const navigate = useNavigate();
+
+
 
   const onlogin = async (e) => {
     e.preventDefault();
@@ -78,20 +82,22 @@ const Login = () => {
 
   const googleLogin = async (e) => {
     e.preventDefault();
-    await providerLogin();
-    navigate("/app");
+    redirectToGoogle();
   };
 
   return (
     <div class="max-w-[280px] mx-auto h-screen">
       <div class="flex flex-col items-center pt-10">
         <h2 class="mb-5 text-gray-900 font-mono font-bold text-xl">Login</h2>
- 
-        <button disabled={isLoggingIn} onClick={googleLogin} class="flex items-center bg-white dark:bg-gray-900 border border-gray-300 rounded-lg shadow-md px-6 py-2 m-4 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+
+        <button
+          disabled={isLoggingIn}
+          onClick={googleLogin}
+          class="flex items-center bg-white dark:bg-gray-900 border border-gray-300 rounded-lg shadow-md px-6 py-2 m-4 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
           <svg
             class="h-6 w-6 mr-2"
             xmlns="http://www.w3.org/2000/svg"
-            
             width="800px"
             height="800px"
             viewBox="-0.5 0 48 48"
