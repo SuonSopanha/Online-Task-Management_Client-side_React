@@ -175,13 +175,16 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                
-                <div className="flex items-center w-20 font-semibold text-xs"><FaCalendarAlt size={16} className="mr-2" />Hour Required</div>
+                <div className="flex items-center w-20 font-semibold text-xs">
+                  Hour Required
+                </div>
                 <NumberInput
                   init={task.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
-                <div className="flex items-center w-10 font-semibold text-xs"><FaCalendarAlt size={16} className="mr-2" />Timer</div>
+                <div className="flex items-center w-10 font-semibold text-xs">
+                  Timer
+                </div>
                 <Timer />
               </div>
               <div className="flex flex-row justify-start space-x-5  text-sm sm:text-base border-gray-500 p-3 items-center">
@@ -192,8 +195,9 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-              <FaCalendarAlt size={16} className="mr-2" />
-                <div className="flex items-center w-10 font-semibold text-sm">Project</div>
+                <div className="flex items-center w-10 font-semibold text-sm">
+                  Project
+                </div>
                 <div className="flex flex-row items-center justify-between space-x-2 border-2 rounded-lg p-2 bg-gray-50">
                   <div className="flex w-6 h-6 items-center justify-center rounded-lg bg-sky-600 text-white">
                     <FaClipboardList className="w-4 h-4" />
@@ -204,13 +208,16 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                       : "No Project"}
                   </span>
                 </div>
-                <FaCalendarAlt size={16} className="mr-2" />
-                <div className="flex items-center w-6 font-semibold text-sm">Tags</div>
+
+                <div className="flex items-center w-6 font-semibold text-sm">
+                  Tags
+                </div>
                 <TagInput />
               </div>
               <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
-              <FaCalendarAlt size={16} className="mr-2" />
-                <div className="flex items-center w-24 font-semibold">Description</div>
+                <div className="flex items-center w-24 font-semibold">
+                  Description
+                </div>
                 <EditableBox
                   init={task.description}
                   OnChange={onDescriptionChange}

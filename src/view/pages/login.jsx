@@ -48,7 +48,7 @@
 //   };
 
 import React from "react";
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { auth } from "../../firebase/config";
@@ -57,26 +57,39 @@ import { getUserByID } from "../../firebase/usersCRUD";
 import { userSignin, providerLogin } from "../../firebase/appAuth";
 import { redirectToGoogle } from "../../utils/authService";
 
+import { apiRequest } from "../../api/api";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-
   const navigate = useNavigate();
-
-
 
   const onlogin = async (e) => {
     e.preventDefault();
+    try {
+      setIsLoggingIn(true); // Set isLoggingIn to true when starting the login process
 
-    await userSignin(email, password);
-    const user = await getUserByID(auth.currentUser.uid);
+      // Make a POST request to the login endpoint using apiRequest function
+      const response = await apiRequest("post", "/api/v1/login", {
+        email,
+        password,
+      });
 
-    if (user.full_name) {
-      navigate("/app");
-    } else {
-      navigate("/welcome");
+      if(response) {
+        console.log("Login successful:", response);
+        //store the token in session storage
+        sessionStorage.setItem("token", response.data.token);
+        navigate('/app');
+      }
+      // Check if login is successful
+      // Redirect to the app if login is successful
+    } catch (error) {
+      console.error("Login error:", error);
+      // Handle login error here
+    } finally {
+      setIsLoggingIn(false); // Set isLoggingIn to false when the login process finishes
     }
   };
 

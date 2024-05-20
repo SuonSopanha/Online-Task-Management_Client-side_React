@@ -1,14 +1,5 @@
-// TaskBoard.js
 import React, { useState, useEffect, useContext } from "react";
-
 import { FaUser, FaUsers } from "react-icons/fa";
-
-import { auth } from "../../firebase/config";
-
-import {
-  getRtTaskByUserID,
-  getRtTaskByAssigneeID,
-} from "../../firebase/taskCRUD";
 import LoadingBalls from "../../utils/loading";
 import {
   sortByPriority,
@@ -18,7 +9,6 @@ import {
   sortByTaskName,
   sortByID,
 } from "../../utils/sortTask";
-
 import { modalContext } from "../part/test";
 import { mytaskContext } from "../pages/myTask";
 
@@ -27,7 +17,7 @@ const TaskBoard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { openModal, isModalOpen, setModalTask } = useContext(modalContext);
+  const { openModal, setModalTask } = useContext(modalContext);
   const { sortCriteria } = useContext(mytaskContext);
 
   const sortTasks = (tasks, criteria) => {
@@ -42,7 +32,7 @@ const TaskBoard = () => {
         console.log("Status sort");
         return sortByStatus(tasks);
       case "Name":
-        console.log("naem sort");
+        console.log("Name sort");
         return sortByTaskName(tasks);
       // Add more cases for other criteria as needed
       default:
@@ -51,137 +41,151 @@ const TaskBoard = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in, you can update the component state or perform other actions.
-        console.log("User is signed in:", user);
+    // Simulating fetching data from Firebase
+    const fetchTaskData = async () => {
+      try {
+        // Simulate loading delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        getRtTaskByUserID(auth.currentUser.uid, setTaskList);
-        getRtTaskByAssigneeID(auth.currentUser.uid, setTaskList);
+        // Define mock data
+        const mockTaskData = [
+          {
+            id: "1",
+            task_name: "Task 1",
+            task_category: "To Do",
+            project_id: null,
+            priority: "High",
+            status: "Incomplete",
+            due_date: "2024-05-01",
+          },
+          {
+            id: "2",
+            task_name: "Task 1",
+            task_category: "To Do",
+            project_id: null,
+            priority: "High",
+            status: "Incomplete",
+            due_date: "2024-05-01",
+          },
+          {
+            id: "3",
+            task_name: "Task 1",
+            task_category: "In Progress",
+            project_id: null,
+            priority: "High",
+            status: "Incomplete",
+            due_date: "2024-05-01",
+          },
+          {
+            id:"4",
+            task_name: "Task 1",
+            task_category: "Done",
+            project_id: null,
+            priority: "High",
+            status: "Incomplete",
+            due_date: "2024-05-01",
+          },
+          // Add more mock tasks as needed
+        ];
 
+        // Apply sorting based on criteria
+        const sortedTasks = sortTasks(mockTaskData, sortCriteria);
+        setTaskList(sortedTasks);
         setLoading(false);
-      } else {
-        // User is signed out.
-        setError(true);
-        console.log("User is signed out");
+      } catch (error) {
+        setError(error);
+        setLoading(false);
       }
-    });
-
-    return () => {
-      // Unsubscribe the listener when the component unmounts
-      unsubscribe();
     };
-  }, []); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
 
-  let sortTask = [];
-
-  useEffect(() => {
-    sortTask = [...sortTasks(taskList, sortCriteria)];
-    setTaskList(sortTask);
+    fetchTaskData();
   }, [sortCriteria]);
 
   if (loading) {
-    return <LoadingBalls />;
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
   }
 
   if (error) {
     return <p>Error: {error.message}</p>;
   }
-  const Team = "Team";
+
   const milestone = [
     {
-      milestoneName: "Working",
-      startDate: "2024-05-01",
-      endDate: "2024-05-15",
-    },
-    {
-      milestoneName: "Done",
-      startDate: "2024-05-02",
-      endDate: "2024-05-03",
-    },
-    {
       milestoneName: "To Do",
-      startDate: "2024-05-01",
-      endDate: "2024-05-15",
+      tasks: taskList.filter(task => task.task_category === "To Do"),
     },
     {
-      milestoneName: "Working",
-      startDate: "2024-05-01",
-      endDate: "2024-05-15",
+      milestoneName: "In Progress",
+      tasks: taskList.filter(task => task.task_category === "In Progress"),
     },
     {
       milestoneName: "Done",
-      startDate: "2024-05-02",
-      endDate: "2024-05-03",
+      tasks: taskList.filter(task => task.task_category === "Done"),
     },
-  
-
+    // Add more milestones if necessary
   ];
-
 
   return (
     <div className="container mx-auto mt-6 overflow-x-auto">
       <h1 className="text-2xl ml-4 font-semibold mb-4">Task Board</h1>
-
       <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
-        {milestone.map((milestone) => (
+        {milestone.map((milestone, index) => (
           <div
-            className={`w-full lg:w-1/${milestone.length} bg-glasses backdrop-blur-12 rounded-xl p-3`}
+            key={index}
+            className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3"
           >
-            <h2 className="text-lg font-semibold mb-4">
-              {milestone.milestoneName}
-            </h2>
+            <h2 className="text-lg font-semibold mb-4">{milestone.milestoneName}</h2>
             <div className="flex flex-col space-y-2">
-              {taskList
-                .filter(
-                  (task) => task.task_category === milestone.milestoneName
-                )
-                .map((task) => (
-                  <button
-                    key={task.id}
-                    className="flex justify-center items-center transition duration-300 transform hover:scale-105"
-                    onClick={() => {
-                      setModalTask(task);
-                      openModal();
-                    }}
-                  >
-                    <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
-                      <div className="flex flex-row space-x-1 items-center">
-                        <span>
-                          {task.project_id !== null ? (
-                            <FaUsers className="text-white text-xs" />
-                          ) : (
-                            <FaUser className="text-white text-xs" />
-                          )}
-                        </span>
+              {milestone.tasks.map((task) => (
+                <button
+                  key={task.id}
+                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
+                  onClick={() => {
+                    setModalTask(task);
+                    openModal();
+                  }}
+                >
+                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                    <div className="flex flex-row space-x-1 items-center">
+                      <span>
                         {task.project_id !== null ? (
-                          <span className="text-xs">
-                            {task.project ? task.project.project_name : "Team"}
-                          </span>
+                          <FaUsers className="text-white text-xs" />
                         ) : (
-                          <span className="text-xs">Only Me</span>
+                          <FaUser className="text-white text-xs" />
                         )}
-                      </div>
-                      <div>
-                        <p className="flex justify-start text-sm font-bold mt-1 mb-1">
-                          {task.task_name}
-                        </p>
-                      </div>
-                      <div className="mb-1 flex flex-row justify-start left-0"></div>
-                      <div className="text-xs flex space-x-1">
-                        <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
-                          {task.priority}
+                      </span>
+                      {task.project_id !== null ? (
+                        <span className="text-xs">
+                          {task.project ? task.project.project_name : "Team"}
                         </span>
-                        <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
-                          {task.status}
-                        </span>
-                      </div>
-                      <div className="text-xs pt-0.5 items-end flex justify-end">
-                        DueDate: {task.due_date}
-                      </div>
+                      ) : (
+                        <span className="text-xs">Only Me</span>
+                      )}
                     </div>
-                  </button>
-                ))}
+                    <div>
+                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
+                        {task.task_name}
+                      </p>
+                    </div>
+                    <div className="mb-1 flex flex-row justify-start left-0"></div>
+                    <div className="text-xs flex space-x-1">
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
+                        {task.priority}
+                      </span>
+                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
+                        {task.status}
+                      </span>
+                    </div>
+                    <div className="text-xs pt-0.5 items-end flex justify-end">
+                      DueDate: {task.due_date}
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         ))}
