@@ -1,99 +1,125 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formattedDate } from "../../utils/formatDate";
 import { Link } from "react-router-dom";
+import { apiRequest } from "../../api/api";
+import  LoadingBalls from "../../utils/loading";
 
 const AdminUser = () => {
   // Example user data
-  const users = [
-    {
-      id: 1,
-      name: "Jane Cooper",
-      title: "Regional Paradigm Technician",
-      department: "Optimization",
-      status: "Active",
-      role: "Admin",
-      email: "jane.cooper@example.com",
-      image: "https://i.pravatar.cc/150?img=1",
-    },
+  // const users = [
+  //   {
+  //     id: 1,
+  //     name: "Jane Cooper",
+  //     title: "Regional Paradigm Technician",
+  //     department: "Optimization",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "jane.cooper@example.com",
+  //     image: "https://i.pravatar.cc/150?img=1",
+  //   },
 
-    {
-      id: 2,
-      name: "Cody Fisher",
-      title: "Product Directives Officer",
-      department: "Intranet",
-      status: "Active",
-      role: "Admin",
-      email: "cody.fisher@example.com",
-      image: "https://i.pravatar.cc/150?img=2",
-    },
+  //   {
+  //     id: 2,
+  //     name: "Cody Fisher",
+  //     title: "Product Directives Officer",
+  //     department: "Intranet",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "cody.fisher@example.com",
+  //     image: "https://i.pravatar.cc/150?img=2",
+  //   },
 
-    {
-      id: 3,
-      name: "Esther Howard",
-      title: "Forward Response Developer",
-      department: "Directives",
-      status: "Active",
-      role: "Admin",
-      email: "esther.howard@example.com",
-      image: "https://i.pravatar.cc/150?img=3",
-    },
+  //   {
+  //     id: 3,
+  //     name: "Esther Howard",
+  //     title: "Forward Response Developer",
+  //     department: "Directives",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "esther.howard@example.com",
+  //     image: "https://i.pravatar.cc/150?img=3",
+  //   },
 
-    {
-      id: 4,
-      name: "Jenny Wilson",
-      title: "Central Security Planner",
-      department: "Security",
-      status: "Active",
-      role: "Admin",
-      email: "jenny.wilson@example.com",
-      image: "https://i.pravatar.cc/150?img=4",
-    },
+  //   {
+  //     id: 4,
+  //     name: "Jenny Wilson",
+  //     title: "Central Security Planner",
+  //     department: "Security",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "jenny.wilson@example.com",
+  //     image: "https://i.pravatar.cc/150?img=4",
+  //   },
 
-    {
-      id: 5,
-      name: "Esther Howard",
-      title: "Forward Response Developer",
-      department: "Directives",
-      status: "Active",
-      role: "Admin",
-      email: "esther.howard@example.com",
-      image: "https://i.pravatar.cc/150?img=5",
-    },
+  //   {
+  //     id: 5,
+  //     name: "Esther Howard",
+  //     title: "Forward Response Developer",
+  //     department: "Directives",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "esther.howard@example.com",
+  //     image: "https://i.pravatar.cc/150?img=5",
+  //   },
 
-    {
-      id: 6,
-      name: "Jenny Wilson",
-      title: "Central Security Planner",
-      department: "Security",
-      status: "Active",
-      role: "Admin",
-      email: "jenny.wilson@example.com",
-      image: "https://i.pravatar.cc/150?img=6",
-    },
+  //   {
+  //     id: 6,
+  //     name: "Jenny Wilson",
+  //     title: "Central Security Planner",
+  //     department: "Security",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "jenny.wilson@example.com",
+  //     image: "https://i.pravatar.cc/150?img=6",
+  //   },
 
-    {
-      id: 7,
-      name: "Jenny Wilson",
-      title: "Central Security Planner",
-      department: "Security",
-      status: "Active",
-      role: "Admin",
-      email: "jenny.wilson@example.com",
-      image: "https://i.pravatar.cc/150?img=7",
-    },
+  //   {
+  //     id: 7,
+  //     name: "Jenny Wilson",
+  //     title: "Central Security Planner",
+  //     department: "Security",
+  //     status: "Active",
+  //     role: "Admin",
+  //     email: "jenny.wilson@example.com",
+  //     image: "https://i.pravatar.cc/150?img=7",
+  //   },
 
-    // Add more user objects as needed
-    // ...
-  ];
+  //   // Add more user objects as needed
+  //   // ...
+  // ];
+
 
   // Pagination state
+  const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setloading] = useState(true);
   const usersPerPage = 5;
 
+  useEffect(() => { 
+    const fetchData = async () => {
+        try{
+            const response = await apiRequest("get", "api/admin/users");
+            setUsers(response.data);
+            setloading(false);
+            console.log(response);
+        }catch(error){
+            console.error("Error fetching data:", error);
+        }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LoadingBalls />
+      </div>
+    );
+  }
   const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -260,12 +286,12 @@ const AdminUser = () => {
                         <img
                           className="h-10 w-10 rounded-full"
                           src={user.image}
-                          alt={user.name}
+                          alt={user.full_name}
                         />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {user.name}
+                          {user.full_name}
                         </div>
                         <div className="text-sm text-gray-500">
                           {user.email}

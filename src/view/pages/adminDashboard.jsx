@@ -25,14 +25,13 @@ import LineAverage from "../components/chartComponents/lineAverage";
 const AdminDashboard = () => {
 
   const [data, setData] = useState([]);
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   
   useEffect(() => { 
     const fetchData = async () => {
         try{
-            setloading(true);
             const data = await apiRequest("get", "api/admin/statistics");
-            setData(data);
+            setData(data.data);
             setloading(false);
             console.log(data);
         }catch(error){
