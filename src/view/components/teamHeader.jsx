@@ -10,6 +10,7 @@ import { modalContext } from "../part/test";
 import { apiRequest } from "../../api/api";
 
 const mockTeam = {
+  id: "1",
   name: "Sample Team",
   description: "This is a sample team description.",
   milestone: "Sample Milestone",

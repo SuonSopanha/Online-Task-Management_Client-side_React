@@ -66,74 +66,11 @@ const TeamOverview = ({team}) => {
     navigate('/team',{ state: { team_id:mockTeam.id } });
   };
 
-  // useEffect(() => {
-  //   const fetchTeamMembers = async () => {
-  //     if (!team.members || team.members.length === 0) {
-  //       // Team members is undefined or an empty array, handle accordingly
-  //       console.warn("Team members are undefined or empty.");
-  //       return;
-  //     }
 
-  //     const teamMemberUserIds = team.members.map((member) => member.user_id);
+  //fecth member by team.id url : api/v1/org-members?org_id[eq]=team.id
+  //fetch project by team.id url : api/v1/project?organization_id[eq]=team.id
+  //fetch goal by team.id url : api/v1/goal?organization_id[eq]=team.id
 
-  //     console.log(teamMemberUserIds);
-
-  //     try {
-  //       const memberPromises = teamMemberUserIds.map(async (userId) => {
-  //         const user = await getUserByID(userId);
-  //         if (user) {
-  //           // Include the 'role' field from the corresponding team member
-  //           const teamMember = team.members.find(
-  //             (member) => member.user_id === userId
-  //           );
-  //           if (teamMember && teamMember.role) {
-  //             user.role = teamMember.role;
-  //           }
-  //           return user;
-  //         }
-  //         return null;
-  //       });
-
-  //       const teamMembers = await Promise.all(memberPromises);
-
-  //       setTeamMembers(teamMembers);
-  //     } catch (error) {
-  //       // Handle errors if needed
-  //       console.error("Error fetching team members:", error);
-  //     }
-  //   };
-
-  //   const fetchProjects = async () => {
-  //     if (!team.projects || team.projects.length === 0) {
-  //       // Team projects is undefined or an empty array, handle accordingly
-  //       console.warn("Team projects are undefined or empty.");
-  //       return;
-  //     }
-
-  //     const teamProjectsIDs = team.projects.map(
-  //       (project) => project.project_id
-  //     );
-
-  //     console.log(teamProjectsIDs);
-
-  //     try {
-  //       const projectPromises = teamProjectsIDs.map(async (projectId) => {
-  //         const project = await getprojecByID(projectId);
-  //         return project;
-  //       });
-
-  //       const teamProjects = await Promise.all(projectPromises);
-
-  //       setTeamProjects(teamProjects);
-  //     } catch (error) {
-  //       // Handle errors if needed
-  //       console.error("Error fetching team projects:", error);
-  //     }
-  //   };
-
-  //   fetchProjects();
-  //   fetchTeamMembers();
-  // }, [team]);
 
   return (
     <>
@@ -142,6 +79,7 @@ const TeamOverview = ({team}) => {
           <div className="w-full h-fit  bg-glasses backdrop-blur-12 px-4 py-2 space-y-5 rounded-xl mb-4">
             <h1 className="text-2xl font-semibold text-gray-700 pt-2">
               Member
+              {console.log(team)}
             </h1>
 
             <div className="grid gap-10 row-gap-8 mx-auto sm:row-gap-10 lg:max-w-screen-lg sm:grid-cols-2 lg:grid-cols-3 pb-2">
