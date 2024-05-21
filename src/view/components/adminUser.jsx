@@ -144,7 +144,7 @@ const AdminUser = () => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center text-2xl bg-glasses backdrop-blur-12 font-semibold p-4 m-2 rounded-lg">
           <div className="flex items-center justify-start">
             <div className="relative w-12 h-12 rounded-full md:block">
