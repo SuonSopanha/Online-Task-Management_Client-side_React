@@ -6,6 +6,8 @@ import { FaCheckCircle, FaMinusCircle, FaUser, FaUsers } from "react-icons/fa";
 import LoadingBalls from "../../utils/loading";
 import UserProfilePic from "../../utils/photoGenerator";
 import { modalContext } from "../part/test";
+import api, { apiRequest } from "../../api/api";
+import { set } from "date-fns";
 
 const mockUser = {
   full_name: "John Doe",
@@ -44,10 +46,10 @@ const mockProjects = [
 ];
 
 const HomeTab = () => {
-  const [user, setUser] = useState(mockUser);
+  const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(false); // Directly set to false since we're using mock data
-  const [taskList, setTaskList] = useState(mockTasks);
-  const [projectList, setProjectList] = useState(mockProjects);
+  const [taskList, setTaskList] = useState([]);
+  const [projectList, setProjectList] = useState([]);
 
   const { openModal, setModalTask, setTab } = useContext(modalContext);
   const navigate = useNavigate();
@@ -80,6 +82,61 @@ const HomeTab = () => {
   }
 
   const Team = "Team";
+
+  useEffect (() => {
+
+    const fetchUser = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/users");
+        setUser(response.data);
+        setLoading(false);
+        console.log(response);
+
+      }catch(error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+
+    const fetchTask = async () => {
+      try {
+        const [ response1, response2 ] = await Promise.all([
+          apiRequest("get", "api/v1/tasks-by-assignee"),
+          apiRequest("get", "api/v1/tasks-by-owner")
+        ]);
+        
+        const taskList = [...response1.data, ...response2.data];
+
+        setTaskList(taskList);
+        setLoading(false);
+        console.log(taskList);
+      }catch(error) {
+        console.error("Error fetching task:", error);
+      }
+    }
+
+    const fetchProject = async () => {
+      try {
+        const [ response1, response2 ] = await Promise.all([
+          apiRequest("get", "api/v1/projects-by-member"),
+          apiRequest("get", "api/v1/projects-by-owner")
+        ]);
+
+        const projectList = [...response1.data, ...response2.data];
+
+        setProjectList(projectList);
+        setLoading(false);  
+        console.log(projectList);
+      }catch(error) { 
+        console.error("Error fetching project:", error);
+      }
+    }
+
+    fetchUser();
+    fetchTask();
+    fetchProject();
+
+  }, []);
+
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <NotificationBar type="success" message="Your account has been saved." />

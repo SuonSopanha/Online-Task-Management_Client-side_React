@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useEffect, useState } from "react";
-import  LoadingBalls from "../../utils/loading";
+import LoadingBalls from "../../utils/loading";
 import {
   FaCheckCircle,
   FaClipboard,
@@ -23,20 +23,19 @@ import RadarChart from "../components/chartComponents/radarChart";
 import LineAverage from "../components/chartComponents/lineAverage";
 
 const AdminDashboard = () => {
-
   const [data, setData] = useState([]);
   const [loading, setloading] = useState(true);
-  
-  useEffect(() => { 
+
+  useEffect(() => {
     const fetchData = async () => {
-        try{
-            const data = await apiRequest("get", "api/admin/statistics");
-            setData(data.data);
-            setloading(false);
-            console.log(data);
-        }catch(error){
-            console.error("Error fetching data:", error);
-        }
+      try {
+        const data = await apiRequest("get", "api/admin/statistics");
+        setData(data.data);
+        setloading(false);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
     fetchData();
   }, []);
@@ -118,7 +117,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">User :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              1
+              {data.userCount}
             </span>
           </li>
           <li className="bg-gradient-to-r from-green-600 to-green-500 backdrop-blur-md px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
@@ -127,7 +126,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Active User :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              1
+              {data.activeUserCount}
             </span>
           </li>
 
@@ -137,7 +136,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">New User :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              1
+              {data.newUserCount}
             </span>
           </li>
         </ul>
@@ -149,7 +148,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Task :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              1
+              {data.taskCount}
             </span>
           </li>
           <li className="bg-gradient-to-r from-green-600 to-green-500 backdrop-blur-md px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
@@ -158,7 +157,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Projects :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              1
+              {data.projectCount}
             </span>
           </li>
 
@@ -168,7 +167,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Organization :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              1
+              {data.organizationCount}
             </span>
           </li>
         </ul>

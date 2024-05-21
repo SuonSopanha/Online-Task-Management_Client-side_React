@@ -16,12 +16,15 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
+import { apiRequest } from "../../api/api";
+
 import { auth } from "../../firebase/config";
 import {
   getRtProjectByMemberID,
   getRtProjectByOwnerID,
 } from "../../firebase/projectCRUD";
 import { getRtTeamsByUserId } from "../../firebase/teamCRUD";
+import { set } from "date-fns";
 
 const mockProjectList = [
   { project_id: 1, project_name: "Project 1" },
@@ -70,8 +73,11 @@ function Sidebar({ isOpen, TabNavigate }) {
   const [isOpendropProject, setIsOpendropProject] = useState(false);
   const [isOpendropTeam, setIsOpendropTeam] = useState(false);
 
-  const [projectList, setProjectList] = useState(mockProjectList);
+  const [projectList, setProjectList] = useState([]);
   const [teamList, setTeamList] = useState(mockTeamList);
+  const [organizationList, setOrganizationList] = useState([]);
+
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -108,27 +114,66 @@ function Sidebar({ isOpen, TabNavigate }) {
 
   }
 
+  // useEffect(() => {
+  // // Effect: Fetch project and team data based on the current user's ID.
+  // // getProjectByMemberID,getProjectByOwnnerID
+  // // getTeamByMemberID,getTeamByOwnerID
+  // // This hook is triggered when the component mounts.
+
+  // // Ideally, this hook would subscribe to changes in the user's authentication status,
+  // // updating the component state accordingly.
+
+  // // In a real-world scenario, the following steps would be executed:
+  // // 1. Check if the user is authenticated.
+  // // 2. If the user is authenticated, fetch projects and teams associated with the user.
+  // // 3. Update the component state with the fetched data.
+  // // 4. Handle loading and error states accordingly.
+
+  // // Cleanup function:
+  // // Unsubscribe from any ongoing subscriptions to prevent memory leaks
+  // // and ensure that the effect is only triggered once.
+  // // when the component unmounts.
+  // }, []);
+
+  
   useEffect(() => {
-  // Effect: Fetch project and team data based on the current user's ID.
-  // getProjectByMemberID,getProjectByOwnnerID
-  // getTeamByMemberID,getTeamByOwnerID
-  // This hook is triggered when the component mounts.
+    const fetchProject = async () => {
+      try {
+        const [ response1, response2 ] = await Promise.all([
+          apiRequest("get", "api/v1/projects-by-member"),
+          apiRequest("get", "api/v1/projects-by-owner")
+        ]);
+    
+        const projectList = [...response1.data, ...response2.data];
+        setProjectList(projectList);
+        setLoading(false);
+        console.log(projectList);
 
-  // Ideally, this hook would subscribe to changes in the user's authentication status,
-  // updating the component state accordingly.
+      }catch(error) {
+        console.error("Error fetching project:", error);
+      }
+    }
 
-  // In a real-world scenario, the following steps would be executed:
-  // 1. Check if the user is authenticated.
-  // 2. If the user is authenticated, fetch projects and teams associated with the user.
-  // 3. Update the component state with the fetched data.
-  // 4. Handle loading and error states accordingly.
+    const fetchOrganizatoin = async () => {
+      try {
+        const [ response1, response2 ] = await Promise.all([
+          apiRequest("get", "api/v1/organizations-by-member"),
+          apiRequest("get", "api/v1/organizations-by-owner")
+        ]);
+      
+        const organizationList = [...response1.data, ...response2.data];
+        setOrganizationList(organizationList);
+        setLoading(false);
+        console.log(organizationList);
+      }catch(error) {
+        console.error("Error fetching organization:", error);
+      }
+    }
 
-  // Cleanup function:
-  // Unsubscribe from any ongoing subscriptions to prevent memory leaks
-  // and ensure that the effect is only triggered once.
-  // when the component unmounts.
+    fetchProject();
+    fetchOrganizatoin();
+   
   }, []);
-
 
   return (
     <>
