@@ -220,7 +220,7 @@ const Project = () => {
         )}
         <projectTaskContext.Provider value={{ sortCriteria }}>
           {activeTab === "List" && <ProjectList />}
-          {activeTab === "Calender" && <ProjectCalender />}
+          {activeTab === "Calendar" && <ProjectCalender />}
           {activeTab === "Board" && <ProjectBoard />}
           {activeTab === "Dashboard" && <ProjectDashboard />}
           {activeTab === "Member" && <ProjectMember />}
