@@ -58,6 +58,7 @@ const ProjectBoard = () => {
     useContext(modalContext);
 
   const [taskList, setTaskList] = useState([]);
+  const [projectStageList, setProjectStageList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -142,7 +143,22 @@ const ProjectBoard = () => {
       }
     }
 
+    const fetchProjectStage = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
+
+        setProjectStageList(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching project stage:", error);
+      }
+    }
+
     fetchTask();
+
+    fetchProjectStage();
+
   },[tabID]);
 
   if (loading) {
