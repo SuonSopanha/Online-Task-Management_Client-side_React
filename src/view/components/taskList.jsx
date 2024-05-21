@@ -132,12 +132,35 @@ const TaskList = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Simulate loading data from API
-    setTimeout(() => {
-      setTaskList(mockTaskList);
+  // useEffect(() => {
+  //   // Simulate loading data from API
+  //   setTimeout(() => {
+  //     setTaskList(mockTaskList);
 
-    }, 1000); // Simulating 1 second delay
+  //   }, 1000); // Simulating 1 second delay
+  // }, []);
+
+  useEffect(() => {
+    const fetchTask = async () => {
+      try {
+
+        const [response1, response2] = await Promise.all([
+          apiRequest("get", "api/v1/tasks-by-assignee"),
+          apiRequest("get", "api/v1/tasks-by-owner")
+        ]);
+
+        const taskList = [...response1.data, ...response2.data];
+        setTaskList(taskList);
+        setLoading(false);
+
+        // console.log(response1.data)
+        // console.log(taskList);
+
+      }catch(error) {
+        console.error("Error fetching task:", error);
+      }
+    }
+    fetchTask();
   }, []);
 
   let sortedTaskList = sortTasks(taskList, sortCriteria);

@@ -55,7 +55,7 @@ const mockTaskData = [
 ];
 
 const TaskBoard = () => {
-  const [taskList, setTaskList] = useState(mockTaskData);
+  const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [milestoneList, setMilestoneList] = useState([]);
@@ -103,20 +103,41 @@ const TaskBoard = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Simulating fetching data from Firebase
-    const fetchTaskData = async () => {
-      try {
-        // Apply sorting based on criteria
-        const sortedTasks = sortTasks(mockTaskData, sortCriteria);
-        setTaskList(sortedTasks);
-      } catch (error) {
-        setError(error);
-      }
-    };
+  // useEffect(() => {
+  //   // Simulating fetching data from Firebase
+  //   const fetchTaskData = async () => {
+  //     try {
+  //       // Apply sorting based on criteria
+  //       const sortedTasks = sortTasks(mockTaskData, sortCriteria);
+  //       setTaskList(sortedTasks);
+  //     } catch (error) {
+  //       setError(error);
+  //     }
+  //   };
 
-    fetchTaskData();
-  }, [sortCriteria]);
+  //   fetchTaskData();
+  // }, [sortCriteria]);
+
+  useEffect(() => {
+
+    const fetchTask = async () => {
+      try {
+        const [response1, response2] = await Promise.all([
+          apiRequest("get", "api/v1/tasks-by-assignee"),
+          apiRequest("get", "api/v1/tasks-by-owner")
+        ]);
+
+        const taskList = [...response1.data, ...response2.data];
+
+        setTaskList(taskList);
+        setLoading(false);
+        console.log(taskList);
+      }catch(error) {
+        console.error("Error fetching task:", error);
+      }
+    }
+    fetchTask();
+  }, []);
 
   if (loading) {
     return (

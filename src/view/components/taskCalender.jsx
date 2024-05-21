@@ -13,6 +13,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import LoadingBalls from "../../utils/loading";
 
 import { modalContext } from "../part/test";
+import { apiRequest } from "../../api/api";
 
 const mockTaskList = [
   {
@@ -51,12 +52,35 @@ const TaskCalender = () => {
 
   const { openModal, setModalTask } = useContext(modalContext);
 
-  useEffect(() => {
-    // Simulating loading data from API
-    setTimeout(() => {
-      setTaskList(mockTaskList);
-      setLoading(false);
-    }, 1000); // Simulating 1 second delay
+  // useEffect(() => {
+  //   // Simulating loading data from API
+  //   setTimeout(() => {
+  //     setTaskList(mockTaskList);
+  //     setLoading(false);
+  //   }, 1000); // Simulating 1 second delay
+  // }, []);
+
+  useEffect (() => {
+
+    const fetchTask = async () => {
+      try {
+
+        const [ response1, response2 ] = await Promise.all([
+          apiRequest("get", "api/v1/tasks-by-assignee"),
+          apiRequest("get", "api/v1/tasks-by-owner")
+        ]);
+
+        const taskList = [...response1.data, ...response2.data];
+        setTaskList(taskList);
+        setLoading(false);
+
+        console.log(taskList);
+      }catch(error) {
+        console.error("Error fetching task:", error);
+      }
+    }
+
+    fetchTask();
   }, []);
 
   if (loading) {
