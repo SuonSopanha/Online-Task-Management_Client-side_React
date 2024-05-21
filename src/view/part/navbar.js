@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import UserProfilePic from "../../utils/photoGenerator";
-import apiRequest from "../../api/api";
+import { apiRequest } from "../../api/api";
 
 const Navbar = ({ toggleSidebar }) => {
-
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,8 +31,9 @@ const Navbar = ({ toggleSidebar }) => {
         console.error("Error fetching data:", error);
       }
     };
+    
     fetchData();
-  }, [])
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
