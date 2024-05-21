@@ -4,6 +4,7 @@ import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 
 import { auth } from "../../firebase/config";
+import { apiRequest } from "../../api/api";
 
 import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
 import { getUserFullNameById } from "../../firebase/usersCRUD";
@@ -50,7 +51,7 @@ const mockTaskList = [
 const ProjectList = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
 
-  const [taskList, setTaskList] = useState(mockTaskList);
+  const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -122,6 +123,22 @@ const ProjectList = () => {
   //   sortTask = [...sortTasks(taskList,sortCriteria)]
   //   setTaskList(sortTask)
   // },[sortCriteria])
+
+  useEffect (() => {
+
+    const fetchTask = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID)
+        setTaskList(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching task:", error);
+      }
+    }
+
+    fetchTask();
+  }, [tabID]);
 
   if (loading) {
     return <LoadingBalls />;
