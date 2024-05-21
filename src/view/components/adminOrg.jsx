@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { formattedDate } from "../../utils/formatDate";
 import { Link } from "react-router-dom";
-import apiRequest from "../../api/api";
+import { FaOldRepublic,FaClipboard} from "react-icons/fa";
+import {apiRequest} from "../../api/api";
+import {  } from "react-icons/fa";
 
 const AdminOrg = () => {
   // const users = [
@@ -172,9 +174,9 @@ const AdminOrg = () => {
             </div>
           </div>
         </div>
-        <div className="container w-full overflow-hidden">
+        <div className="flex justify-center">
           <div className="w-full overflow-x-auto bg-glasses backdrop-blur-12 font-semibold p-4 m-2 rounded-lg">
-            <h3 className="text-lg text-start pl-4 mb-4">Users</h3>
+            <h3 className="text-lg text-start pl-4 mb-4">Organization</h3>
             <table className="w-full divide-y divide-gray-500">
               <thead className="bg-glasses">
                 <tr>
@@ -182,13 +184,13 @@ const AdminOrg = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Name
+                    Owner
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Owner
+                    Name
                   </th>
                   <th
                     scope="col"
@@ -206,7 +208,7 @@ const AdminOrg = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Created At
+                    Description
                   </th>
                   <th
                     scope="col"
@@ -222,11 +224,7 @@ const AdminOrg = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <img
-                            className="h-10 w-10 rounded-full"
-                            src={user.image}
-                            alt={user.name}
-                          />
+                            <FaClipboard className="h-10 w-10 rounded-full" />
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
@@ -236,70 +234,66 @@ const AdminOrg = () => {
                             {user.email}
                           </div>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {user.email}
-                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.title}</div>
-                    <div className="text-sm text-gray-500">
-                      {user.department}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {user.role}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {user.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a
-                      href="#"
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Edit
-                    </a>
-                    <a
-                      href="#"
-                      className="ml-2 text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="flex justify-between items-center p-4">
-            <button
-              onClick={handlePrevious}
-              disabled={currentPage === 1}
-              className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <p className="text-sm">
-              Page {currentPage} of {totalPages}
-            </p>
-            <button
-              onClick={handleNext}
-              disabled={currentPage === totalPages}
-              className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
-            >
-              Next
-            </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{user.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {user.email}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        {user.industry}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {user.owner_id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {user.description}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <a
+                        href="#"
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        Edit
+                      </a>
+                      <a
+                        href="#"
+                        className="ml-2 text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="flex justify-between items-center p-4">
+              <button
+                onClick={handlePrevious}
+                disabled={currentPage === 1}
+                className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <p className="text-sm">
+                Page {currentPage} of {totalPages}
+              </p>
+              <button
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+                className="text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </>
   );
 };
-
 export default AdminOrg;
