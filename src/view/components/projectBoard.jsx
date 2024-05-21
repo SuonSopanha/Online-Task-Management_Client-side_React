@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { FaUser, FaUsers } from "react-icons/fa";
 
 import { auth } from "../../firebase/config";
+import { apiRequest } from "../../api/api";
 
 import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
 import { getUserFullNameById } from "../../firebase/usersCRUD";
@@ -70,9 +71,11 @@ const mockTaskList = [
 const ProjectBoard = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } =
     useContext(modalContext);
-
+  const [taskList, setTaskList] = useState([]);
+  const [projectStageList, setProjectStageList] = useState([]);
   const [ProjectStageList, setProjectStageList] = useState(mockProjectStages);
   const [taskList, setTaskList] = useState(mockTaskList);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -144,6 +147,36 @@ const ProjectBoard = () => {
   //   sortTask = [...sortTasks(taskList,sortCriteria)]
   //   setTaskList(sortTask)
   // },[sortCriteria])
+
+  useEffect(() => {
+    const fetchTask = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
+        setTaskList(response.data);
+        setLoading(false);
+        console.log(response);
+      } catch (error) {
+        console.error("Error fetching task:", error);
+      }
+    }
+
+    const fetchProjectStage = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
+
+        setProjectStageList(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching project stage:", error);
+      }
+    }
+
+    fetchTask();
+
+    fetchProjectStage();
+
+  },[tabID]);
 
   if (loading) {
     return <LoadingBalls />;

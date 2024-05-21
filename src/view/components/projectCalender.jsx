@@ -18,6 +18,7 @@ import { getUserFullNameById } from "../../firebase/usersCRUD";
 import LoadingBalls from "../../utils/loading";
 
 import { modalContext } from "../part/test";
+import { apiRequest } from "../../api/api";
 
 const mockTaskList = [
   {
@@ -48,7 +49,8 @@ const mockTaskList = [
 ];
 
 const ProjectCalender = () => {
-  const [taskList, setTaskList] = useState(mockTaskList);
+  const [taskList, setTaskList] = useState([]);
+  const [projectStageList, setProjectStageList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -106,6 +108,36 @@ const ProjectCalender = () => {
   //   };
   // }, [tabID]); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
 // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
+
+  useEffect (() => {
+    const fetchTask = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
+        setTaskList(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching task:", error);
+      }
+    }
+
+    const fetchProjectStage = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
+
+        setProjectStageList(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching project stage:", error);
+      }
+    }
+
+    fetchTask();
+
+    fetchProjectStage();
+
+  }, [tabID]);
 
   if (loading) {
     return <LoadingBalls />;

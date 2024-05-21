@@ -7,6 +7,7 @@ import TeamDashboard from "./teamDashboard";
 
 import { getTeamByID } from "../../firebase/teamCRUD";
 import { modalContext } from "../part/test";
+import { apiRequest } from "../../api/api";
 
 const mockTeam = {
   name: "Sample Team",
@@ -49,9 +50,11 @@ const mockTeam = {
 
 const TeamHeader = () => {
   const [activeTab, setActiveTab] = useState("Overview");
+  const [loading, setLoading] = useState(true);
   const {tabID} = useContext(modalContext);
 
   const [team,setTeam] = useState(mockTeam);
+  const [organization, setOrganization] = useState([]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -62,6 +65,23 @@ const TeamHeader = () => {
   //     setTeam(data);
   //   });
   // }, [tabID]);
+
+  useEffect(() => {
+
+    const fetchOrganization = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/organizations?project_id[eq]" + tabID);
+        setOrganization(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching organization:", error);
+      }
+    };
+
+    fetchOrganization();
+    
+  }, [tabID]);
 
 
   console.log(team);
