@@ -19,6 +19,7 @@ import {
 } from "../../utils/sortTask";
 import { modalContext } from "../part/test";
 import { mytaskContext } from "../pages/myTask";
+import { apiRequest } from "../../api/api";
 
 import UserProfilePic from "../../utils/photoGenerator";
 
@@ -86,6 +87,7 @@ const TaskList = () => {
   const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [milestoneList, setMilestoneList] = useState(mockMilestone);
 
   const { openModal, isModalOpen, setModalTask, closeCreateModal } =
     useContext(modalContext);
@@ -112,10 +114,29 @@ const TaskList = () => {
   };
 
   useEffect(() => {
+    try {
+      const fetchData = async () => {
+        const milestoneRespone = await apiRequest(
+          "get",
+          "/api/v1/milestones"
+        );
+        const milestones = milestoneRespone.data;
+        setMilestoneList(milestones);
+        console.log(milestones)
+        setLoading(false);
+      };
+
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
     // Simulate loading data from API
     setTimeout(() => {
       setTaskList(mockTaskList);
-      setLoading(false);
+
     }, 1000); // Simulating 1 second delay
   }, []);
 
@@ -212,13 +233,13 @@ const TaskList = () => {
                   </tr>
                 ))}
                 {/* Render milestone */}
-                {mockMilestone.map((milestone, index) => (
+                {milestoneList.map((milestone, index) => (
                   <React.Fragment key={index}>
                     <tr className="text-gray-700">
                       <td colSpan="4">
                         <div className="flex justify-between items-center">
                           <h1 className="px-4 py-2 text-xxl font-semibold">
-                            {milestone.milestoneName}
+                            {milestone.milestone_name}
                           </h1>
                           <div className="px-4 py-2">
                             <button className="">
