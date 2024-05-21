@@ -70,10 +70,6 @@ const mockProjectStageList = [
 const ProjectList = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
 
-  const [taskList, setTaskList] = useState([]);
-  const [projectStageList, setProjectStageList] = useState([]);
-
-
   const [ProjectStageList, setProjectStageList] = useState(mockProjectStageList);
   const [taskList, setTaskList] = useState(mockTaskList);
 
