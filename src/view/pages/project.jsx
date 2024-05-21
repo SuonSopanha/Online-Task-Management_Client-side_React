@@ -69,6 +69,7 @@ const Project = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+    console.log(activeTab);
   };
 
   const taskSample = {
@@ -123,7 +124,6 @@ const Project = () => {
                       : ""
                   }`}
                   onClick={() => handleTabClick("Calendar")}
-                  aria-current={activeTab === "Calendar"}
                 >
                   <FaCalendar className="inline-block mr-2" /> Calendar
                 </a>
@@ -213,11 +213,7 @@ const Project = () => {
           </div>
         )}
 
-        {isOpenStageModal && (
-          <ProjectStageModal
-            onClose={closeStageModal}
-          />
-        )}
+        {isOpenStageModal && <ProjectStageModal onClose={closeStageModal} />}
         <projectTaskContext.Provider value={{ sortCriteria }}>
           {activeTab === "List" && <ProjectList />}
           {activeTab === "Calendar" && <ProjectCalender />}

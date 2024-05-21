@@ -22,6 +22,21 @@ import {
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
 
+const mockProjectStages = [
+  {
+    id: 1,
+    name: "To Do",
+  },
+  {
+    id: 2,
+    name: "Working Help",
+  },
+  {
+    id: 3,
+    name: "Done",
+  },
+];
+
 const mockTaskList = [
   {
     id: 1,
@@ -56,9 +71,11 @@ const mockTaskList = [
 const ProjectBoard = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } =
     useContext(modalContext);
-
   const [taskList, setTaskList] = useState([]);
   const [projectStageList, setProjectStageList] = useState([]);
+  const [ProjectStageList, setProjectStageList] = useState(mockProjectStages);
+  const [taskList, setTaskList] = useState(mockTaskList);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -171,14 +188,19 @@ const ProjectBoard = () => {
   const Team = "Team";
 
   return (
-    <div className="container mx-auto mt-10">
+    <div className="container mx-auto mt-6 overflow-x-auto">
+      <h1 className="text-2xl ml-4 font-semibold mb-4">Task Board</h1>
       <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
-        <div className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3">
-          <h2 className="text-lg font-semibold mb-4">To Do</h2>
-          <div className="flex flex-col space-y-2">
-            {taskList
-              .filter((task) => task.task_category === "To Do")
-              .map((task) => (
+        {ProjectStageList.map((ProjectStage, index) => (
+          <div
+            key={index}
+            className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3"
+          >
+            <h2 className="text-lg font-semibold mb-4">
+              {ProjectStage.name}
+            </h2>
+            <div className="flex flex-col space-y-2">
+              {taskList.map((task) => (
                 <button
                   key={task.id}
                   className="flex justify-center items-center transition duration-300 transform hover:scale-105"
@@ -224,114 +246,9 @@ const ProjectBoard = () => {
                   </div>
                 </button>
               ))}
+            </div>
           </div>
-        </div>
-        <div className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3">
-          <h2 className="text-lg font-semibold mb-4">To Do</h2>
-          <div className="flex flex-col space-y-2">
-            {taskList
-              .filter((task) => task.task_category === "To Do")
-              .map((task) => (
-                <button
-                  key={task.id}
-                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
-                  onClick={() => {
-                    setModalTask(task);
-                    openProjectModal();
-                  }}
-                >
-                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
-                    <div className="flex flex-row space-x-1 items-center">
-                      <span>
-                        {task.project_id !== null ? (
-                          <FaUsers className="text-white text-xs" />
-                        ) : (
-                          <FaUser className="text-white text-xs" />
-                        )}
-                      </span>
-                      {task.project_id !== null ? (
-                        <span className="text-xs">
-                          {task.project ? task.project.project_name : "Team"}
-                        </span>
-                      ) : (
-                        <span className="text-xs">Only Me</span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
-                        {task.task_name}
-                      </p>
-                    </div>
-                    <div className="mb-1 flex flex-row justify-start left-0"></div>
-                    <div className="text-xs flex space-x-1">
-                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
-                        {task.priority}
-                      </span>
-                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
-                        {task.status}
-                      </span>
-                    </div>
-                    <div className="text-xs pt-0.5 items-end flex justify-end">
-                      DueDate: {task.due_date}
-                    </div>
-                  </div>
-                </button>
-              ))}
-          </div>
-        </div>
-        <div className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3">
-          <h2 className="text-lg font-semibold mb-4">Done</h2>
-          <div className="flex flex-col space-y-2">
-            {taskList
-              .filter((task) => task.task_category === "To Do")
-              .map((task) => (
-                <button
-                  key={task.id}
-                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
-                  onClick={() => {
-                    setModalTask(task);
-                    openProjectModal();
-                  }}
-                >
-                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
-                    <div className="flex flex-row space-x-1 items-center">
-                      <span>
-                        {task.project_id !== null ? (
-                          <FaUsers className="text-white text-xs" />
-                        ) : (
-                          <FaUser className="text-white text-xs" />
-                        )}
-                      </span>
-                      {task.project_id !== null ? (
-                        <span className="text-xs">
-                          {task.project ? task.project.project_name : "Team"}
-                        </span>
-                      ) : (
-                        <span className="text-xs">Only Me</span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
-                        {task.task_name}
-                      </p>
-                    </div>
-                    <div className="mb-1 flex flex-row justify-start left-0"></div>
-                    <div className="text-xs flex space-x-1">
-                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
-                        {task.priority}
-                      </span>
-                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
-                        {task.status}
-                      </span>
-                    </div>
-                    <div className="text-xs pt-0.5 items-end flex justify-end">
-                      DueDate: {task.due_date}
-                    </div>
-                  </div>
-                </button>
-              ))}
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
