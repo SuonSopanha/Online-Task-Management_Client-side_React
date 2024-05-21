@@ -224,14 +224,18 @@ const AdminOrg = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                            <FaClipboard className="h-10 w-10 rounded-full" />
+                          <img
+                            className="h-10 w-10 rounded-full"
+                            src={user.owner.photo_url}
+                            alt=""
+                          />
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
-                            {user.name}
+                            {user.owner.full_name}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {user.email}
+                            {user.owner.email}
                           </div>
                         </div>
                       </div>
@@ -248,7 +252,7 @@ const AdminOrg = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.owner_id}
+                      {user.id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {user.description}
