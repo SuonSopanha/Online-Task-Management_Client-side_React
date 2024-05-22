@@ -31,7 +31,7 @@ const Navbar = ({ toggleSidebar }) => {
         console.error("Error fetching data:", error);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -84,8 +84,20 @@ const Navbar = ({ toggleSidebar }) => {
               <div className="w-6 h-6 bg-gray-200 animate-pulse rounded-full"></div>
             ) : (
               <div>
-                <UserProfilePic name="John Doe" size={6} />
+                {data && data.photo_url ? (
+                  <img
+                    src={data.photo_url}
+                    alt={data.full_name}
+                    className="object-cover w-6 h-6 rounded-full"
+                  />
+                ) : (
+                  <UserProfilePic name={data.full_name} size={6} />
+                )}
               </div>
+
+              // <div>
+              //   <UserProfilePic name="John Doe" size={6} />
+              // </div>
             )}
           </a>
           <span className="flex absolute -mt-5 ml-4">

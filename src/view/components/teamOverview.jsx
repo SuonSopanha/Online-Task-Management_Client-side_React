@@ -8,6 +8,8 @@ import { getprojecByID } from "../../firebase/projectCRUD";
 import UserProfilePic from "../../utils/photoGenerator";
 import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
 
+import {apiRequest} from "../../api/api";
+
 const mockTeam = {
   id: "1",
   name: "Sample Team",
@@ -51,11 +53,14 @@ const mockTeam = {
 
 
 const TeamOverview = ({team}) => {
-  const [teamMembers, setTeamMembers] = useState(mockTeam.members);
+  const [teamMembers, setTeamMembers] = useState([]);
   const [teamDesciption, setTeamDescription] = useState(mockTeam.description);
   const [teamMilestone, setTeamMilestone] = useState(mockTeam.milestone);
   const [teamName, setTeamName] = useState(mockTeam.name);
-  const [teamProjects, setTeamProjects] = useState(mockTeam.projects);
+  const [teamProjects, setTeamProjects] = useState([]);
+
+  const [teamGoal, setTeamGoal] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const handleChangeCreateProject = () => {
@@ -70,6 +75,49 @@ const TeamOverview = ({team}) => {
   //fecth member by team.id url : api/v1/org-members?org_id[eq]=team.id
   //fetch project by team.id url : api/v1/project?organization_id[eq]=team.id
   //fetch goal by team.id url : api/v1/goal?organization_id[eq]=team.id
+
+  useEffect (() => {
+
+    const fetchMember = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
+        setTeamMembers(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching team members:", error);
+      }
+    }
+
+    const fetchProject = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + team.id);
+        setTeamProjects(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching team projects:", error);
+      }
+    }
+
+    const fetchGoal = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + team.id);
+        setTeamGoal(response.data);
+        setLoading(false);
+        console.log(response);
+      }catch(error) {
+        console.error("Error fetching team goal:", error);
+      }
+    }
+
+    fetchMember();
+
+    fetchProject();
+
+    fetchGoal();
+    
+  }, [team.id])
 
 
   return (

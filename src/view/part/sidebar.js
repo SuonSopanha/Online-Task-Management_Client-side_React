@@ -330,15 +330,15 @@ function Sidebar({ isOpen, TabNavigate }) {
             {isOpendropTeam && (
               <div className="flex flex-col items-center w-full">
                 {/* Dropdown content */}
-                {teamList.map((team) => (
+                {organizationList.map((organization) => (
                   <button
-                    key={team.team_id}
+                    key={organization.team_id}
                     className="flex items-center w-full h-8 px-3 mt-1 rounded  hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
-                    onClick={() => NavigateTabwithParam("Team", team.id)}
+                    onClick={() => NavigateTabwithParam("Team", organization.id)}
                   >
                     <FaUsers className="w-3 h-3 stroke-current text-blue-900" />
                     <span className="ml-2 text-sm font-medium text-gray-700">
-                      {team.name}
+                      {organization.name}
                     </span>
                   </button>
                 ))}
