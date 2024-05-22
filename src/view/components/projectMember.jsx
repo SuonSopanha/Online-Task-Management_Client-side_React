@@ -5,12 +5,14 @@ import UserProfilePic from "../../utils/photoGenerator";
 import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
 import { modalContext } from "../part/test";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../../api/api";
 
 const ProjectMember = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [teamProjects, setTeamProjects] = useState([]);
   const { tabID } = useContext(modalContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const addMember = async (user) => {
     navigate('/team',{ state: { project_id: tabID} });
@@ -50,8 +52,22 @@ const ProjectMember = () => {
         console.error("Error fetching team data:", error);
       }
     };
+
+    const fetchMember = async () => {
+      try {
+        const response = await apiRequest("get", "api/v1/project-members?project_id[eq]=" + tabID);
+        setTeamMembers(response.data);
+        setLoading(false);
+        console.log(response);  
+      }catch(error) {
+        console.error("Error fetching team members:", error);
+      }
+    }
   
     fetchTeamData();
+
+    fetchMember();
+
   }, [tabID]);
 
   // Render your component based on teamMembers and teamProjects
