@@ -152,9 +152,7 @@ const TaskList = () => {
         const taskList = [...response1.data, ...response2.data];
         setTaskList(taskList);
         setLoading(false);
-
-        // console.log(response1.data)
-        // console.log(taskList);
+        console.log(taskList);
 
       }catch(error) {
         console.error("Error fetching task:", error);

@@ -54,34 +54,6 @@ const HomeTab = () => {
   const { openModal, setModalTask, setTab } = useContext(modalContext);
   const navigate = useNavigate();
 
-  const priorityColor = (priority) => {
-    switch (priority) {
-      case "High":
-        return "yellow";
-      case "Medium":
-        return "green";
-      case "Low":
-        return "blue";
-      case "Very High":
-        return "red";
-      default:
-        return "gray";
-    }
-  };
-
-  const handleChangeCreateProject = () => {
-    navigate("/projectCreate");
-  };
-
-  const handleCompleteProfile = () => {
-    navigate("/welcome");
-  };
-
-  if (loading) {
-    return <LoadingBalls />;
-  }
-
-  const Team = "Team";
 
   useEffect (() => {
 
@@ -132,10 +104,43 @@ const HomeTab = () => {
     }
 
     fetchUser();
+
     fetchTask();
+
     fetchProject();
 
   }, []);
+
+  const priorityColor = (priority) => {
+    switch (priority) {
+      case "High":
+        return "yellow";
+      case "Medium":
+        return "green";
+      case "Low":
+        return "blue";
+      case "Very High":
+        return "red";
+      default:
+        return "gray";
+    }
+  };
+
+  const handleChangeCreateProject = () => {
+    navigate("/projectCreate");
+  };
+
+  const handleCompleteProfile = () => {
+    navigate("/welcome");
+  };
+
+  if (loading) {
+    return <LoadingBalls />;
+  }
+
+  const Team = "Team";
+
+  
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
@@ -145,7 +150,7 @@ const HomeTab = () => {
       <div className="container w-full">
         <div className="mt-8 text-center animate-in duration-300 ease-in-out">
           <p className="font-medium">{new Date().toLocaleDateString()}</p>
-          <p className="text-3xl font-medium">Good morning, {user.full_name}</p>
+          <p className="text-3xl font-medium">Good Morning, {user.full_name}</p>
         </div>
         <div className="ml-6 mt-12">
           <p className="text-xl font-medium animate-pulse">
@@ -224,7 +229,7 @@ const HomeTab = () => {
           <div className="w-full lg:w-8/12 flex flex-col bg-glasses backdrop-blur-12 bg-opacity-50 rounded-lg">
             <div className="flex flex-row justify-start border-b border-gray-500">
               <div className="flex items-center p-3 ml-1">
-                {user.photoURL === null ? (
+                {user.photo_url === null ? (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full">
                     <UserProfilePic
                       name={user.full_name}
@@ -234,7 +239,7 @@ const HomeTab = () => {
                 ) : (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full">
                     <img
-                      src={user.photoURL}
+                      src={user.photo_url}
                       alt="profile-pic"
                       className="rounded-full"
                     />
