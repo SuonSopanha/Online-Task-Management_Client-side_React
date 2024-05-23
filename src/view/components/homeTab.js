@@ -10,49 +10,56 @@ import api, { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
 import { set } from "date-fns";
 
-
 const HomeTab = () => {
-
   const { openModal, setModalTask, setTab } = useContext(modalContext);
   const navigate = useNavigate();
 
-  const { data: user, isLoading: userLoading, error: userError } = useQuery({
-    queryKey : ["user"],
-    queryFn : fetchUser
+  const {
+    data: user,
+    isLoading: userLoading,
+    error: userError,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: fetchUser,
   });
-  const { data: taskList, isLoading: taskLoading, error: taskError } = useQuery({
-    queryKey : ["task"],
-    queryFn : fetchTasks
+  const {
+    data: taskList,
+    isLoading: taskLoading,
+    error: taskError,
+  } = useQuery({
+    queryKey: ["task"],
+    queryFn: fetchTasks,
   });
-  const { data: projectList, isLoading: projectLoading, error: projectError } = useQuery({
-    queryKey : ["project"],
-    queryFn : fetchProjects
+  const {
+    data: projectList,
+    isLoading: projectLoading,
+    error: projectError,
+  } = useQuery({
+    queryKey: ["project"],
+    queryFn: fetchProjects,
   });
 
-    // Fetch user data
-    async function fetchUser() {
-      const response = await apiRequest("get", "api/v1/users");
-      return response.data;
-    }
-  
-    // Fetch tasks data
-    async function fetchTasks() {
-      const [response1] = await Promise.all([
-        apiRequest("get", "api/v1/user-tasks"),
-       
-      ]);
-      return [...response1.data];
-    }
-  
-    // Fetch projects data
-    async function fetchProjects() {
-      const [response1] = await Promise.all([
-        apiRequest("get", "api/v1/user-projects"),
-        
-      ]);
-      return [...response1.data];
-    }
+  // Fetch user data
+  async function fetchUser() {
+    const response = await apiRequest("get", "api/v1/users");
+    return response.data;
+  }
 
+  // Fetch tasks data
+  async function fetchTasks() {
+    const [response1] = await Promise.all([
+      apiRequest("get", "api/v1/user-tasks"),
+    ]);
+    return [...response1.data];
+  }
+
+  // Fetch projects data
+  async function fetchProjects() {
+    const [response1] = await Promise.all([
+      apiRequest("get", "api/v1/user-projects"),
+    ]);
+    return [...response1.data];
+  }
 
   const priorityColor = (priority) => {
     switch (priority) {
@@ -77,12 +84,11 @@ const HomeTab = () => {
     navigate("/welcome");
   };
 
-  if (userError || taskError || projectError) return <div>Error: {userError || taskError || projectError}</div>;
+  if (userError || taskError || projectError)
+    return <div>Error: {userError || taskError || projectError}</div>;
 
   const Team = "Team";
-
   
-
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <NotificationBar type="success" message="Your account has been saved." />
@@ -91,7 +97,13 @@ const HomeTab = () => {
       <div className="container w-full">
         <div className="mt-8 text-center animate-in duration-300 ease-in-out">
           <p className="font-medium">{new Date().toLocaleDateString()}</p>
-          {userLoading ? (<p className="text-3xl font-medium">Good Morning, .....</p>) : (<p className="text-3xl font-medium">Good Morning, {user.full_name}</p>) }
+          {userLoading ? (
+            <p className="text-3xl font-medium">Good Morning, .....</p>
+          ) : (
+            <p className="text-3xl font-medium">
+              Good Morning, {user.full_name}
+            </p>
+          )}
         </div>
         <div className="ml-6 mt-12">
           <p className="text-xl font-medium animate-pulse">
@@ -146,46 +158,47 @@ const HomeTab = () => {
                   Create projects{" "}
                 </span>
               </button>
-              {!projectList ? null :  projectList.map((project, index) => (
-                <div
-                  key={index}
-                  className="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
-                >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-2xl">
-                    <img
-                      width="96"
-                      height="96"
-                      src="https://img.icons8.com/fluency/96/personal-video-recorder-menu.png"
-                      alt="personal-video-recorder-menu"
-                    />
-                  </div>
-                  <span className="ml-4 text-sm font-medium">
-                    {project.project_name}
-                  </span>
-                </div>
-              ))}
+              {!projectList
+                ? null
+                : projectList.map((project, index) => (
+                    <div
+                      key={index}
+                      className="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
+                    >
+                      <div className="flex h-8 w-8 items-center justify-center rounded-2xl">
+                        <img
+                          width="96"
+                          height="96"
+                          src="https://img.icons8.com/fluency/96/personal-video-recorder-menu.png"
+                          alt="personal-video-recorder-menu"
+                        />
+                      </div>
+                      <span className="ml-4 text-sm font-medium">
+                        {project.project_name}
+                      </span>
+                    </div>
+                  ))}
             </div>
           </div>
 
           <div className="w-full lg:w-8/12 flex flex-col bg-glasses backdrop-blur-12 bg-opacity-50 rounded-lg">
             <div className="flex flex-row justify-start border-b border-gray-500">
               <div className="flex items-center p-3 ml-1">
-              
-              {userLoading === true ? (
-                <div className="w-6 h-6 bg-gray-200 animate-pulse rounded-full"></div>
-              ) : (
-                <div>
-                  {user && user.photo_url ? (
-                    <img
-                      src={user.photo_url}
-                      alt={user.full_name}
-                      className="object-cover w-12 h-12 rounded-full"
-                    />
-                  ) : (
-                    <UserProfilePic name={user.full_name} size={6} />
-                  )}
-                </div>
-              )}
+                {userLoading === true ? (
+                  <div className="w-6 h-6 bg-gray-200 animate-pulse rounded-full"></div>
+                ) : (
+                  <div>
+                    {user && user.photo_url ? (
+                      <img
+                        src={user.photo_url}
+                        alt={user.full_name}
+                        className="object-cover w-12 h-12 rounded-full"
+                      />
+                    ) : (
+                      <UserProfilePic name={user.full_name} size={6} />
+                    )}
+                  </div>
+                )}
               </div>
               <div className="text-sm font-medium text-gray-500 flex flex-col justify-between">
                 <div>
@@ -236,71 +249,73 @@ const HomeTab = () => {
                       </tr>
                     </thead>
                     <tbody className="">
-                      {!taskList ? null : taskList.map((task) => (
-                        <tr key={task.id} className="text-gray-700">
-                          <td className="px-4 py-2 border">
-                            <button
-                              onClick={() => {
-                                openModal();
-                                setModalTask(task);
-                              }}
-                            >
-                              <div className="flex justify-center items-center text-sm">
-                                {task.complete ? (
-                                  <FaCheckCircle className="text-emerald-500 mr-2" />
-                                ) : (
-                                  <FaMinusCircle className=" text-violet-600 mr-2" />
-                                )}
+                      {!taskList
+                        ? null
+                        : taskList.map((task) => (
+                            <tr key={task.id} className="text-gray-700">
+                              <td className="px-4 py-2 border">
+                                <button
+                                  onClick={() => {
+                                    openModal();
+                                    setModalTask(task);
+                                  }}
+                                >
+                                  <div className="flex justify-center items-center text-sm">
+                                    {task.complete ? (
+                                      <FaCheckCircle className="text-emerald-500 mr-2" />
+                                    ) : (
+                                      <FaMinusCircle className=" text-violet-600 mr-2" />
+                                    )}
 
-                                <div className="flex flex-col justify-center items-center">
-                                  <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
-                                    {task.task_name}
-                                  </p>
+                                    <div className="flex flex-col justify-center items-center">
+                                      <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
+                                        {task.task_name}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </button>
+                              </td>
+
+                              <td className="px-4 py-2 text-ms font-semibold border">
+                                <div className="flex items-center text-sm">
+                                  <div className="flex items-center relative w-4 h-4 mr-3 rounded-full md:block">
+                                    {task.project_id !== null ? (
+                                      <FaUsers />
+                                    ) : (
+                                      <FaUser />
+                                    )}
+                                    <div
+                                      className="absolute inset-0 rounded-full shadow-inner"
+                                      aria-hidden="true"
+                                    ></div>
+                                  </div>
+                                  {task.project_id !== null ? (
+                                    <span className="text-x whitespace-nowrap">
+                                      {task.project
+                                        ? task.project.project_name
+                                        : Team}
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs">Only Me</span>
+                                  )}
                                 </div>
-                              </div>
-                            </button>
-                          </td>
-
-                          <td className="px-4 py-2 text-ms font-semibold border">
-                            <div className="flex items-center text-sm">
-                              <div className="flex items-center relative w-4 h-4 mr-3 rounded-full md:block">
-                                {task.project_id !== null ? (
-                                  <FaUsers />
-                                ) : (
-                                  <FaUser />
-                                )}
-                                <div
-                                  className="absolute inset-0 rounded-full shadow-inner"
-                                  aria-hidden="true"
-                                ></div>
-                              </div>
-                              {task.project_id !== null ? (
-                                <span className="text-x whitespace-nowrap">
-                                  {task.project
-                                    ? task.project.project_name
-                                    : Team}
+                              </td>
+                              <td className="px-4 py-2 text-xs border">
+                                <span
+                                  className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
+                                    task.priority
+                                  )}-700 rounded-sm bg-${priorityColor(
+                                    task.priority
+                                  )}-100`}
+                                >
+                                  {task.priority}
                                 </span>
-                              ) : (
-                                <span className="text-xs">Only Me</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 text-xs border">
-                            <span
-                              className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
-                                task.priority
-                              )}-700 rounded-sm bg-${priorityColor(
-                                task.priority
-                              )}-100`}
-                            >
-                              {task.priority}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 text-sm border">
-                            {task.due_date}
-                          </td>
-                        </tr>
-                      ))}
+                              </td>
+                              <td className="px-4 py-2 text-sm border">
+                                {task.due_date}
+                              </td>
+                            </tr>
+                          ))}
                     </tbody>
                   </table>
                 </div>

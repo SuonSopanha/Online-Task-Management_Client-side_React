@@ -19,9 +19,10 @@ import {
 } from "../../utils/sortTask";
 import { modalContext } from "../part/test";
 import { mytaskContext } from "../pages/myTask";
-import { apiRequest } from "../../api/api";
+import api, { apiRequest } from "../../api/api";
 
 import UserProfilePic from "../../utils/photoGenerator";
+import { useQuery } from "@tanstack/react-query";
 
 const mockMilestone = [
   {
@@ -84,10 +85,10 @@ const mockTaskList = [
 ];
 
 const TaskList = () => {
-  const [taskList, setTaskList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [milestoneList, setMilestoneList] = useState(mockMilestone);
+  // const [taskList, setTaskList] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
+  // const [milestoneList, setMilestoneList] = useState(mockMilestone);
 
   const { openModal, isModalOpen, setModalTask, closeCreateModal } =
     useContext(modalContext);
@@ -113,24 +114,55 @@ const TaskList = () => {
     }
   };
 
-  useEffect(() => {
-    try {
-      const fetchData = async () => {
-        const milestoneRespone = await apiRequest(
-          "get",
-          "/api/v1/milestones"
-        );
-        const milestones = milestoneRespone.data;
-        setMilestoneList(milestones);
-        console.log(milestones)
-        setLoading(false);
-      };
+  const {
+    data: milestoneList,
+    isLoading: milestoneLoading,
+    error: milestoneError,
+  } = useQuery({
+    queryKey: ["taskList_milestone"],
+    queryFn: fetchMilestones,
+  });
 
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const {
+    data: taskList,
+    isLoading: taskLoading,
+    error: taskError, 
+  } = useQuery({
+    queryKey: ["taskList_taskList"],
+    queryFn: fetchTasks,
+  });
+
+  async function fetchMilestones() {
+    const response = await apiRequest("get", "/api/v1/milestones");
+    return response.data;
+  }
+
+  async function fetchTasks() {
+    const [response1, response2] = await Promise.all([
+      apiRequest("get", "api/v1/tasks-by-assignee"),
+      apiRequest("get", "api/v1/tasks-by-owner"),
+    ]);
+    return [...response1.data, ...response2.data];
+  }
+
+  // useEffect(() => {
+  //   try {
+  //     const fetchData = async () => {
+  //       const milestoneRespone = await apiRequest(
+  //         "get",
+  //         "/api/v1/milestones"
+  //       );
+  //       const milestones = milestoneRespone.data;
+  //       setMilestoneList(milestones);
+  //       console.log(milestones)
+  //       setLoading(false);
+  //     };
+
+  //     fetchData();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, []);
 
   // useEffect(() => {
   //   // Simulate loading data from API
@@ -140,30 +172,30 @@ const TaskList = () => {
   //   }, 1000); // Simulating 1 second delay
   // }, []);
 
-  useEffect(() => {
-    const fetchTask = async () => {
-      try {
+  // useEffect(() => {
+  //   const fetchTask = async () => {
+  //     try {
 
-        const [response1, response2] = await Promise.all([
-          apiRequest("get", "api/v1/tasks-by-assignee"),
-          apiRequest("get", "api/v1/tasks-by-owner")
-        ]);
+  //       const [response1, response2] = await Promise.all([
+  //         apiRequest("get", "api/v1/tasks-by-assignee"),
+  //         apiRequest("get", "api/v1/tasks-by-owner")
+  //       ]);
 
-        const taskList = [...response1.data, ...response2.data];
-        setTaskList(taskList);
-        setLoading(false);
-        console.log(taskList);
+  //       const taskList = [...response1.data, ...response2.data];
+  //       setTaskList(taskList);
+  //       setLoading(false);
+  //       console.log(taskList);
 
-      }catch(error) {
-        console.error("Error fetching task:", error);
-      }
-    }
-    fetchTask();
-  }, []);
+  //     }catch(error) {
+  //       console.error("Error fetching task:", error);
+  //     }
+  //   }
+  //   fetchTask();
+  // }, []);
 
   let sortedTaskList = sortTasks(taskList, sortCriteria);
 
-  if (loading) {
+  if (milestoneLoading || taskLoading) {
     return (
       <div className="flex justify-center items-center h-72">
         <LoadingBalls />
@@ -171,8 +203,8 @@ const TaskList = () => {
     );
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  if (milestoneError || taskError) {
+    return <p>Error: {milestoneError || taskError}</p>;
   }
 
   const priorityColor = (priority) => {
