@@ -14,6 +14,7 @@ import LoadingBalls from "../../utils/loading";
 
 import { modalContext } from "../part/test";
 import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 
 const mockTaskList = [
   {
@@ -30,9 +31,9 @@ const mockTaskList = [
 ];
 
 const TaskCalender = () => {
-  const [taskList, setTaskList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [taskList, setTaskList] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -52,38 +53,49 @@ const TaskCalender = () => {
 
   const { openModal, setModalTask } = useContext(modalContext);
 
-  // useEffect(() => {
-  //   // Simulating loading data from API
-  //   setTimeout(() => {
-  //     setTaskList(mockTaskList);
-  //     setLoading(false);
-  //   }, 1000); // Simulating 1 second delay
+  const {
+    data: taskList,
+    isLoading: taskListLoading,
+    error: taskListError,
+  } = useQuery({
+    queryKey: ["taskCalendar_taskList"],
+    queryFn: fetchTask,
+  });
+
+  async function fetchTask (){
+    const [response1, response2] = await Promise.all([
+      apiRequest("get", "api/v1/tasks-by-assignee"),
+      apiRequest("get", "api/v1/tasks-by-owner")
+    ]);
+    
+    return [...response1.data, ...response2.data];
+  }
+
+  
+  // useEffect (() => {
+
+  //   const fetchTask = async () => {
+  //     try {
+
+  //       const [ response1, response2 ] = await Promise.all([
+  //         apiRequest("get", "api/v1/tasks-by-assignee"),
+  //         apiRequest("get", "api/v1/tasks-by-owner")
+  //       ]);
+
+  //       const taskList = [...response1.data, ...response2.data];
+  //       setTaskList(taskList);
+  //       setLoading(false);
+
+  //       console.log(taskList);
+  //     }catch(error) {
+  //       console.error("Error fetching task:", error);
+  //     }
+  //   }
+
+  //   fetchTask();
   // }, []);
 
-  useEffect (() => {
-
-    const fetchTask = async () => {
-      try {
-
-        const [ response1, response2 ] = await Promise.all([
-          apiRequest("get", "api/v1/tasks-by-assignee"),
-          apiRequest("get", "api/v1/tasks-by-owner")
-        ]);
-
-        const taskList = [...response1.data, ...response2.data];
-        setTaskList(taskList);
-        setLoading(false);
-
-        console.log(taskList);
-      }catch(error) {
-        console.error("Error fetching task:", error);
-      }
-    }
-
-    fetchTask();
-  }, []);
-
-  if (loading) {
+  if (taskListLoading) {
     return (
       <div className="flex justify-center items-center h-72">
         <LoadingBalls />
@@ -91,8 +103,8 @@ const TaskCalender = () => {
     );
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  if (taskListError) {
+    return <p>Error: {taskListError}</p>;
   }
 
   return (
