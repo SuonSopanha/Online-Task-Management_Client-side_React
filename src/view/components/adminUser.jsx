@@ -3,6 +3,7 @@ import { formattedDate } from "../../utils/formatDate";
 import { Link } from "react-router-dom";
 import { apiRequest } from "../../api/api";
 import LoadingBalls from "../../utils/loading";
+import { useQuery } from "@tanstack/react-query";
 
 const AdminUser = () => {
   // Example user data
@@ -89,33 +90,52 @@ const AdminUser = () => {
   // ];
 
   // Pagination state
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
+  // const [loading, setloading] = useState(true);
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setloading] = useState(true);
   const usersPerPage = 5;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiRequest("get", "api/admin/users");
-        setUsers(response.data);
-        setloading(false);
-        console.log(response);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+  const {
+    data: users,
+    isLoading: adminUserLoading,
+    error: adminUserError,
+  } = useQuery({
+    queryKey: ["adminUsers"],
+    queryFn: fetchAdminUsers,
+  });
 
-  if (loading) {
+  async function fetchAdminUsers() {
+    const response = await apiRequest("get", "api/admin/users");
+    return response.data;
+  }
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/admin/users");
+  //       setUsers(response.data);
+  //       setloading(false);
+  //       console.log(response);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
+  if (adminUserLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <LoadingBalls />
       </div>
     );
   }
+
+  if (adminUserError)
+    return <div>Error: {adminUserError}</div>;
+
   const filteredUsers = users.filter(
     (user) =>
       user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||

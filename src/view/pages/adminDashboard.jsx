@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 
 import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 
 import BarChart from "../components/chartComponents/barChart";
 import BarChartCompare from "../components/chartComponents/barChartCompare";
@@ -23,24 +24,39 @@ import RadarChart from "../components/chartComponents/radarChart";
 import LineAverage from "../components/chartComponents/lineAverage";
 
 const AdminDashboard = () => {
-  const [data, setData] = useState([]);
-  const [loading, setloading] = useState(true);
+  
+  const {
+    data: statistics,
+    isLoading: statisticsLoading,
+    error: statisticsError,
+  } = useQuery({
+    queryKey: ["statistics"],
+    queryFn: fetchStatistics,
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await apiRequest("get", "api/admin/statistics");
-        setData(data.data);
-        setloading(false);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+  async function fetchStatistics() {
+    const response = await apiRequest("get", "api/admin/statistics");
+    return response.data;
+  }
 
-  if (loading) {
+  if (statisticsError)
+    return <div>Error: {statisticsError}</div>;
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const data = await apiRequest("get", "api/admin/statistics");
+  //       setData(data.data);
+  //       setloading(false);
+  //       console.log(data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
+  if (statisticsLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <LoadingBalls />
@@ -117,7 +133,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">User :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              {data.userCount}
+              {statistics.userCount}
             </span>
           </li>
           <li className="bg-gradient-to-r from-green-600 to-green-500 backdrop-blur-md px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
@@ -126,7 +142,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Active User :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              {data.activeUserCount}
+              {statistics.activeUserCount}
             </span>
           </li>
 
@@ -136,7 +152,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">New User :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              {data.newUserCount}
+              {statistics.newUserCount}
             </span>
           </li>
         </ul>
@@ -148,7 +164,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Task :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              {data.taskCount}
+              {statistics.taskCount}
             </span>
           </li>
           <li className="bg-gradient-to-r from-green-600 to-green-500 backdrop-blur-md px-2 py-6 rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
@@ -157,7 +173,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Projects :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              {data.projectCount}
+              {statistics.projectCount}
             </span>
           </li>
 
@@ -167,7 +183,7 @@ const AdminDashboard = () => {
             </span>
             <span className="text-sm m-1">Organization :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
-              {data.organizationCount}
+              {statistics.organizationCount}
             </span>
           </li>
         </ul>

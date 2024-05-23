@@ -3,7 +3,9 @@ import { formattedDate } from "../../utils/formatDate";
 import { Link } from "react-router-dom";
 import { FaOldRepublic,FaClipboard} from "react-icons/fa";
 import {apiRequest} from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 import {  } from "react-icons/fa";
+import { query } from "firebase/firestore";
 
 const AdminOrg = () => {
   // const users = [
@@ -30,8 +32,6 @@ const AdminOrg = () => {
   //   // Add more user objects as needed
   // ];
 
-  const [users, setUsers] = useState([]);
-  const [loading, setloading] = useState(true);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
@@ -39,19 +39,36 @@ const AdminOrg = () => {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiRequest("get", "api/admin/organizations");
-        setUsers(response.data);
-        console.log(response);
-        setloading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+  const {
+    data: users,
+    isLoading: adminOrgUsersLoading,
+    error: adminOrgUsersError,
+  } = useQuery({
+    queryKey: ["adminOrgUsers"],
+    queryFn: fetchAdminOrgUsers,
+  }); 
+
+  async function fetchAdminOrgUsers() {
+    const response = await apiRequest("get", "api/admin/organizations");
+    return response.data;
+  }
+
+  if (adminOrgUsersError)
+    return <div>Error: {adminOrgUsersError}</div>;
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/admin/organizations");
+  //       setUsers(response.data);
+  //       console.log(response);
+  //       setloading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   // Handle search input change
   const handleSearchChange = (e) => {
