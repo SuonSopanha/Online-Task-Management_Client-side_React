@@ -62,7 +62,7 @@ const HomeTab = () => {
         return "green";
       case "Low":
         return "blue";
-      case "Very High":
+      case "Critical":
         return "red";
       default:
         return "gray";

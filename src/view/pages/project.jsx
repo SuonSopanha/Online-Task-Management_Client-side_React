@@ -17,6 +17,7 @@ import ProjectDashboard from "../components/projectDashboard";
 import ProjectMember from "../components/projectMember";
 import ProjectStageModal from "../components/projectStageModal";
 import Dropdown from "../components/dropDown";
+import ProjectDetail from "../components/projectDetail";
 
 import { getprojecByID } from "../../firebase/projectCRUD";
 
@@ -27,6 +28,7 @@ export const projectTaskContext = createContext(null);
 //mock data
 const mockProject = {
   project_name: "Sample Project",
+  project_status: "Not Started",
   project_description: "This is a sample project for testing purposes.",
   start_date: "2022-01-01",
   end_date: "2022-12-31",
@@ -102,6 +104,9 @@ const Project = () => {
           <h1 className="text-lg font-semibold text-gray-500 pt-3 pb-1 px-1">
             {project.project_name}
           </h1>
+          <span class=" w-fit ml-1 px-1 font-semibold text-xs leading-tight text-green-700 bg-green-100 rounded-sm whitespace-nowrap">
+            {project.project_status}
+          </span>
           <div>
             <ul className="flex flex-wrap -mb-px">
               <li className="me-2">
@@ -165,6 +170,19 @@ const Project = () => {
                   <FaUsers className="inline-block mr-2" /> Member
                 </a>
               </li>
+              <li className="me-2">
+                <a
+                  href="#"
+                  className={`inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:bg-blue-300 hover:text-blue-600 hover:border-blue-300 dark:hover:text-gray-300 ${
+                    activeTab === "Details"
+                      ? "text-blue-600 border-blue-600"
+                      : ""
+                  }`}
+                  onClick={() => handleTabClick("Details")}
+                >
+                  <FaUsers className="inline-block mr-2" /> Details
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -220,6 +238,7 @@ const Project = () => {
           {activeTab === "Board" && <ProjectBoard />}
           {activeTab === "Dashboard" && <ProjectDashboard />}
           {activeTab === "Member" && <ProjectMember />}
+          {activeTab === "Details" && <ProjectDetail />}
         </projectTaskContext.Provider>
       </div>
     </div>

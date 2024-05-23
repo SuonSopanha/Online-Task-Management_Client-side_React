@@ -42,19 +42,6 @@ const AdminDashboard = () => {
   if (statisticsError)
     return <div>Error: {statisticsError}</div>;
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const data = await apiRequest("get", "api/admin/statistics");
-  //       setData(data.data);
-  //       setloading(false);
-  //       console.log(data);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   if (statisticsLoading) {
     return (
@@ -94,7 +81,7 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-center bg-glasses backdrop-blur-12 font-semibold p-4 m-2 rounded-lg">
           <nav className="flex space-x-4">
             <Link
-              to="/overview"
+              to="/adminDashboard"
               className="text-sm text-gray-700 hover:text-gray-900"
             >
               Overview
