@@ -7,109 +7,52 @@ import LoadingBalls from "../../utils/loading";
 import UserProfilePic from "../../utils/photoGenerator";
 import { modalContext } from "../part/test";
 import api, { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 import { set } from "date-fns";
 
-const mockUser = {
-  full_name: "John Doe",
-  photoURL: null,
-};
-
-const mockTasks = [
-  {
-    id: 1,
-    task_name: "Mock Task 1",
-    complete: false,
-    project_id: null,
-    priority: "High",
-    due_date: "2024-05-25",
-  },
-  {
-    id: 2,
-    task_name: "Mock Task 2",
-    complete: true,
-    project_id: 1,
-    priority: "Medium",
-    due_date: "2024-05-26",
-    project: {
-      project_name: "Mock Project",
-    },
-  },
-];
-
-const mockProjects = [
-  {
-    project_name: "Mock Project 1",
-  },
-  {
-    project_name: "Mock Project 2",
-  },
-];
 
 const HomeTab = () => {
-  const [user, setUser] = useState([]);
-  const [loading, setLoading] = useState(false); // Directly set to false since we're using mock data
-  const [taskList, setTaskList] = useState([]);
-  const [projectList, setProjectList] = useState([]);
 
   const { openModal, setModalTask, setTab } = useContext(modalContext);
   const navigate = useNavigate();
 
+  const { data: user, isLoading: userLoading, error: userError } = useQuery({
+    queryKey : ["user"],
+    queryFn : fetchUser
+  });
+  const { data: taskList, isLoading: taskLoading, error: taskError } = useQuery({
+    queryKey : ["task"],
+    queryFn : fetchTasks
+  });
+  const { data: projectList, isLoading: projectLoading, error: projectError } = useQuery({
+    queryKey : ["project"],
+    queryFn : fetchProjects
+  });
 
-  useEffect (() => {
-
-    const fetchUser = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/users");
-        setUser(response.data);
-        setLoading(false);
-        console.log(response);
-
-      }catch(error) {
-        console.error("Error fetching user:", error);
-      }
+    // Fetch user data
+    async function fetchUser() {
+      const response = await apiRequest("get", "api/v1/users");
+      return response.data;
     }
-
-    const fetchTask = async () => {
-      try {
-        const [ response1, response2 ] = await Promise.all([
-          apiRequest("get", "api/v1/tasks-by-assignee"),
-          apiRequest("get", "api/v1/tasks-by-owner")
-        ]);
+  
+    // Fetch tasks data
+    async function fetchTasks() {
+      const [response1] = await Promise.all([
+        apiRequest("get", "api/v1/user-tasks"),
+       
+      ]);
+      return [...response1.data];
+    }
+  
+    // Fetch projects data
+    async function fetchProjects() {
+      const [response1] = await Promise.all([
+        apiRequest("get", "api/v1/user-projects"),
         
-        const taskList = [...response1.data, ...response2.data];
-
-        setTaskList(taskList);
-        setLoading(false);
-        console.log(taskList);
-      }catch(error) {
-        console.error("Error fetching task:", error);
-      }
+      ]);
+      return [...response1.data];
     }
 
-    const fetchProject = async () => {
-      try {
-        const [ response1, response2 ] = await Promise.all([
-          apiRequest("get", "api/v1/projects-by-member"),
-          apiRequest("get", "api/v1/projects-by-owner")
-        ]);
-
-        const projectList = [...response1.data, ...response2.data];
-
-        setProjectList(projectList);
-        setLoading(false);  
-        console.log(projectList);
-      }catch(error) { 
-        console.error("Error fetching project:", error);
-      }
-    }
-
-    fetchUser();
-
-    fetchTask();
-
-    fetchProject();
-
-  }, []);
 
   const priorityColor = (priority) => {
     switch (priority) {
@@ -134,9 +77,7 @@ const HomeTab = () => {
     navigate("/welcome");
   };
 
-  if (loading) {
-    return <LoadingBalls />;
-  }
+  if (userError || taskError || projectError) return <div>Error: {userError || taskError || projectError}</div>;
 
   const Team = "Team";
 
@@ -150,7 +91,7 @@ const HomeTab = () => {
       <div className="container w-full">
         <div className="mt-8 text-center animate-in duration-300 ease-in-out">
           <p className="font-medium">{new Date().toLocaleDateString()}</p>
-          <p className="text-3xl font-medium">Good Morning, {user.full_name}</p>
+          {userLoading ? (<p className="text-3xl font-medium">Good Morning, .....</p>) : (<p className="text-3xl font-medium">Good Morning, {user.full_name}</p>) }
         </div>
         <div className="ml-6 mt-12">
           <p className="text-xl font-medium animate-pulse">
@@ -205,7 +146,7 @@ const HomeTab = () => {
                   Create projects{" "}
                 </span>
               </button>
-              {projectList.map((project, index) => (
+              {!projectList ? null :  projectList.map((project, index) => (
                 <div
                   key={index}
                   className="ml-12 mt-4 flex items-center transition-transform duration-300 transform hover:scale-105"
@@ -229,22 +170,22 @@ const HomeTab = () => {
           <div className="w-full lg:w-8/12 flex flex-col bg-glasses backdrop-blur-12 bg-opacity-50 rounded-lg">
             <div className="flex flex-row justify-start border-b border-gray-500">
               <div className="flex items-center p-3 ml-1">
-                {user.photo_url === null ? (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full">
-                    <UserProfilePic
-                      name={user.full_name}
-                      size={8}
-                    ></UserProfilePic>
-                  </div>
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full">
+              
+              {userLoading === true ? (
+                <div className="w-6 h-6 bg-gray-200 animate-pulse rounded-full"></div>
+              ) : (
+                <div>
+                  {user && user.photo_url ? (
                     <img
                       src={user.photo_url}
-                      alt="profile-pic"
-                      className="rounded-full"
+                      alt={user.full_name}
+                      className="object-cover w-12 h-12 rounded-full"
                     />
-                  </div>
-                )}
+                  ) : (
+                    <UserProfilePic name={user.full_name} size={6} />
+                  )}
+                </div>
+              )}
               </div>
               <div className="text-sm font-medium text-gray-500 flex flex-col justify-between">
                 <div>
@@ -295,7 +236,7 @@ const HomeTab = () => {
                       </tr>
                     </thead>
                     <tbody className="">
-                      {taskList.map((task) => (
+                      {!taskList ? null : taskList.map((task) => (
                         <tr key={task.id} className="text-gray-700">
                           <td className="px-4 py-2 border">
                             <button

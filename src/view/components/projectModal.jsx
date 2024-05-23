@@ -66,50 +66,45 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
     setIsModalOpen(isOpen);
   }, [isOpen]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (task.project_id !== null && task.project_id.length === 20) {
-          const project = await getprojecByID(task.project_id);
-          setProject(project);
-          const memberIdList = project.members.map((member) => member.id);
-          console.log(memberIdList);
-          // Fetch user information for each member ID
-          const users = await Promise.all(
-            memberIdList.map(async (memberId) => {
-              // Assuming you have a function to get user information by ID
-              const user = await getUserByID(memberId);
-              return user;
-            })
-          );
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       if (task.project_id !== null && task.project_id.length === 20) {
+  //         const project = await getprojecByID(task.project_id);
+  //         setProject(project);
+  //         const memberIdList = project.members.map((member) => member.id);
+  //         console.log(memberIdList);
+  //         // Fetch user information for each member ID
+  //         const users = await Promise.all(
+  //           memberIdList.map(async (memberId) => {
+  //             // Assuming you have a function to get user information by ID
+  //             const user = await getUserByID(memberId);
+  //             return user;
+  //           })
+  //         );
 
-          // Only set the state if the component is still mounted
-          setMembers(users);
-          const name = await getUserFullNameById(taskData.assignee_id)
-          setUserName(name);
-          setIsDataLoaded(true);
+  //         // Only set the state if the component is still mounted
+  //         setMembers(users);
+  //         const name = await getUserFullNameById(taskData.assignee_id)
+  //         setUserName(name);
+  //         setIsDataLoaded(true);
  
-        }
-      } catch (error) {
-        // Handle errors
-        console.error("Error fetching data:", error);
-      }
-    };
+  //       }
+  //     } catch (error) {
+  //       // Handle errors
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    fetchData();
+  //   fetchData();
 
-    return () => {
-      setIsDataLoaded(false); // Reset the flag if the component is unmounted
-    };
+  //   return () => {
+  //     setIsDataLoaded(false); // Reset the flag if the component is unmounted
+  //   };
 
-    // Cleanup function to cancel any ongoing async operations if the component is unmounted
-  }, [taskData,isModalOpen,setIsModalOpen,isOpen,task]);
+  //   // Cleanup function to cancel any ongoing async operations if the component is unmounted
+  // }, [taskData,isModalOpen,setIsModalOpen,isOpen,task]);
 
-  const refresh = () => {
-    setInterval(() => {
-      setMembers(members);
-    }, 2000);
-  };
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -184,7 +179,6 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
       complete: task.complete,
       complete_date: task.complete_date,
     };
-    console.log(newFeild);
     await updateRtTaskByID(task.id, newFeild);
     handleClose();
   };
@@ -193,7 +187,7 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
     handleClose();
   };
 
-  console.log(taskData.priority, "THIS");
+
   return (
     <>
       {isModalOpen &&(
