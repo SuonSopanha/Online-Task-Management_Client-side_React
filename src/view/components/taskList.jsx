@@ -208,7 +208,18 @@ const TaskList = () => {
   }
 
   const priorityColor = (priority) => {
-    // Your priority color logic
+    switch (priority) {
+      case "High":
+        return "yellow";
+      case "Medium":
+        return "green";
+      case "Low":
+        return "blue";
+      case "Critical":
+        return "red";
+      default:
+        return "gray";
+    }
   };
 
   return (

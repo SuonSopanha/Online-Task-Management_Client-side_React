@@ -4,10 +4,12 @@ import { useState,useEffect, useContext } from "react";
 import ChatBox from "../components/chatBox";
 import TeamOverview from "./teamOverview";
 import TeamDashboard from "./teamDashboard";
+import OrgDetail from "./orgDetail";
 
 import { getTeamByID } from "../../firebase/teamCRUD";
 import { modalContext } from "../part/test";
 import { apiRequest } from "../../api/api";
+import { FaChartBar, FaClipboard, FaInbox, FaObjectGroup } from "react-icons/fa";
 
 const mockTeam = {
   id: "1",
@@ -118,7 +120,7 @@ const TeamHeader = () => {
                   }`}
                   onClick={() => handleTabClick("Overview")}
                 >
-                  Overview
+                  <FaObjectGroup className="inline-block mr-2" />Overview
                 </a>
               </li>
               <li className="me-2">
@@ -132,7 +134,7 @@ const TeamHeader = () => {
                   onClick={() => handleTabClick("Message")}
                   aria-current={activeTab === "Message"}
                 >
-                  Message
+                  <FaInbox className="inline-block mr-2" />Message
                 </a>
               </li>
               <li className="me-2">
@@ -143,7 +145,18 @@ const TeamHeader = () => {
                   }`}
                   onClick={() => handleTabClick("Dashboard")}
                 >
-                  Dashboard
+                  <FaChartBar className="inline-block mr-2" />Dashboard
+                </a>
+              </li>
+              <li className="me-2">
+                <a
+                  href="#"
+                  className={`inline-block px-3 py-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                    activeTab === "Detail" ? "text-blue-600 border-blue-600" : ""
+                  }`}
+                  onClick={() => handleTabClick("Detail")}
+                >
+                  <FaClipboard className="inline-block mr-2" />Detail
                 </a>
               </li>
             </ul>
@@ -156,6 +169,7 @@ const TeamHeader = () => {
       {activeTab === "Overview" && <TeamOverview team={team} />}
       {activeTab === "Message" && <ChatBox team={team}/>}
       {activeTab === "Dashboard" && <TeamDashboard team={team}/>}
+      {activeTab === "Detail" && <OrgDetail team={team}/>}
     </div>
   );
 };

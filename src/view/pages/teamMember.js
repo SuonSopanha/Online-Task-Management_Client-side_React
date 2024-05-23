@@ -2,68 +2,57 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserByEmail } from "../../firebase/usersCRUD";
 import { useLocation } from "react-router-dom";
-import { updateProject ,updateByPushNewMembers} from "../../firebase/projectCRUD";
+import { updateByPushNewMembers } from "../../firebase/projectCRUD";
 
 const TeamMember = () => {
-  const [emails, setEmails] = useState([""]);
-
-  const location = useLocation();
-  const { state } = location;
-
-  // Now you can access the state object
-  const { team_id } = state;
-
-
-
+  const [members, setMembers] = useState([{ email: "", role: "" }]);
   const navigate = useNavigate();
+
   const addInputRow = () => {
-    setEmails([...emails, ""]);
+    setMembers([...members, { email: "", role: "" }]);
   };
 
-  const handleEmailChange = (index, value) => {
-    const newEmails = [...emails];
-    newEmails[index] = value;
-    setEmails(newEmails);
+  const handleMemberChange = (index, field, value) => {
+    const newMembers = [...members];
+    newMembers[index][field] = value;
+    setMembers(newMembers);
   };
 
   const handleContinue = async () => {
     // Filter out empty emails
-    const nonEmptyEmails = emails.filter((email) => email.trim() !== '');
-  
+    const nonEmptyMembers = members.filter(
+      (member) => member.email.trim() !== ""
+    );
+
     // Use getUserByEmail for each non-empty email to get user ID
     const userIds = await Promise.all(
-      nonEmptyEmails.map(async (email) => {
-        const user = await getUserByEmail(email);
-        return user ? user.id : null;
+      nonEmptyMembers.map(async (member) => {
+        const user = await getUserByEmail(member.email);
+        return user ? { id: user.id, role: member.role } : null;
       })
     );
-  
+
     // Filter out null values (for emails that didn't match any user)
-    const validUserIds = userIds.filter((userId) => userId !== null);
-  
+    const validMembers = userIds.filter((userId) => userId !== null);
+
     // Find invalid user IDs and corresponding emails
-    const invalidUsers = nonEmptyEmails
-      .map((email, index) => (userIds[index] === null ? email : null))
+    const invalidUsers = nonEmptyMembers
+      .map((member, index) =>
+        userIds[index] === null ? member.email : null
+      )
       .filter(Boolean);
-  
+
     if (invalidUsers.length > 0) {
       // Alert the user about invalid emails
-      alert(`Invalid emails: ${invalidUsers.join(', ')}`);
-    }else{
-      const members = validUserIds.map((userId) => ({ id: userId }));
-      console.log( members);
-      await updateByPushNewMembers(team_id, members);
+      alert(`Invalid emails: ${invalidUsers.join(", ")}`);
+    } else {
+      console.log(validMembers);
+      // await updateByPushNewMembers(team_id, validMembers);
 
       // Navigate to the next page or perform any other logic
-      navigate("/app"); 
+      navigate("/app");
     }
-  
-    // Update the members state with valid user IDs
-
-    // Navigate to the next page or perform any other logic
-    // navigate("/next-page"); // Replace "/next-page" with your desired route
   };
-  
 
   return (
     <>
@@ -77,15 +66,26 @@ const TeamMember = () => {
         </div>
 
         <div className="mt-2">
-          <p className="font-medium">Email Address</p>
-          {emails.map((email, index) => (
-            <div key={index}>
+          <p className="font-medium">Email Address & Role</p>
+          {members.map((member, index) => (
+            <div key={index} className="flex space-x-4 mt-2">
               <input
-                className="focus:shadow-outline focus:border-blue-300 mt-1 w-96 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
+                className="focus:shadow-outline focus:border-blue-300 w-64 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
                 type="text"
                 placeholder="Teammate's email"
-                value={email}
-                onChange={(e) => handleEmailChange(index, e.target.value)}
+                value={member.email}
+                onChange={(e) =>
+                  handleMemberChange(index, "email", e.target.value)
+                }
+              />
+              <input
+                className="focus:shadow-outline focus:border-blue-300 w-64 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
+                type="text"
+                placeholder="Role"
+                value={member.role}
+                onChange={(e) =>
+                  handleMemberChange(index, "role", e.target.value)
+                }
               />
             </div>
           ))}

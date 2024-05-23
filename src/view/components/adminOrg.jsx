@@ -56,19 +56,6 @@ const AdminOrg = () => {
   if (adminOrgUsersError)
     return <div>Error: {adminOrgUsersError}</div>;
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/admin/organizations");
-  //       setUsers(response.data);
-  //       console.log(response);
-  //       setloading(false);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -76,12 +63,18 @@ const AdminOrg = () => {
     setCurrentPage(1); // Reset to the first page on search
   };
 
+  let filteredUsers = [];
+
+  if(!adminOrgUsersLoading){
+    filteredUsers = users?.filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
+  };
+
   // Filter users based on search query
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
 
   // Calculate pagination values
   const indexOfLastUser = currentPage * usersPerPage;
@@ -127,7 +120,7 @@ const AdminOrg = () => {
         <div className="flex justify-between items-center bg-glasses backdrop-blur-12 font-semibold p-4 mx-2 mb-1 rounded-lg">
           <nav className="flex space-x-4">
             <Link
-              to="/overview"
+              to="/adminDashboard"
               className="text-sm text-gray-700 hover:text-gray-900"
             >
               Overview
@@ -236,7 +229,7 @@ const AdminOrg = () => {
                 </tr>
               </thead>
               <tbody className="bg-glasses divide-y divide-gray-500">
-                {currentUsers.map((user) => (
+                {adminOrgUsersLoading ? null : currentUsers.map((user) => (
                   <tr key={user.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">

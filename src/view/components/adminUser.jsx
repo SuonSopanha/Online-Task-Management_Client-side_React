@@ -6,93 +6,6 @@ import LoadingBalls from "../../utils/loading";
 import { useQuery } from "@tanstack/react-query";
 
 const AdminUser = () => {
-  // Example user data
-  // const users = [
-  //   {
-  //     id: 1,
-  //     name: "Jane Cooper",
-  //     title: "Regional Paradigm Technician",
-  //     department: "Optimization",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "jane.cooper@example.com",
-  //     image: "https://i.pravatar.cc/150?img=1",
-  //   },
-
-  //   {
-  //     id: 2,
-  //     name: "Cody Fisher",
-  //     title: "Product Directives Officer",
-  //     department: "Intranet",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "cody.fisher@example.com",
-  //     image: "https://i.pravatar.cc/150?img=2",
-  //   },
-
-  //   {
-  //     id: 3,
-  //     name: "Esther Howard",
-  //     title: "Forward Response Developer",
-  //     department: "Directives",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "esther.howard@example.com",
-  //     image: "https://i.pravatar.cc/150?img=3",
-  //   },
-
-  //   {
-  //     id: 4,
-  //     name: "Jenny Wilson",
-  //     title: "Central Security Planner",
-  //     department: "Security",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "jenny.wilson@example.com",
-  //     image: "https://i.pravatar.cc/150?img=4",
-  //   },
-
-  //   {
-  //     id: 5,
-  //     name: "Esther Howard",
-  //     title: "Forward Response Developer",
-  //     department: "Directives",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "esther.howard@example.com",
-  //     image: "https://i.pravatar.cc/150?img=5",
-  //   },
-
-  //   {
-  //     id: 6,
-  //     name: "Jenny Wilson",
-  //     title: "Central Security Planner",
-  //     department: "Security",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "jenny.wilson@example.com",
-  //     image: "https://i.pravatar.cc/150?img=6",
-  //   },
-
-  //   {
-  //     id: 7,
-  //     name: "Jenny Wilson",
-  //     title: "Central Security Planner",
-  //     department: "Security",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "jenny.wilson@example.com",
-  //     image: "https://i.pravatar.cc/150?img=7",
-  //   },
-
-  //   // Add more user objects as needed
-  //   // ...
-  // ];
-
-  // Pagination state
-  // const [users, setUsers] = useState([]);
-  // const [loading, setloading] = useState(true);
-  
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const usersPerPage = 5;
@@ -111,20 +24,6 @@ const AdminUser = () => {
     return response.data;
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/admin/users");
-  //       setUsers(response.data);
-  //       setloading(false);
-  //       console.log(response);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
   if (adminUserLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -133,14 +32,18 @@ const AdminUser = () => {
     );
   }
 
-  if (adminUserError)
-    return <div>Error: {adminUserError}</div>;
+  if (adminUserError) return <div>Error: {adminUserError}</div>;
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  let filteredUsers = [];
+
+  if (!adminUserLoading) {
+    filteredUsers =
+      users.filter(
+        (user) =>
+          user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchQuery.toLowerCase())
+      ) || [];
+  }
 
   // Calculate pagination values
   const indexOfLastUser = currentPage * usersPerPage;
@@ -190,7 +93,7 @@ const AdminUser = () => {
         <div className="flex justify-between items-center bg-glasses backdrop-blur-12 font-semibold p-4 mx-2 mb-1 rounded-lg">
           <nav className="flex space-x-4">
             <Link
-              to="/overview"
+              to="/adminDashboard"
               className="text-sm text-gray-700 hover:text-gray-900"
             >
               Overview
@@ -269,18 +172,6 @@ const AdminUser = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Title
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Status
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
                     Role
                   </th>
                   <th
@@ -293,65 +184,72 @@ const AdminUser = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
+                    Join At
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-glasses divide-y divide-gray-500">
-                {currentUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <img
-                            className="h-10 w-10 rounded-full"
-                            src={user.photo_url}
-                            alt={user.full_name}
-                          />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.full_name}
+                {adminUserLoading
+                  ? null
+                  : currentUsers.map((user) => (
+                      <tr key={user.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10">
+                              <img
+                                className="h-10 w-10 rounded-full"
+                                src={user.photo_url}
+                                alt={user.full_name}
+                              />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {user.full_name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {user.email}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {user.role}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {user.email}
+                            {user.department}
                           </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{user.title}</div>
-                      <div className="text-sm text-gray-500">
-                        {user.department}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        {user.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.role}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <a
-                        href="#"
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit
-                      </a>
-                      <a
-                        href="#"
-                        className="ml-2 text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </a>
-                    </td>
-                  </tr>
-                ))}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {user.email}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {user.created_at.substring(0, 10)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <a
+                            href="#"
+                            className="text-indigo-600 hover:text-indigo-900"
+                          >
+                            Edit
+                          </a>
+                          <a
+                            href="#"
+                            className="ml-2 text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
             <div className="flex justify-between items-center p-4">

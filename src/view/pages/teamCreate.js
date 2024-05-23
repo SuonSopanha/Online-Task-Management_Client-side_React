@@ -3,23 +3,31 @@ import { useNavigate } from "react-router-dom";
 import { createProject } from "../../firebase/projectCRUD";
 import { auth } from "../../firebase/config";
 
-const project_id = "";
-
 const TeamCreate = () => {
-  const [teamProject, setTeamProject] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   const handleContinue = async () => {
     // Add any validation logic here before creating the project
-    if (teamProject.trim() === "") {
+    if (name.trim() === "") {
       alert("Please enter a project name.");
       return;
     }
 
     // Create the project or perform any further actions
-    const project_id = await createProject({ project_name: teamProject,owner_id:auth.currentUser.uid,members:[] })
+    const project_id = await createProject({
+      project_name: name,
+      description,
+      industry,
+      email,
+      owner_id: auth.currentUser.uid,
+      members: [],
+    });
     console.log(project_id);
-    navigate('/team',{ state: { project_id:project_id} });
+    navigate("/teamMember", { state: { team_id: 1 } });
   };
 
   return (
@@ -30,13 +38,42 @@ const TeamCreate = () => {
       <div className="mt-5">
         <p className="font-medium">Name for your Team.</p>
       </div>
-      <div className="mt-10">
+      <div className="mt-4">
         <input
-          className="focus:shadow-outline focus:border-blue-300 mt-4 w-96 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
+          className="focus:shadow-outline focus:border-blue-300 w-96 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
           type="text"
           placeholder="Team Name"
-          value={teamProject}
-          onChange={(e) => setTeamProject(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
+      <div className="mt-4">
+        <p className="font-medium">Description</p>
+        <textarea
+          className="focus:shadow-outline focus:border-blue-300 w-96 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+      <div className="mt-4">
+        <p className="font-medium">Industry</p>
+        <input
+          className="focus:shadow-outline focus:border-blue-300 w-96 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
+          type="text"
+          placeholder="Industry"
+          value={industry}
+          onChange={(e) => setIndustry(e.target.value)}
+        />
+      </div>
+      <div className="mt-4">
+        <p className="font-medium">Email</p>
+        <input
+          className="focus:shadow-outline focus:border-blue-300 w-96 appearance-none rounded-xl border-2 px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none font-medium"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <button
