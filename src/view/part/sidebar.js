@@ -26,46 +26,7 @@ import {
 import { getRtTeamsByUserId } from "../../firebase/teamCRUD";
 import { set } from "date-fns";
 
-const mockProjectList = [
-  { project_id: 1, project_name: "Project 1" },
-  { project_id: 2, project_name: "Project 2" },
-  { project_id: 3, project_name: "Project 3" },
-];
-
-const mockTeamList = [
-{
-    name: "Sample Team",
-    description: "This is a sample team description.",
-    milestone: "Sample Milestone",
-    members: [
-      {
-        user_id: "1",
-        full_name: "John Doe",
-        role: "Developer",
-        photoURL: "https://via.placeholder.com/150",
-      },
-      {
-        user_id: "2",
-        full_name: "Jane Smith",
-        role: "Designer",
-        photoURL: "https://via.placeholder.com/150",
-      },
-      // Add more mock team members as needed
-    ],
-    projects: [
-      {
-        project_id: "1",
-        project_name: "Sample Project 1",
-      },
-      {
-        project_id: "2",
-        project_name: "Sample Project 2",
-      },
-      // Add more mock projects as needed
-    ],
-  }
-];
-
+import { useQuery } from "@tanstack/react-query";
 
 function Sidebar({ isOpen, TabNavigate }) {
   const [isOpendrop, setIsOpendrop] = useState(false);
@@ -73,16 +34,10 @@ function Sidebar({ isOpen, TabNavigate }) {
   const [isOpendropProject, setIsOpendropProject] = useState(false);
   const [isOpendropTeam, setIsOpendropTeam] = useState(false);
 
-  const [projectList, setProjectList] = useState([]);
-  const [teamList, setTeamList] = useState(mockTeamList);
-  const [organizationList, setOrganizationList] = useState([]);
-
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
 
   const NavigateTab = (Tab) => {
     TabNavigate(Tab);
@@ -108,72 +63,89 @@ function Sidebar({ isOpen, TabNavigate }) {
     navigate("/teamCreate");
   };
 
-  const handleLogout = () =>{
-    auth.signOut();
+  const handleLogout = () => {
+    sessionStorage.removeItem("token");
     navigate("/");
+  };
 
+  async function fetchProjects() {
+    try {
+      const [response1] = await Promise.all([
+        apiRequest("get", "api/v1/user-projects"),
+
+      ]);
+      console.log("already Fetched projects");
+      return [...response1.data];
+    } catch (error) {
+      throw new Error("Error fetching projects:", error);
+    }
   }
 
+  async function fetchOrganizations() {
+    try {
+      const [response1] = await Promise.all([
+        apiRequest("get", "api/v1/user-organizations"),
+      ]);
+      console.log("already Fetched organizations");
+      return [...response1.data];
+    } catch (error) {
+      throw new Error("Error fetching organizations:", error);
+    }
+  }
+
+  const {
+    data: projectList,
+    isLoading: projectLoading,
+    error: projectError,
+  } = useQuery({
+    queryKey: ["project"],
+    queryFn: fetchProjects,
+  });
+  const {
+    data: organizationList,
+    isLoading: organizationLoading,
+    error: organizationError,
+  } = useQuery({
+    queryKey: ["organization"],
+    queryFn: fetchOrganizations,
+  });
+
   // useEffect(() => {
-  // // Effect: Fetch project and team data based on the current user's ID.
-  // // getProjectByMemberID,getProjectByOwnnerID
-  // // getTeamByMemberID,getTeamByOwnerID
-  // // This hook is triggered when the component mounts.
+  //   const fetchProject = async () => {
+  //     try {
+  //       const [ response1, response2 ] = await Promise.all([
+  //         apiRequest("get", "api/v1/projects-by-member"),
+  //         apiRequest("get", "api/v1/projects-by-owner")
+  //       ]);
 
-  // // Ideally, this hook would subscribe to changes in the user's authentication status,
-  // // updating the component state accordingly.
+  //       const projectList = [...response1.data, ...response2.data];
+  //       setProjectList(projectList);
+  //       setLoading(false);
 
-  // // In a real-world scenario, the following steps would be executed:
-  // // 1. Check if the user is authenticated.
-  // // 2. If the user is authenticated, fetch projects and teams associated with the user.
-  // // 3. Update the component state with the fetched data.
-  // // 4. Handle loading and error states accordingly.
+  //     }catch(error) {
+  //       console.error("Error fetching project:", error);
+  //     }
+  //   }
 
-  // // Cleanup function:
-  // // Unsubscribe from any ongoing subscriptions to prevent memory leaks
-  // // and ensure that the effect is only triggered once.
-  // // when the component unmounts.
+  //   const fetchOrganizatoin = async () => {
+  //     try {
+  //       const [ response1, response2 ] = await Promise.all([
+  //         apiRequest("get", "api/v1/organizations-by-member"),
+  //         apiRequest("get", "api/v1/organizations-by-owner")
+  //       ]);
+
+  //       const organizationList = [...response1.data, ...response2.data];
+  //       setOrganizationList(organizationList);
+  //       setLoading(false);
+  //     }catch(error) {
+  //       console.error("Error fetching organization:", error);
+  //     }
+  //   }
+
+  //   fetchProject();
+  //   fetchOrganizatoin();
+
   // }, []);
-
-  
-  useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        const [ response1, response2 ] = await Promise.all([
-          apiRequest("get", "api/v1/projects-by-member"),
-          apiRequest("get", "api/v1/projects-by-owner")
-        ]);
-    
-        const projectList = [...response1.data, ...response2.data];
-        setProjectList(projectList);
-        setLoading(false);
-        console.log(projectList);
-
-      }catch(error) {
-        console.error("Error fetching project:", error);
-      }
-    }
-
-    const fetchOrganizatoin = async () => {
-      try {
-        const [ response1, response2 ] = await Promise.all([
-          apiRequest("get", "api/v1/organizations-by-member"),
-          apiRequest("get", "api/v1/organizations-by-owner")
-        ]);
-      
-        const organizationList = [...response1.data, ...response2.data];
-        setOrganizationList(organizationList);
-        setLoading(false);
-        console.log(organizationList);
-      }catch(error) {
-        console.error("Error fetching organization:", error);
-      }
-    }
-
-    fetchProject();
-    fetchOrganizatoin();
-   
-  }, []);
 
   return (
     <>
@@ -281,7 +253,7 @@ function Sidebar({ isOpen, TabNavigate }) {
                 />
               </svg>{" "}
             </button>
-            {isOpendropProject && (
+            {isOpendropProject && !projectLoading && (
               <div className="flex flex-col items-center w-full ">
                 {/* Dropdown content */}
                 {projectList.map((project) => (
@@ -307,7 +279,7 @@ function Sidebar({ isOpen, TabNavigate }) {
               <div className="flex items-center">
                 <FaUsers className="w-3 h-3 stroke-current" />
                 <span className="ml-2 text-sm font-medium text-gray-700">
-                  Team
+                  Organization
                 </span>
               </div>
               <svg
@@ -327,14 +299,16 @@ function Sidebar({ isOpen, TabNavigate }) {
                 />
               </svg>{" "}
             </button>
-            {isOpendropTeam && (
+            {isOpendropTeam && !organizationLoading && (
               <div className="flex flex-col items-center w-full">
                 {/* Dropdown content */}
                 {organizationList.map((organization) => (
                   <button
                     key={organization.team_id}
                     className="flex items-center w-full h-8 px-3 mt-1 rounded  hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
-                    onClick={() => NavigateTabwithParam("Team", organization.id)}
+                    onClick={() =>
+                      NavigateTabwithParam("Team", organization.id)
+                    }
                   >
                     <FaUsers className="w-3 h-3 stroke-current text-blue-900" />
                     <span className="ml-2 text-sm font-medium text-gray-700">
@@ -343,19 +317,22 @@ function Sidebar({ isOpen, TabNavigate }) {
                   </button>
                 ))}
                 <button
-                    className="flex items-center w-full h-8 px-3 mt-1 rounded  hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
-                    onClick={handleCreateTeam}
-                  >
-                    <FaPlus className="w-3 h-3 stroke-current text-blue-900" />
-                    <span className="ml-2 text-sm font-medium text-gray-700">
-                      Create Team
-                    </span>
-                  </button>
+                  className="flex items-center w-full h-8 px-3 mt-1 rounded  hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
+                  onClick={handleCreateTeam}
+                >
+                  <FaPlus className="w-3 h-3 stroke-current text-blue-900" />
+                  <span className="ml-2 text-sm font-medium text-gray-700">
+                    Create Organization
+                  </span>
+                </button>
                 {/* Add more dropdown items as needed */}
               </div>
             )}
           </div>
-          <button onClick={handleLogout} class="flex items-center justify-start w-full h-16 mt-auto mb-10 border-t border-blue-400 hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105">
+          <button
+            onClick={handleLogout}
+            class="flex items-center justify-start w-full h-16 mt-auto mb-10 border-t border-blue-400 hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
+          >
             <FaDoorOpen className="w-6 h-6 stroke-current ml-4" />
             <span class="ml-2 text-sm font-medium text-gray-700">Log Out</span>
           </button>

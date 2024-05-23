@@ -25,7 +25,7 @@ const sortByDueDate = (tasks) => {
   };
 
   const sortByID = (tasks) => {
-    return tasks.sort((a, b) => a.id.localeCompare(b.id));
+    return tasks.sort((a, b) => a.id - b.id);
   }
 
 

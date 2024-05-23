@@ -66,40 +66,35 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
 
   let newData = {};
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      // The user object will be null if no user is logged in
-      newData = {
-        project_id: taskData.project_id ? taskData.project_id : "",
-        user_id: auth.currentUser.uid,
-        task_name: taskData.task_name ? taskData.task_name : "",
-        description: taskData.description ? taskData.description : "",
-        due_date: taskData.due_date ? taskData.due_date : "",
-        task_category: taskData.task_category
-          ? taskData.task_category
-          : "To Do",
-        tracking: [],
-        work_hour_required: taskData.work_hour_required
-          ? taskData.work_hour_required
-          : "",
-        status: taskData.status ? taskData.status : "On Track",
-        priority: taskData.priority ? taskData.priority : "Low",
-        assignee_id: taskData.assignee_id ? taskData.assignee_id : "",
-        assignee_dates: taskData.assignee_dates ? taskData.assignee_dates : "",
-        complete: taskData.complete ? taskData.complete : false,
-        complete_date: taskData.complete_date ? taskData.complete_date : "",
-      };
-      setTask(newData);
-    });
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     // The user object will be null if no user is logged in
+  //     newData = {
+  //       project_id: taskData.project_id ? taskData.project_id : "",
+  //       user_id: auth.currentUser.uid,
+  //       task_name: taskData.task_name ? taskData.task_name : "",
+  //       description: taskData.description ? taskData.description : "",
+  //       due_date: taskData.due_date ? taskData.due_date : "",
+  //       task_category: taskData.task_category
+  //         ? taskData.task_category
+  //         : "To Do",
+  //       tracking: [],
+  //       work_hour_required: taskData.work_hour_required
+  //         ? taskData.work_hour_required
+  //         : "",
+  //       status: taskData.status ? taskData.status : "On Track",
+  //       priority: taskData.priority ? taskData.priority : "Low",
+  //       assignee_id: taskData.assignee_id ? taskData.assignee_id : "",
+  //       assignee_dates: taskData.assignee_dates ? taskData.assignee_dates : "",
+  //       complete: taskData.complete ? taskData.complete : false,
+  //       complete_date: taskData.complete_date ? taskData.complete_date : "",
+  //     };
+  //     setTask(newData);
+  //   });
 
-    return () => unsubscribe();
-  }, []);
+  //   return () => unsubscribe();
+  // }, []);
 
-  const refresh = () => {
-    setInterval(() => {
-      setMembers(members);
-    }, 2000);
-  };
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -217,7 +212,6 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
     handleClose();
   };
 
-  console.log(taskData.priority, "THIS");
   return (
     <>
       {isModalOpen && (

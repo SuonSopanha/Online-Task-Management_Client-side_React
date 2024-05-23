@@ -145,7 +145,7 @@ const ProjectList = () => {
 
     const fetchTask = async () => {
       try {
-        const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID)
+        const response = await apiRequest("get", "api/v1/tasks-by-project-id/" + tabID)
         setTaskList(response.data);
         setLoading(false);
         console.log(response);
@@ -223,10 +223,10 @@ const ProjectList = () => {
                       <div className="flex items-center text-sm">
                         <div className="flex flex-row items-center space-x-2 justify-center">
                           <div className="flex flex-row items-center justify-center w-6 h-6 rounded-full md:block">
-                            {task.assignee.photoURL != null ? (
+                            {task.assignee.photo_url != null ? (
                               <img
                                 className="object-cover w-full h-full rounded-full"
-                                src={task.assignee.photoURL}
+                                src={task.assignee.photo_url}
                                 alt=""
                                 loading="lazy"
                               />

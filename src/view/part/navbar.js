@@ -1,39 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import UserProfilePic from "../../utils/photoGenerator";
 import { apiRequest } from "../../api/api";
 
 const Navbar = ({ toggleSidebar }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: user,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchData,
+  });
+
+  async function fetchData() {
+    try {
+      const response = await apiRequest("get", "api/v1/users");
+      return response.data;
+    } catch (error) {
+      throw new Error("Error fetching data:", error);
+    }
+  }
 
   const handleClick = () => {
     toggleSidebar(true);
   };
 
-  // useEffect(() => {
-  //   // Simulate loading for 1.5 seconds
-  //   const timer = setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1500);
-
-  //   // Cleanup timer
-  //   return () => clearTimeout(timer);
-  // }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/users");
-        setData(response.data);
-        setLoading(false);
-        console.log(response);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -50,7 +42,7 @@ const Navbar = ({ toggleSidebar }) => {
             type="button"
             className="flex py-1 mx-3 items-center justify-center rounded-2xl bg-gray-100 font-semibold text-blue-500 border-1 border-blue-500 hover:bg-blue-600 sm:mx-0 sm:w-1/2 sm:px-2 sm:py-1 sm:text-sm"
           >
-            <span className="px-1">Created</span>
+            <span className="px-1">create</span>
           </button>
         </div>
         <div className="px-5 xl:px-12 py-3 flex w-full items-center ">
@@ -72,7 +64,15 @@ const Navbar = ({ toggleSidebar }) => {
                 <div className="w-6 h-6 bg-gray-200 animate-pulse rounded-full"></div>
               ) : (
                 <div>
-                  <UserProfilePic name="John Doe" size={6} />
+                  {user && user.photo_url ? (
+                    <img
+                      src={user.photo_url}
+                      alt={user.full_name}
+                      className="object-cover w-6 h-6 rounded-full"
+                    />
+                  ) : (
+                    <UserProfilePic name={user.full_name} size={6} />
+                  )}
                 </div>
               )}
             </a>
@@ -84,14 +84,14 @@ const Navbar = ({ toggleSidebar }) => {
               <div className="w-6 h-6 bg-gray-200 animate-pulse rounded-full"></div>
             ) : (
               <div>
-                {data && data.photo_url ? (
+                {user && user.photo_url ? (
                   <img
-                    src={data.photo_url}
-                    alt={data.full_name}
+                    src={user.photo_url}
+                    alt={user.full_name}
                     className="object-cover w-6 h-6 rounded-full"
                   />
                 ) : (
-                  <UserProfilePic name={data.full_name} size={6} />
+                  <UserProfilePic name={user.full_name} size={6} />
                 )}
               </div>
 
