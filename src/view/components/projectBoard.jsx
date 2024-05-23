@@ -5,6 +5,7 @@ import { FaUser, FaUsers } from "react-icons/fa";
 
 import { auth } from "../../firebase/config";
 import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 
 import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
 import { getUserFullNameById } from "../../firebase/usersCRUD";
@@ -71,11 +72,11 @@ const mockTaskList = [
 const ProjectBoard = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } =
     useContext(modalContext);
-  const [ProjectStageList, setProjectStageList] = useState(mockProjectStages);
-  const [taskList, setTaskList] = useState(mockTaskList);
+  // const [ProjectStageList, setProjectStageList] = useState(mockProjectStages);
+  // const [taskList, setTaskList] = useState(mockTaskList);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
 
   const { sortCriteria } = useContext(projectTaskContext);
 
@@ -146,50 +147,93 @@ const ProjectBoard = () => {
   //   setTaskList(sortTask)
   // },[sortCriteria])
 
-  useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
-        setTaskList(response.data);
-        setLoading(false);
-        console.log(response);
-      } catch (error) {
-        console.error("Error fetching task:", error);
-      }
-    }
+  // useEffect(() => {
+  //   const fetchTask = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
+  //       setTaskList(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     } catch (error) {
+  //       console.error("Error fetching task:", error);
+  //     }
+  //   }
 
-    const fetchProjectStage = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
+  //   const fetchProjectStage = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
 
-        setProjectStageList(response.data);
-        setLoading(false);
-        console.log(response);
-      }catch(error) {
-        console.error("Error fetching project stage:", error);
-      }
-    }
+  //       setProjectStageList(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching project stage:", error);
+  //     }
+  //   }
 
-    fetchTask();
+  //   fetchTask();
 
-    fetchProjectStage();
+  //   fetchProjectStage();
 
-  },[tabID]);
+  // },[tabID]);
 
-  if (loading) {
-    return <LoadingBalls />;
+  // if (loading) {
+  //   return <LoadingBalls />;
+  // }
+
+  // if (error) {
+  //   return <p>Error: {error.message}</p>;
+  // }
+
+  const {
+    data: projectStageList,
+    isLoading: projectStageListLoading,
+    error: projectStageListError,
+  } = useQuery({
+    queryKey: ["projectBoard_projectStageList"],
+    queryFn: fetchprojectStages,
+  });
+
+  const {
+    data: taskList,
+    isLoading: taskLoading,
+    error: taskError, 
+  } = useQuery({
+    queryKey: ["projectBoard_taskList"],
+    queryFn: fetchTasks,
+  });
+
+  async function fetchprojectStages(tabID) {
+    const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID);
+    console.log(response);
+    return response.data;
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  async function fetchTasks(tabID) {
+    const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
+    console.log(response);
+    return response.data;
   }
+
+  if (projectStageListLoading || taskLoading) {
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
+  }
+
+  if (projectStageListError || taskError) {
+    return <p>Error: {projectStageListError || taskError}</p>;
+  }
+
   const Team = "Team";
 
   return (
     <div className="container mx-auto mt-6 overflow-x-auto">
       <h1 className="text-2xl ml-4 font-semibold mb-4">Task Board</h1>
       <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
-        {ProjectStageList.map((ProjectStage, index) => (
+        {projectStageList.map((ProjectStage, index) => (
           <div
             key={index}
             className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3"

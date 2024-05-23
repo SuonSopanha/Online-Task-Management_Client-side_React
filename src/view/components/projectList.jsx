@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 
 import { auth } from "../../firebase/config";
 import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 
 import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
 import { getUserFullNameById } from "../../firebase/usersCRUD";
@@ -70,11 +71,11 @@ const mockProjectStageList = [
 const ProjectList = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
 
-  const [ProjectStageList, setProjectStageList] = useState([]);
-  const [taskList, setTaskList] = useState([]);
+  // const [ProjectStageList, setProjectStageList] = useState([]);
+  // const [taskList, setTaskList] = useState([]);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
 
   const { sortCriteria } = useContext(projectTaskContext);
 
@@ -141,42 +142,84 @@ const ProjectList = () => {
   //   setTaskList(sortTask)
   // },[sortCriteria])
 
-  useEffect (() => {
+  // useEffect (() => {
 
-    const fetchTask = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/tasks-by-project-id/" + tabID)
-        setTaskList(response.data);
-        setLoading(false);
-        console.log(response);
-      }catch(error) {
-        console.error("Error fetching task:", error);
-      }
-    }
+  //   const fetchTask = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/tasks-by-project-id/" + tabID)
+  //       setTaskList(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching task:", error);
+  //     }
+  //   }
 
-    const fetchProjectStage = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
-        setProjectStageList(response.data);
-        setLoading(false);
-        console.log(response);
-      }catch(error) {
-        console.error("Error fetching project stage:", error);
-      }
-    }
+  //   const fetchProjectStage = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
+  //       setProjectStageList(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching project stage:", error);
+  //     }
+  //   }
 
-    fetchTask();
+  //   fetchTask();
 
-    fetchProjectStage();
+  //   fetchProjectStage();
 
-  }, [tabID]);
+  // }, [tabID]);
 
-  if (loading) {
-    return <LoadingBalls />;
+  // if (loading) {
+  //   return <LoadingBalls />;
+  // }
+
+  // if (error) {
+  //   return <p>Error: {error.message}</p>;
+  // }
+
+  const {
+    data: projectStageList,
+    isLoading: projectStageListLoading,
+    error: projectStageListError,
+  } = useQuery({
+    queryKey: ["projectList_projectStageList"],
+    queryFn: fetchprojectStages,
+  });
+
+  const {
+    data: taskList,
+    isLoading: taskLoading,
+    error: taskError, 
+  } = useQuery({
+    queryKey: ["projectList_taskList"],
+    queryFn: fetchTasks,
+  });
+
+  async function fetchprojectStages(tabID) {
+    const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID);
+    console.log(response);
+    return response.data;
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  async function fetchTasks(tabID) {
+    const response = await apiRequest("get", "api/v1/tasks-by-project-id/" + tabID);
+    console.log(response);
+    return response.data;
+  }
+
+  if (projectStageListLoading || taskLoading) {
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
+  }
+
+  if (projectStageListError || taskError) {
+    return <p>Error: {projectStageListError || taskError}</p>;
   }
 
   return (
@@ -259,7 +302,7 @@ const ProjectList = () => {
                   </tr>
                 ))}
 
-                {ProjectStageList.map((stage) => (
+                {projectStageList.map((stage) => (
                   <React.Fragment key={stage.id}>
                     <tbody class="text-gray-700">
                       <td class="px-4 py-2 border" colSpan="5">

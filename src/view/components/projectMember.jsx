@@ -6,69 +6,136 @@ import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
 import { modalContext } from "../part/test";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
+import LoadingBalls from "../../utils/loading";
 
 const ProjectMember = () => {
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [teamProjects, setTeamProjects] = useState([]);
+  // const [teamMembers, setTeamMembers] = useState([]);
+  // const [teamProjects, setTeamProjects] = useState([]);
   const { tabID } = useContext(modalContext);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   const addMember = async (user) => {
-    navigate('/team',{ state: { project_id: tabID} });
+    navigate("/team", { state: { project_id: tabID } });
   };
 
- 
-  useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        // Fetch project based on tabID
-        const project = await getprojecByID(tabID);
-        if (!project || !project.members) {
-          console.warn("Project or members are undefined.");
-          return;
-        }
-        console.log(project)
-  
-        const teamMemberUserIds = project.members.map((member) => member.id);
-  
-        console.log(teamMemberUserIds);
-  
-        if (teamMemberUserIds.length === 0) {
-          console.warn("No team members found.");
-          return;
-        }
-  
-        const memberPromises = teamMemberUserIds.map(async (userId) => {
-          const user = await getUserByID(userId);
-          return user;
-        });
-  
-        const teamMembers = await Promise.all(memberPromises);
-  
-        setTeamMembers(teamMembers.filter((member) => member !== null)); // Filter out null values
-      } catch (error) {
-        // Handle errors if needed
-        console.error("Error fetching team data:", error);
-      }
-    };
+  const {
+    data: teamMembers,
+    isLoading: teamMembersLoading,
+    error: teamMembersError,
+  } = useQuery({
+    queryKey: ["projectMember_teamMembers"],
+    queryFn: fetchTeamData,
+  });
 
-    const fetchMember = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/project-members?project_id[eq]=" + tabID);
-        setTeamMembers(response.data);
-        setLoading(false);
-        console.log(response);  
-      }catch(error) {
-        console.error("Error fetching team members:", error);
-      }
+  const {
+    data: teamProjects,
+    isLoading: teamProjectsLoading,
+    error: teamProjectsError,
+  } = useQuery({
+    queryKey: ["projectMember_teamProjects"],
+    queryFn: fetchTeamProjects,
+  });
+
+  async function fetchTeamData() {
+    // Fetch project based on tabID
+    const project = await getprojecByID(tabID);
+    if (!project || !project.members) {
+      console.warn("Project or members are undefined.");
+      return;
     }
-  
-    fetchTeamData();
+    console.log(project);
 
-    fetchMember();
+    const teamMemberUserIds = project.members.map((member) => member.id);
 
-  }, [tabID]);
+    console.log(teamMemberUserIds);
+
+    if (teamMemberUserIds.length === 0) {
+      console.warn("No team members found.");
+      return;
+    }
+
+    const memberPromises = teamMemberUserIds.map(async (userId) => {
+      const user = await getUserByID(userId);
+      return user;
+    });
+
+    const teamMembers = await Promise.all(memberPromises);
+
+    return teamMembers.filter((member) => member !== null); // Filter out null values
+  }
+
+  async function fetchTeamProjects(tabID) {
+    const response = await apiRequest(
+      "get",
+      "api/v1/project-members?project_id[eq]=" + tabID
+    );
+    return response.data;
+  }
+
+  if (teamMembersLoading || teamProjectsLoading) {
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
+  }
+
+  if (teamMembersError || teamProjectsError) {
+    return <p>Error: {teamMembersError || teamProjectsError}</p>;
+  }
+
+  // useEffect(() => {
+  //   const fetchTeamData = async () => {
+  //     try {
+  //       // Fetch project based on tabID
+  //       const project = await getprojecByID(tabID);
+  //       if (!project || !project.members) {
+  //         console.warn("Project or members are undefined.");
+  //         return;
+  //       }
+  //       console.log(project)
+
+  //       const teamMemberUserIds = project.members.map((member) => member.id);
+
+  //       console.log(teamMemberUserIds);
+
+  //       if (teamMemberUserIds.length === 0) {
+  //         console.warn("No team members found.");
+  //         return;
+  //       }
+
+  //       const memberPromises = teamMemberUserIds.map(async (userId) => {
+  //         const user = await getUserByID(userId);
+  //         return user;
+  //       });
+
+  //       const teamMembers = await Promise.all(memberPromises);
+
+  //       setTeamMembers(teamMembers.filter((member) => member !== null)); // Filter out null values
+  //     } catch (error) {
+  //       // Handle errors if needed
+  //       console.error("Error fetching team data:", error);
+  //     }
+  //   };
+
+  //   const fetchMember = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/project-members?project_id[eq]=" + tabID);
+  //       setTeamMembers(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching team members:", error);
+  //     }
+  //   }
+
+  //   fetchTeamData();
+
+  //   fetchMember();
+
+  // }, [tabID]);
 
   // Render your component based on teamMembers and teamProjects
   // ...
@@ -118,11 +185,8 @@ const ProjectMember = () => {
               </button>
             </div>
           </div>
-
-
         </div>
         {console.log(teamProjects)}
-
       </div>
     </>
   );
