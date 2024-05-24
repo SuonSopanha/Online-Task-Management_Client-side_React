@@ -7,61 +7,13 @@ import { getUserByID } from "../../firebase/usersCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
 import UserProfilePic from "../../utils/photoGenerator";
 import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
+import LoadingBalls from "../../utils/loading";
 
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
 
-// const mockTeam = {
-//   id: "1",
-//   name: "Sample Team",
-//   description: "This is a sample team description.",
-//   milestone: "Sample Milestone",
-//   members: [
-//     {
-//       user_id: "1",
-//       full_name: "John Doe",
-//       role: "Developer",
-//       photoURL: "https://via.placeholder.com/150",
-//     },
-//     {
-//       user_id: "2",
-//       full_name: "Jane Smith",
-//       role: "Designer",
-//       photoURL: "https://via.placeholder.com/150",
-//     },
-//     // Add more mock team members as needed
-//   ],
-//   projects: [
-//     {
-//       project_id: "1",
-//       project_name: "Sample Project 1",
-//     },
-//     {
-//       project_id: "2",
-//       project_name: "Sample Project 2",
-//     },
-//     // Add more mock projects as needed
-//   ],
-//   milestones: [
-//     {
-//       milestone_name: "Sample Milestone",
-//       due_date: "2024-05-01", // Sample due date
-//     },
-//     // Add more mock milestones as needed
-//   ],
-// };
-
-
 
 const TeamOverview = ({team}) => {
-  // const [teamDesciption, setTeamDescription] = useState(mockTeam.description);
-  // const [teamMilestone, setTeamMilestone] = useState(mockTeam.milestone);
-  // const [teamName, setTeamName] = useState(mockTeam.name);
-
-  // const [teamMembers, setTeamMembers] = useState([]);
-  // const [teamProjects, setTeamProjects] = useState([]);
-  // const [teamGoal, setTeamGoal] = useState([]);
-  // const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const handleChangeCreateProject = () => {
@@ -69,13 +21,11 @@ const TeamOverview = ({team}) => {
   };
 
   const addMember = async (user) => {
-    navigate('/team',{ state: { team_id:mockTeam.id } });
+    navigate('/team',{ state: { team_id:team.id } });
   };
 
 
-  //fecth member by team.id url : api/v1/org-members?org_id[eq]=team.id
-  //fetch project by team.id url : api/v1/project?organization_id[eq]=team.id
-  //fetch goal by team.id url : api/v1/goal?organization_id[eq]=team.id
+
 
   
   const {
@@ -84,7 +34,7 @@ const TeamOverview = ({team}) => {
     error: teamMemberError,
   } = useQuery({
     queryKey: ["teamOverview_teamMember"],
-    queryFn: fetchTeamMember(team.id),
+    queryFn: fetchTeamMember,
   });
 
   
@@ -94,7 +44,7 @@ const TeamOverview = ({team}) => {
     error: teamProjectError,
   } = useQuery({
     queryKey: ["teamOverview_teamProject"],
-    queryFn: fetchTeamProject(team.id),
+    queryFn: fetchTeamProject,
   });
 
   
@@ -104,78 +54,35 @@ const TeamOverview = ({team}) => {
     error: teamGoalError,
   } = useQuery({
     queryKey: ["teamOverview_teamGoal"],
-    queryFn: fetchTeamGoal(team.id),
+    queryFn: fetchTeamGoal,
   });
 
-  async function fetchTeamMember(teamID) {
-    const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + teamID);
-    return response.data;
+  async function fetchTeamMember() {
+    const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
+    return [...response.data];
   }
 
-  async function fetchTeamProject(teamID) {
-    const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + teamID);
-    return response.data;
+  async function fetchTeamProject() {
+    const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + team.id);
+    console.log(response.data,team.id)
+    return [...response.data];
   }
 
-  async function fetchTeamGoal(teamID) {
-    const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + teamID);
-    return response.data;
+  async function fetchTeamGoal() {
+    const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + team.id);
+    return [...response.data];
   }
 
-  if (teamMemberLoading || teamProjectLoading || teamGoalLoading) {
+
+  if (teamMemberError || teamProjectError || teamGoalError) {
     return (
-      <div className="flex justify-center items-center h-72">
-        <LoadingBalls />
+      <div>
+        Error: {teamMemberError?.message || teamProjectError?.message || teamGoalError?.message}
       </div>
     );
   }
 
-  if (teamMemberError || teamProjectError || teamGoalError)
-    return <div>Error: {teamMemberError || teamProjectError || teamGoalError}</div>;
 
-
-  // useEffect (() => {
-
-  //   const fetchMember = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
-  //       setTeamMembers(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching team members:", error);
-  //     }
-  //   }
-
-  //   const fetchProject = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + team.id);
-  //       setTeamProjects(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching team projects:", error);
-  //     }
-  //   }
-
-  //   const fetchGoal = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + team.id);
-  //       setTeamGoal(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching team goal:", error);
-  //     }
-  //   }
-
-  //   fetchMember();
-
-  //   fetchProject();
-
-  //   fetchGoal();
-    
-  // }, [team.id])
 
 
   return (
@@ -185,30 +92,30 @@ const TeamOverview = ({team}) => {
           <div className="w-full h-fit  bg-glasses backdrop-blur-12 px-4 py-2 space-y-5 rounded-xl mb-4">
             <h1 className="text-2xl font-semibold text-gray-700 pt-2">
               Member
-              {console.log(team)}
             </h1>
 
             <div className="grid gap-10 row-gap-8 mx-auto sm:row-gap-10 lg:max-w-screen-lg sm:grid-cols-2 lg:grid-cols-3 pb-2">
-              {teamMember.map((member, index) =>
+              {teamMemberLoading? null : teamMember.map((member, index) =>
                 member !== null ? (
                   <div className="flex items-center" key={index}>
-                    {member.photoURL !== null ? (
+                    {member.user_photo !== null ? (
                       <img
                         className="object-cover w-12 h-12 mr-4 rounded-full shadow"
-                        src={member.photoURL}
+                        src={member.user_photo}
                         alt="Person"
                       />
                     ) : (
                       <div className="object-cover w-12 h-12 mr-4 rounded-full shadow">
-                        <UserProfilePic name={member.full_name} size={12} />
+                        <UserProfilePic name={member.user_name} size={12} />
                       </div>
                     )}
 
                     <div className="flex flex-col justify-center">
                       <p className="text-sm text-gray-700 font-bold">
-                        {member.full_name}
+                        {member.user_name}
                       </p>
                       <p className="text-xs text-gray-500">{member.role}</p>
+                      <p className="text-xs text-gray-500">{member.user_email}</p>
                     </div>
                   </div>
                 ) : null
@@ -246,7 +153,7 @@ const TeamOverview = ({team}) => {
                 </div>
               </li>
 
-              {teamProject &&
+              {teamProjectLoading ? null : teamProject &&
                 teamProject.map((project) => (
                   <li className="flex flex-row justify-between border-b border-gray-700 w-full items-center">
                     <div class="flex items-center text-sm  px-1 pb-2 transition-transform duration-300 transform hover:scale-105">
@@ -270,13 +177,12 @@ const TeamOverview = ({team}) => {
             </ul>
           </div>
         </div>
-        {console.log(teamProject)}
         <div class="w-full lg:w-4/12 flex flex-col mt-0 mb-2 lg:mt-0">
           <div className="w-full bg-glasses backdrop-blur-12 p-4 rounded-xl text-gray-700 mb-4">
             <div className="text-2xl font-bold">About Us</div>
 
             <div className="p-2">
-              <EditableBox init={teamDesciption} OnChange={() => {}} />
+              <EditableBox init={team.description} OnChange={() => {}} />
             </div>
           </div>
 
@@ -285,23 +191,23 @@ const TeamOverview = ({team}) => {
               <span class="text-xs">{team.name}</span>
             </div>
             <div>
-              {team && team.milestones && team.milestones.length > 0 && (
+              {!teamGoalLoading && teamGoal && teamGoal.length > 0 && (
                 <p className="text-xl font-bold my-1">
-                  {team.milestones[0].milestone_name}
+                  {teamGoal[0].goal_name}
                 </p>
               )}
             </div>
 
             <div>
-              <p class="text-xs">How to be cool and Make them good</p>
+              <p class="text-xs">{teamGoal[0].description}</p>
               <div class="px-2 py-1 text-xs my-1 font-semibold leading-tight w-fit text-green-700 bg-green-100 rounded-lg">
-                Acceptable
+                {teamGoal[0].completed ? "Completed" : "InProgress"}
               </div>
             </div>
 
-            {team && team.milestones && team.milestones.length > 0 && (
+            {!teamGoalLoading && teamGoal && teamGoal.length > 0 && (
               <div class="text-xs mb-2">
-                Due Date : {team.milestones[0].due_date}
+                Due Date : {teamGoal[0].due_date}
               </div>
             )}
 
