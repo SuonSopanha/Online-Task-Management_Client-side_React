@@ -11,6 +11,7 @@ import LoadingBalls from "../../utils/loading";
 
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
+import LoadingBalls from "../../utils/loading";
 
 
 const TeamOverview = ({team}) => {
@@ -74,13 +75,14 @@ const TeamOverview = ({team}) => {
   }
 
 
+
   if (teamMemberError || teamProjectError || teamGoalError) {
     return (
       <div>
         Error: {teamMemberError?.message || teamProjectError?.message || teamGoalError?.message}
       </div>
     );
-  }
+  };
 
 
 

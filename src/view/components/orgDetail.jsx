@@ -1,16 +1,35 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const mockProjectData = {
-  name: "Mock Project",
-  industry: "Technology",
-  email: "project@example.com",
-  description: "This is a mock project description."
-};
+import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
+import LoadingBalls from "../../utils/loading";
+
+// const mockProjectData = {
+//   name: "Mock Project",
+//   industry: "Technology",
+//   email: "project@example.com",
+//   description: "This is a mock project description."
+// };
 const OrgDetail = ({team}) => {
     const navigate = useNavigate();
-    const [project, setProject] = useState(mockProjectData);
+    // const [project, setProject] = useState(mockProjectData);
     const [isEditing, setIsEditing] = useState(false);
+
+    const {
+      data: project,
+      isLoading: projectLoading,
+      error: projectError,
+    } = useQuery({
+      queryKey: ["orgDetail_project"],
+      queryFn: fetchProject,
+    });
+  
+    async function fetchProject() {
+      const response = await apiRequest("get", "api/v1/organizations/" + team.id);
+      console.log(response);
+      return response.data;
+    };
   
     const handleEditToggle = () => {
       setIsEditing(!isEditing);
@@ -18,11 +37,22 @@ const OrgDetail = ({team}) => {
   
     const handleChange = (e) => {
       const { name, value } = e.target;
-      setProject((prevProject) => ({
+      project((prevProject) => ({
         ...prevProject,
         [name]: value,
       }));
     };
+
+    if (projectLoading) {
+      return (
+        <div className="flex justify-center items-center h-72">
+          <LoadingBalls />
+        </div>
+      );
+    }
+  
+    if (projectError)
+      return <div>Error: {projectError}</div>;
   
     const handleSave = () => {
       // Save changes to mock data (In real scenario, you would update the database here)
