@@ -5,59 +5,61 @@ import ChatBox from "../components/chatBox";
 import TeamOverview from "./teamOverview";
 import TeamDashboard from "./teamDashboard";
 import OrgDetail from "./orgDetail";
+import LoadingBalls from "../../utils/loading";
 
 import { getTeamByID } from "../../firebase/teamCRUD";
 import { modalContext } from "../part/test";
 import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 import { FaChartBar, FaClipboard, FaInbox, FaObjectGroup } from "react-icons/fa";
 
-const mockTeam = {
-  id: "1",
-  name: "Sample Team",
-  description: "This is a sample team description.",
-  milestone: "Sample Milestone",
-  members: [
-    {
-      user_id: "1",
-      full_name: "John Doe",
-      role: "Developer",
-      photoURL: "https://via.placeholder.com/150",
-    },
-    {
-      user_id: "2",
-      full_name: "Jane Smith",
-      role: "Designer",
-      photoURL: "https://via.placeholder.com/150",
-    },
-    // Add more mock team members as needed
-  ],
-  projects: [
-    {
-      project_id: "1",
-      project_name: "Sample Project 1",
-    },
-    {
-      project_id: "2",
-      project_name: "Sample Project 2",
-    },
-    // Add more mock projects as needed
-  ],
-  milestones: [
-    {
-      milestone_name: "Sample Milestone",
-      due_date: "2024-05-01", // Sample due date
-    },
-    // Add more mock milestones as needed
-  ],
-};
+// const mockTeam = {
+//   id: "1",
+//   name: "Sample Team",
+//   description: "This is a sample team description.",
+//   milestone: "Sample Milestone",
+//   members: [
+//     {
+//       user_id: "1",
+//       full_name: "John Doe",
+//       role: "Developer",
+//       photoURL: "https://via.placeholder.com/150",
+//     },
+//     {
+//       user_id: "2",
+//       full_name: "Jane Smith",
+//       role: "Designer",
+//       photoURL: "https://via.placeholder.com/150",
+//     },
+//     // Add more mock team members as needed
+//   ],
+//   projects: [
+//     {
+//       project_id: "1",
+//       project_name: "Sample Project 1",
+//     },
+//     {
+//       project_id: "2",
+//       project_name: "Sample Project 2",
+//     },
+//     // Add more mock projects as needed
+//   ],
+//   milestones: [
+//     {
+//       milestone_name: "Sample Milestone",
+//       due_date: "2024-05-01", // Sample due date
+//     },
+//     // Add more mock milestones as needed
+//   ],
+// };
 
 const TeamHeader = () => {
   const [activeTab, setActiveTab] = useState("Overview");
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const {tabID} = useContext(modalContext);
 
-  const [team,setTeam] = useState(mockTeam);
-  const [organization, setOrganization] = useState([]);
+  // const [team, setTeam] = useState([]);
+  // const [organization, setOrganization] = useState([]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -69,22 +71,48 @@ const TeamHeader = () => {
   //   });
   // }, [tabID]);
 
-  useEffect(() => {
+  const {
+    data: team,
+    isLoading: teamLoading,
+    error: teamError,
+  } = useQuery({
+    queryKey: ["teamHeader_team"],
+    queryFn: fetchTeam,
+  });
 
-    const fetchOrganization = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/organizations?project_id[eq]" + tabID);
-        setOrganization(response.data);
-        setLoading(false);
-        console.log(response);
-      }catch(error) {
-        console.error("Error fetching organization:", error);
-      }
-    };
+  async function fetchTeam(tabID) {
+    const response = await apiRequest("get", "api/v1/organizations?project_id[eq]" + tabID);
+    return response.data;
+  }
 
-    fetchOrganization();
+  if (teamLoading) {
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
+  }
+
+  if (teamError)
+    return <div>Error: {teamError}</div>;
+
+
+  // useEffect(() => {
+
+  //   const fetchOrganization = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/organizations?project_id[eq]" + tabID);
+  //       setOrganization(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching organization:", error);
+  //     }
+  //   };
+
+  //   fetchOrganization();
     
-  }, [tabID]);
+  // }, [tabID]);
 
 
   console.log(team);
