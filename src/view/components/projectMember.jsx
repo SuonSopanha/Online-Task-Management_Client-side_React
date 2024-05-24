@@ -26,55 +26,20 @@ const ProjectMember = () => {
     error: teamMembersError,
   } = useQuery({
     queryKey: ["projectMember_teamMembers"],
-    queryFn: fetchTeamData,
-  });
-
-  const {
-    data: teamProjects,
-    isLoading: teamProjectsLoading,
-    error: teamProjectsError,
-  } = useQuery({
-    queryKey: ["projectMember_teamProjects"],
     queryFn: fetchTeamProjects,
   });
 
-  async function fetchTeamData() {
-    // Fetch project based on tabID
-    const project = await getprojecByID(tabID);
-    if (!project || !project.members) {
-      console.warn("Project or members are undefined.");
-      return;
-    }
-    console.log(project);
 
-    const teamMemberUserIds = project.members.map((member) => member.id);
 
-    console.log(teamMemberUserIds);
-
-    if (teamMemberUserIds.length === 0) {
-      console.warn("No team members found.");
-      return;
-    }
-
-    const memberPromises = teamMemberUserIds.map(async (userId) => {
-      const user = await getUserByID(userId);
-      return user;
-    });
-
-    const teamMembers = await Promise.all(memberPromises);
-
-    return teamMembers.filter((member) => member !== null); // Filter out null values
-  }
-
-  async function fetchTeamProjects(tabID) {
+  async function fetchTeamProjects() {
     const response = await apiRequest(
       "get",
-      "api/v1/project-members?project_id[eq]=" + tabID
+      "api/v1/project-members-by-project-id/" + tabID
     );
     return response.data;
   }
 
-  if (teamMembersLoading || teamProjectsLoading) {
+  if (teamMembersLoading) {
     return (
       <div className="flex justify-center items-center h-72">
         <LoadingBalls />
@@ -82,63 +47,6 @@ const ProjectMember = () => {
     );
   }
 
-  if (teamMembersError || teamProjectsError) {
-    return <p>Error: {teamMembersError || teamProjectsError}</p>;
-  }
-
-  // useEffect(() => {
-  //   const fetchTeamData = async () => {
-  //     try {
-  //       // Fetch project based on tabID
-  //       const project = await getprojecByID(tabID);
-  //       if (!project || !project.members) {
-  //         console.warn("Project or members are undefined.");
-  //         return;
-  //       }
-  //       console.log(project)
-
-  //       const teamMemberUserIds = project.members.map((member) => member.id);
-
-  //       console.log(teamMemberUserIds);
-
-  //       if (teamMemberUserIds.length === 0) {
-  //         console.warn("No team members found.");
-  //         return;
-  //       }
-
-  //       const memberPromises = teamMemberUserIds.map(async (userId) => {
-  //         const user = await getUserByID(userId);
-  //         return user;
-  //       });
-
-  //       const teamMembers = await Promise.all(memberPromises);
-
-  //       setTeamMembers(teamMembers.filter((member) => member !== null)); // Filter out null values
-  //     } catch (error) {
-  //       // Handle errors if needed
-  //       console.error("Error fetching team data:", error);
-  //     }
-  //   };
-
-  //   const fetchMember = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/project-members?project_id[eq]=" + tabID);
-  //       setTeamMembers(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching team members:", error);
-  //     }
-  //   }
-
-  //   fetchTeamData();
-
-  //   fetchMember();
-
-  // }, [tabID]);
-
-  // Render your component based on teamMembers and teamProjects
-  // ...
 
   return (
     <>
@@ -148,15 +56,14 @@ const ProjectMember = () => {
             <h1 className="text-2xl font-semibold text-gray-700 pt-2">
               Member
             </h1>
-            {console.log(teamMembers, teamProjects)}
             <div className="grid gap-10 row-gap-8 mx-auto sm:row-gap-10 lg:max-w-screen-lg sm:grid-cols-2 lg:grid-cols-3 pb-2">
               {teamMembers.map((member, index) =>
                 member !== null ? (
                   <div className="flex items-center" key={index}>
-                    {member.photoURL !== null ? (
+                    {member.photo_url !== null ? (
                       <img
                         className="object-cover w-12 h-12 mr-4 rounded-full shadow"
-                        src={member.photoURL}
+                        src={member.photo_url}
                         alt="Person"
                       />
                     ) : (
@@ -169,7 +76,8 @@ const ProjectMember = () => {
                       <p className="text-sm text-gray-700 font-bold">
                         {member.full_name}
                       </p>
-                      <p className="text-xs text-gray-500">{member.role}</p>
+                      <p className="text-xs font-semibold text-gray-500">{member.role}</p>
+                      <p className="text-xs text-gray-500">{member.email}</p>
                     </div>
                   </div>
                 ) : null
@@ -186,7 +94,6 @@ const ProjectMember = () => {
             </div>
           </div>
         </div>
-        {console.log(teamProjects)}
       </div>
     </>
   );

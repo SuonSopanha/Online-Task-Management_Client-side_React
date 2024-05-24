@@ -16,6 +16,7 @@ import {
   sortByStatus,
   sortByTaskName,
   sortByID,
+  sortByAssignDate
 } from "../../utils/sortTask";
 import { modalContext } from "../part/test";
 import { mytaskContext } from "../pages/myTask";
@@ -24,71 +25,9 @@ import api, { apiRequest } from "../../api/api";
 import UserProfilePic from "../../utils/photoGenerator";
 import { useQuery } from "@tanstack/react-query";
 
-const mockMilestone = [
-  {
-    milestoneName: "Launch Website",
-    startDate: "2024-05-01",
-    endDate: "2024-05-15",
-  },
-  {
-    milestoneName: "2024-05-02",
-    startDate: "2024-05-02",
-    endDate: "2024-05-03",
-  },
-];
 
-const mockTaskList = [
-  {
-    id: "1",
-    task_name: "Task 1",
-    complete: false,
-    priority: "High",
-    due_date: "2024-05-30",
-    project_id: "project1",
-    project: {
-      project_name: "Project A",
-    },
-  },
-  {
-    id: "1",
-    task_name: "Task 2",
-    complete: true,
-    priority: "Low",
-    due_date: "2024-06-15",
-    project_id: null,
-  },
-  {
-    id: "1",
-    task_name: "Task 2",
-    complete: true,
-    priority: "Low",
-    due_date: "2024-06-15",
-    project_id: null,
-  },
-  {
-    id: "1",
-    task_name: "Task 2",
-    complete: true,
-    priority: "Low",
-    due_date: "2024-06-15",
-    project_id: null,
-  },
-  {
-    id: "1",
-    task_name: "Task 2",
-    complete: true,
-    priority: "Low",
-    due_date: "2024-06-15",
-    project_id: null,
-  },
-  // Add more mock tasks as needed
-];
 
 const TaskList = () => {
-  // const [taskList, setTaskList] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-  // const [milestoneList, setMilestoneList] = useState(mockMilestone);
 
   const { openModal, isModalOpen, setModalTask, closeCreateModal } =
     useContext(modalContext);
@@ -110,7 +49,7 @@ const TaskList = () => {
         return sortByTaskName(tasks);
       // Add more cases for other criteria as needed
       default:
-        return sortByID(tasks);
+        return sortByAssignDate;
     }
   };
 
@@ -138,62 +77,21 @@ const TaskList = () => {
   }
 
   async function fetchTasks() {
-    const [response1, response2] = await Promise.all([
-      apiRequest("get", "api/v1/tasks-by-assignee"),
-      apiRequest("get", "api/v1/tasks-by-owner"),
+    const [response1] = await Promise.all([
+      apiRequest("get", "api/v1/my-tasks"),
     ]);
-    return [...response1.data, ...response2.data];
+    return [...response1.data];
   }
 
-  // useEffect(() => {
-  //   try {
-  //     const fetchData = async () => {
-  //       const milestoneRespone = await apiRequest(
-  //         "get",
-  //         "/api/v1/milestones"
-  //       );
-  //       const milestones = milestoneRespone.data;
-  //       setMilestoneList(milestones);
-  //       console.log(milestones)
-  //       setLoading(false);
-  //     };
 
-  //     fetchData();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, []);
 
-  // useEffect(() => {
-  //   // Simulate loading data from API
-  //   setTimeout(() => {
-  //     setTaskList(mockTaskList);
+  let sortedTaskList = [];
 
-  //   }, 1000); // Simulating 1 second delay
-  // }, []);
+  if(!taskLoading){
+    sortedTaskList = sortTasks(taskList, sortCriteria);
+  }
 
-  // useEffect(() => {
-  //   const fetchTask = async () => {
-  //     try {
 
-  //       const [response1, response2] = await Promise.all([
-  //         apiRequest("get", "api/v1/tasks-by-assignee"),
-  //         apiRequest("get", "api/v1/tasks-by-owner")
-  //       ]);
-
-  //       const taskList = [...response1.data, ...response2.data];
-  //       setTaskList(taskList);
-  //       setLoading(false);
-  //       console.log(taskList);
-
-  //     }catch(error) {
-  //       console.error("Error fetching task:", error);
-  //     }
-  //   }
-  //   fetchTask();
-  // }, []);
-
-  let sortedTaskList = sortTasks(taskList, sortCriteria);
 
   if (milestoneLoading || taskLoading) {
     return (
@@ -237,7 +135,7 @@ const TaskList = () => {
                 </tr>
               </thead>
               <tbody>
-                {sortedTaskList.map((task, index) => (
+                {taskList.map((task, index) => (
                   <tr key={index} className="text-gray-700">
                     <td className="px-4 py-2 border">
                       <button
@@ -327,7 +225,7 @@ const TaskList = () => {
                       </td>
                     </tr>
                     {/* Render tasks under milestone */}
-                    {sortedTaskList.map((task, taskIndex) => (
+                    {taskList.map((task, taskIndex) => (
                       <React.Fragment key={taskIndex}>
                         {/* Render tasks */}
                         <tr className="text-gray-700">

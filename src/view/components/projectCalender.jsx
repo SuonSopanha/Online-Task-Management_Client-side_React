@@ -21,39 +21,8 @@ import { modalContext } from "../part/test";
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
 
-const mockTaskList = [
-  {
-    id: 1,
-    task_name: "Task 1",
-    assignee: {
-      full_name: "John Doe",
-      photoURL: null, // URL to assignee's photo
-    },
-    status: "In Progress",
-    priority: "High",
-    due_date: "04/02/2024",
-    complete: false,
-  },
-  {
-    id: 2,
-    task_name: "Task 2",
-    assignee: {
-      full_name: "Jane Smith",
-      photoURL: null, // No photo URL provided
-    },
-    status: "Pending",
-    priority: "Medium",
-    due_date: "04/01/2024",
-    complete: false,
-  },
-  // Add more tasks as needed
-];
 
 const ProjectCalender = () => {
-  // const [taskList, setTaskList] = useState([]);
-  // const [projectStageList, setProjectStageList] = useState([]);
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState(null);
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -73,89 +42,7 @@ const ProjectCalender = () => {
 
   const { tabID, setTabID,openProjectModal,setModalTask } = useContext(modalContext);
 
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     if (user) {
-  //       // User is signed in
-  //       console.log("User is signed in:", user);
-  
-  //       getRtTaskByProjectID(tabID, async (tasks) => {
-  //         // Fetch additional data for each task
-  //         const tasksWithFullNames = await Promise.all(
-  //           tasks.map(async (task) => {
-  //             // Fetch user's full name based on assignee_id
-  //             const fullName = await getUserFullNameById(task.assignee_id);
-  //             return {
-  //               ...task,
-  //               assignee_full_name: fullName,
-  //             };
-  //           })
-  //         );
-  
-  //         // Set the modified taskList with assignee_full_name
-  //         setTaskList(tasksWithFullNames);
-  //         setLoading(false);
-  //       });
-  //     } else {
-  //       // User is signed out.
-  //       setError(true);
-  //       console.log("User is signed out");
-  //     }
-  //   });
-  
-  //   return () => {
-  //     // Unsubscribe the listener when the component unmounts
-  //     unsubscribe();
-  //   };
-  // }, [tabID]); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
-// Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
 
-  // useEffect (() => {
-  //   const fetchTask = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
-  //       setTaskList(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching task:", error);
-  //     }
-  //   }
-
-  //   const fetchProjectStage = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
-
-  //       setProjectStageList(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching project stage:", error);
-  //     }
-  //   }
-
-  //   fetchTask();
-
-  //   fetchProjectStage();
-
-  // }, [tabID]);
-
-  // if (loading) {
-  //   return <LoadingBalls />;
-  // }
-
-  // if (error) {
-  //   return <p>Error: {error.message}</p>;
-  // }
-
-  const {
-    data: projectStageList,
-    isLoading: projectStageListLoading,
-    error: projectStageListError,
-  } = useQuery({
-    queryKey: ["projectCalendar_projectStageList"],
-    queryFn: fetchprojectStages,
-  });
 
   const {
     data: taskList,
@@ -166,28 +53,17 @@ const ProjectCalender = () => {
     queryFn: fetchTasks,
   });
 
-  async function fetchprojectStages(tabID) {
-    const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID);
-    console.log(response);
-    return response.data;
-  }
 
-  async function fetchTasks(tabID) {
+  async function fetchTasks() {
     const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
     console.log(response);
     return response.data;
   }
 
-  if (projectStageListLoading || taskLoading) {
-    return (
-      <div className="flex justify-center items-center h-72">
-        <LoadingBalls />
-      </div>
-    );
-  }
 
-  if (projectStageListError || taskError) {
-    return <p>Error: {projectStageListError || taskError}</p>;
+
+  if (taskError) {
+    return <p>Error: {taskError}</p>;
   }
 
   return (
@@ -226,7 +102,7 @@ const ProjectCalender = () => {
           >
             <div className="flex flex-col items-start p-2">
               <span className="text-sm font-semibold">{format(date, "d")}</span>
-              {taskList.map((task) => {
+              {taskLoading ? null : taskList.map((task) => {
                 console.log(task)
                 let calenderDate = format(date, "MM/dd/yyyy");
                 if (task.due_date === calenderDate) {
