@@ -4,7 +4,7 @@ const sortByDueDate = (tasks) => {
   
   // Sort by priority
   const sortByPriority = (tasks) => {
-    const priorityOrder = { 'Low': 3, 'Medium': 2, 'High': 1, 'Very High': 0 };
+    const priorityOrder = { 'Low': 3, 'Medium': 2, 'High': 1, 'Critical': 0 };
     return tasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   };
   
@@ -28,6 +28,10 @@ const sortByDueDate = (tasks) => {
     return tasks.sort((a, b) => a.id - b.id);
   }
 
+  const sortByAssignDate = (tasks) => {
+    return tasks.sort((a, b) => new Date(a.assignee_dates) - new Date(b.assignee_dates));
+  }
+
 
   export {
     sortByDueDate,
@@ -35,6 +39,7 @@ const sortByDueDate = (tasks) => {
     sortByStatus,
     sortByTaskName,
     sortByWorkHoursRequired,
-    sortByID
+    sortByID,
+    sortByAssignDate
   };
 

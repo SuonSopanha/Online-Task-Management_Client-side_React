@@ -23,60 +23,10 @@ import {
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
 
-const mockProjectStages = [
-  {
-    id: 1,
-    name: "To Do",
-  },
-  {
-    id: 2,
-    name: "Working Help",
-  },
-  {
-    id: 3,
-    name: "Done",
-  },
-];
-
-const mockTaskList = [
-  {
-    id: 1,
-    task_name: "Task 1",
-    project_id: 1,
-    task_category: "To Do",
-    priority: "High",
-    status: "In Progress",
-    due_date: "2024-03-25",
-  },
-  {
-    id: 2,
-    task_name: "Task 2",
-    project_id: 2,
-    task_category: "Working",
-    priority: "Medium",
-    status: "In Progress",
-    due_date: "2024-04-05",
-  },
-  {
-    id: 3,
-    task_name: "Task 3",
-    project_id: null,
-    task_category: "Done",
-    priority: "Low",
-    status: "Completed",
-    due_date: "2024-03-20",
-  },
-  // Add more tasks as needed
-];
 
 const ProjectBoard = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } =
     useContext(modalContext);
-  // const [ProjectStageList, setProjectStageList] = useState(mockProjectStages);
-  // const [taskList, setTaskList] = useState(mockTaskList);
-
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState(null);
 
   const { sortCriteria } = useContext(projectTaskContext);
 
@@ -100,7 +50,6 @@ const ProjectBoard = () => {
     }
   };
 
-  //get TaskByTabID
 
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -140,50 +89,7 @@ const ProjectBoard = () => {
 
   let sortTask = [];
 
-  //sort Task
-  // useEffect(() => {
 
-  //   sortTask = [...sortTasks(taskList,sortCriteria)]
-  //   setTaskList(sortTask)
-  // },[sortCriteria])
-
-  // useEffect(() => {
-  //   const fetchTask = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
-  //       setTaskList(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     } catch (error) {
-  //       console.error("Error fetching task:", error);
-  //     }
-  //   }
-
-  //   const fetchProjectStage = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
-
-  //       setProjectStageList(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching project stage:", error);
-  //     }
-  //   }
-
-  //   fetchTask();
-
-  //   fetchProjectStage();
-
-  // },[tabID]);
-
-  // if (loading) {
-  //   return <LoadingBalls />;
-  // }
-
-  // if (error) {
-  //   return <p>Error: {error.message}</p>;
-  // }
 
   const {
     data: projectStageList,
@@ -203,19 +109,25 @@ const ProjectBoard = () => {
     queryFn: fetchTasks,
   });
 
-  async function fetchprojectStages(tabID) {
+  async function fetchprojectStages() {
     const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID);
     console.log(response);
     return response.data;
   }
 
-  async function fetchTasks(tabID) {
+  async function fetchTasks() {
     const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
     console.log(response);
     return response.data;
   }
 
-  if (projectStageListLoading || taskLoading) {
+  let sortedTaskList = [];
+
+  if (!taskLoading && Array.isArray(taskList)) {
+    sortedTaskList = sortTasks(taskList, sortCriteria);
+  }
+  
+  if (projectStageListLoading) {
     return (
       <div className="flex justify-center items-center h-72">
         <LoadingBalls />
@@ -239,10 +151,10 @@ const ProjectBoard = () => {
             className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3"
           >
             <h2 className="text-lg font-semibold mb-4">
-              {ProjectStage.name}
+              {ProjectStage.stage_name}
             </h2>
             <div className="flex flex-col space-y-2">
-              {taskList.map((task) => (
+              {taskLoading ? null : taskList.map((task) => (
                 <button
                   key={task.id}
                   className="flex justify-center items-center transition duration-300 transform hover:scale-105"

@@ -63,37 +63,13 @@ const TaskCalender = () => {
   });
 
   async function fetchTask (){
-    const [response1, response2] = await Promise.all([
-      apiRequest("get", "api/v1/tasks-by-assignee"),
-      apiRequest("get", "api/v1/tasks-by-owner")
+    const [response1] = await Promise.all([
+      apiRequest("get", "api/v1/my-tasks"),
     ]);
     
-    return [...response1.data, ...response2.data];
+    return [...response1.data];
   }
 
-  
-  // useEffect (() => {
-
-  //   const fetchTask = async () => {
-  //     try {
-
-  //       const [ response1, response2 ] = await Promise.all([
-  //         apiRequest("get", "api/v1/tasks-by-assignee"),
-  //         apiRequest("get", "api/v1/tasks-by-owner")
-  //       ]);
-
-  //       const taskList = [...response1.data, ...response2.data];
-  //       setTaskList(taskList);
-  //       setLoading(false);
-
-  //       console.log(taskList);
-  //     }catch(error) {
-  //       console.error("Error fetching task:", error);
-  //     }
-  //   }
-
-  //   fetchTask();
-  // }, []);
 
   if (taskListLoading) {
     return (

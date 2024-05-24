@@ -18,64 +18,16 @@ import {
   sortByWorkHoursRequired,
   sortByTaskName,
   sortByID,
+  sortByAssignDate
 } from "../../utils/sortTask";
 
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
 import { id } from "date-fns/locale";
 
-//mockData
-const mockTaskList = [
-  {
-    id: 1,
-    task_name: "Task 1",
-    assignee: {
-      full_name: "John Doe",
-      photoURL: null, // URL to assignee's photo
-    },
-    status: "In Progress",
-    priority: "High",
-    due_date: "2024-03-31",
-    complete: false,
-  },
-  {
-    id: 2,
-    task_name: "Task 2",
-    assignee: {
-      full_name: "Jane Smith",
-      photoURL: null, // No photo URL provided
-    },
-    status: "Pending",
-    priority: "Medium",
-    due_date: "2024-04-15",
-    complete: false,
-  },
-  // Add more tasks as needed
-];
-
-const mockProjectStageList = [
-  {
-    id: 1,
-    stage_name: "Stage 1",
-  },
-  {
-    id: 2,
-    stage_name: "Stage 200",
-  },
-  {
-    id: 3,
-    stage_name: "Stage 3",
-  },
-];
 
 const ProjectList = () => {
   const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
-
-  // const [ProjectStageList, setProjectStageList] = useState([]);
-  // const [taskList, setTaskList] = useState([]);
-
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState(null);
 
   const { sortCriteria } = useContext(projectTaskContext);
 
@@ -95,90 +47,10 @@ const ProjectList = () => {
         return sortByTaskName(tasks);
       // Add more cases for other criteria as needed
       default:
-        return sortByID(tasks);
+        return sortByAssignDate;
     }
   };
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     if (user) {
-  //       // User is signed in
-  //       console.log("User is signed in:", user);
 
-  //       getRtTaskByProjectID(tabID, async (tasks) => {
-  //         // Fetch additional data for each task
-  //         const tasksWithFullNames = await Promise.all(
-  //           tasks.map(async (task) => {
-  //             // Fetch user's full name based on assignee_id
-  //             const fullName = await getUserFullNameById(task.assignee_id);
-  //             return {
-  //               ...task,
-  //               assignee_full_name: fullName,
-  //             };
-  //           })
-  //         );
-
-  //         // Set the modified taskList with assignee_full_name
-  //         setTaskList(tasksWithFullNames);
-  //         setLoading(false);
-  //       });
-  //     } else {
-  //       // User is signed out.
-  //       setError(true);
-  //       console.log("User is signed out");
-  //     }
-  //   });
-
-  //   return () => {
-  //     // Unsubscribe the listener when the component unmounts
-  //     unsubscribe();
-  //   };
-  // }, [tabID]); // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount // Empty dependency array to run the effect only once on component mount
-
-  let sortTask = [];
-
-  // useEffect(() => {
-
-  //   sortTask = [...sortTasks(taskList,sortCriteria)]
-  //   setTaskList(sortTask)
-  // },[sortCriteria])
-
-  // useEffect (() => {
-
-  //   const fetchTask = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/tasks-by-project-id/" + tabID)
-  //       setTaskList(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching task:", error);
-  //     }
-  //   }
-
-  //   const fetchProjectStage = async () => {
-  //     try {
-  //       const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID)
-  //       setProjectStageList(response.data);
-  //       setLoading(false);
-  //       console.log(response);
-  //     }catch(error) {
-  //       console.error("Error fetching project stage:", error);
-  //     }
-  //   }
-
-  //   fetchTask();
-
-  //   fetchProjectStage();
-
-  // }, [tabID]);
-
-  // if (loading) {
-  //   return <LoadingBalls />;
-  // }
-
-  // if (error) {
-  //   return <p>Error: {error.message}</p>;
-  // }
 
   const {
     data: projectStageList,
@@ -198,19 +70,27 @@ const ProjectList = () => {
     queryFn: fetchTasks,
   });
 
-  async function fetchprojectStages(tabID) {
+  async function fetchprojectStages() {
     const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID);
     console.log(response);
+    console.log(tabID)
     return response.data;
   }
 
-  async function fetchTasks(tabID) {
+  async function fetchTasks() {
     const response = await apiRequest("get", "api/v1/tasks-by-project-id/" + tabID);
     console.log(response);
     return response.data;
   }
 
-  if (projectStageListLoading || taskLoading) {
+
+  let sortedTaskList = [];
+
+  if (!taskLoading && Array.isArray(taskList)) {
+    sortedTaskList = sortTasks(taskList, sortCriteria);
+  }
+
+  if (projectStageListLoading) {
     return (
       <div className="flex justify-center items-center h-72">
         <LoadingBalls />
@@ -238,7 +118,7 @@ const ProjectList = () => {
                 </tr>
               </thead>
               <tbody class="">
-                {taskList.map((task) => (
+                {taskLoading ? null : taskList.map((task) => (
                   <tr key={task.id} class="text-gray-700">
                     <td class="px-4 py-2 border">
                       <button
@@ -266,23 +146,23 @@ const ProjectList = () => {
                       <div className="flex items-center text-sm">
                         <div className="flex flex-row items-center space-x-2 justify-center">
                           <div className="flex flex-row items-center justify-center w-6 h-6 rounded-full md:block">
-                            {task.assignee.photo_url != null ? (
+                            {task.assignee_photo != null ? (
                               <img
                                 className="object-cover w-full h-full rounded-full"
-                                src={task.assignee.photo_url}
+                                src={task.assignee_photo}
                                 alt=""
                                 loading="lazy"
                               />
                             ) : (
                               <UserProfilePic
                                 className="w-2 h-2 items-center"
-                                name={task.assignee.full_name}
+                                name={task.assignee_name}
                                 size={6}
                               />
                             )}
                           </div>
                           <div className="ml-2">
-                            <span>{task.assignee.full_name}</span>
+                            <span>{task.assignee_name}</span>
                           </div>
                         </div>
                       </div>
@@ -315,7 +195,7 @@ const ProjectList = () => {
                         </div>
                       </td>
                     </tbody>
-                    {taskList.map((task) => (
+                    {taskLoading ? null : taskList.map((task) => (
                       <tr key={task.id} class="text-gray-700">
                         <td class="px-4 py-2 border">
                           <button
@@ -343,23 +223,23 @@ const ProjectList = () => {
                           <div className="flex items-center text-sm">
                             <div className="flex flex-row items-center space-x-2 justify-center">
                               <div className="flex flex-row items-center justify-center w-6 h-6 rounded-full md:block">
-                                {task.assignee.photoURL != null ? (
+                                {task.assignee_photo != null ? (
                                   <img
                                     className="object-cover w-full h-full rounded-full"
-                                    src={task.assignee.photoURL}
+                                    src={task.assignee_photo}
                                     alt=""
                                     loading="lazy"
                                   />
                                 ) : (
                                   <UserProfilePic
                                     className="w-2 h-2 items-center"
-                                    name={task.assignee.full_name}
+                                    name={task.assignee_name}
                                     size={6}
                                   />
                                 )}
                               </div>
                               <div className="ml-2">
-                                <span>{task.assignee.full_name}</span>
+                                <span>{task.assignee_name}</span>
                               </div>
                             </div>
                           </div>
