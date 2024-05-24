@@ -8,59 +8,60 @@ import { getprojecByID } from "../../firebase/projectCRUD";
 import UserProfilePic from "../../utils/photoGenerator";
 import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
 
-import {apiRequest} from "../../api/api";
+import { apiRequest } from "../../api/api";
+import { useQuery } from "@tanstack/react-query";
 
-const mockTeam = {
-  id: "1",
-  name: "Sample Team",
-  description: "This is a sample team description.",
-  milestone: "Sample Milestone",
-  members: [
-    {
-      user_id: "1",
-      full_name: "John Doe",
-      role: "Developer",
-      photoURL: "https://via.placeholder.com/150",
-    },
-    {
-      user_id: "2",
-      full_name: "Jane Smith",
-      role: "Designer",
-      photoURL: "https://via.placeholder.com/150",
-    },
-    // Add more mock team members as needed
-  ],
-  projects: [
-    {
-      project_id: "1",
-      project_name: "Sample Project 1",
-    },
-    {
-      project_id: "2",
-      project_name: "Sample Project 2",
-    },
-    // Add more mock projects as needed
-  ],
-  milestones: [
-    {
-      milestone_name: "Sample Milestone",
-      due_date: "2024-05-01", // Sample due date
-    },
-    // Add more mock milestones as needed
-  ],
-};
+// const mockTeam = {
+//   id: "1",
+//   name: "Sample Team",
+//   description: "This is a sample team description.",
+//   milestone: "Sample Milestone",
+//   members: [
+//     {
+//       user_id: "1",
+//       full_name: "John Doe",
+//       role: "Developer",
+//       photoURL: "https://via.placeholder.com/150",
+//     },
+//     {
+//       user_id: "2",
+//       full_name: "Jane Smith",
+//       role: "Designer",
+//       photoURL: "https://via.placeholder.com/150",
+//     },
+//     // Add more mock team members as needed
+//   ],
+//   projects: [
+//     {
+//       project_id: "1",
+//       project_name: "Sample Project 1",
+//     },
+//     {
+//       project_id: "2",
+//       project_name: "Sample Project 2",
+//     },
+//     // Add more mock projects as needed
+//   ],
+//   milestones: [
+//     {
+//       milestone_name: "Sample Milestone",
+//       due_date: "2024-05-01", // Sample due date
+//     },
+//     // Add more mock milestones as needed
+//   ],
+// };
 
 
 
 const TeamOverview = ({team}) => {
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [teamDesciption, setTeamDescription] = useState(mockTeam.description);
-  const [teamMilestone, setTeamMilestone] = useState(mockTeam.milestone);
-  const [teamName, setTeamName] = useState(mockTeam.name);
-  const [teamProjects, setTeamProjects] = useState([]);
+  // const [teamDesciption, setTeamDescription] = useState(mockTeam.description);
+  // const [teamMilestone, setTeamMilestone] = useState(mockTeam.milestone);
+  // const [teamName, setTeamName] = useState(mockTeam.name);
 
-  const [teamGoal, setTeamGoal] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [teamMembers, setTeamMembers] = useState([]);
+  // const [teamProjects, setTeamProjects] = useState([]);
+  // const [teamGoal, setTeamGoal] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const handleChangeCreateProject = () => {
@@ -76,48 +77,105 @@ const TeamOverview = ({team}) => {
   //fetch project by team.id url : api/v1/project?organization_id[eq]=team.id
   //fetch goal by team.id url : api/v1/goal?organization_id[eq]=team.id
 
-  useEffect (() => {
+  
+  const {
+    data: teamMember,
+    isLoading: teamMemberLoading,
+    error: teamMemberError,
+  } = useQuery({
+    queryKey: ["teamOverview_teamMember"],
+    queryFn: fetchTeamMember(team.id),
+  });
 
-    const fetchMember = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
-        setTeamMembers(response.data);
-        setLoading(false);
-        console.log(response);
-      }catch(error) {
-        console.error("Error fetching team members:", error);
-      }
-    }
+  
+  const {
+    data: teamProject,
+    isLoading: teamProjectLoading,
+    error: teamProjectError,
+  } = useQuery({
+    queryKey: ["teamOverview_teamProject"],
+    queryFn: fetchTeamProject(team.id),
+  });
 
-    const fetchProject = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + team.id);
-        setTeamProjects(response.data);
-        setLoading(false);
-        console.log(response);
-      }catch(error) {
-        console.error("Error fetching team projects:", error);
-      }
-    }
+  
+  const {
+    data: teamGoal,
+    isLoading: teamGoalLoading,
+    error: teamGoalError,
+  } = useQuery({
+    queryKey: ["teamOverview_teamGoal"],
+    queryFn: fetchTeamGoal(team.id),
+  });
 
-    const fetchGoal = async () => {
-      try {
-        const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + team.id);
-        setTeamGoal(response.data);
-        setLoading(false);
-        console.log(response);
-      }catch(error) {
-        console.error("Error fetching team goal:", error);
-      }
-    }
+  async function fetchTeamMember(teamID) {
+    const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + teamID);
+    return response.data;
+  }
 
-    fetchMember();
+  async function fetchTeamProject(teamID) {
+    const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + teamID);
+    return response.data;
+  }
 
-    fetchProject();
+  async function fetchTeamGoal(teamID) {
+    const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + teamID);
+    return response.data;
+  }
 
-    fetchGoal();
+  if (teamMemberLoading || teamProjectLoading || teamGoalLoading) {
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
+  }
+
+  if (teamMemberError || teamProjectError || teamGoalError)
+    return <div>Error: {teamMemberError || teamProjectError || teamGoalError}</div>;
+
+
+  // useEffect (() => {
+
+  //   const fetchMember = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
+  //       setTeamMembers(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching team members:", error);
+  //     }
+  //   }
+
+  //   const fetchProject = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + team.id);
+  //       setTeamProjects(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching team projects:", error);
+  //     }
+  //   }
+
+  //   const fetchGoal = async () => {
+  //     try {
+  //       const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + team.id);
+  //       setTeamGoal(response.data);
+  //       setLoading(false);
+  //       console.log(response);
+  //     }catch(error) {
+  //       console.error("Error fetching team goal:", error);
+  //     }
+  //   }
+
+  //   fetchMember();
+
+  //   fetchProject();
+
+  //   fetchGoal();
     
-  }, [team.id])
+  // }, [team.id])
 
 
   return (
@@ -131,7 +189,7 @@ const TeamOverview = ({team}) => {
             </h1>
 
             <div className="grid gap-10 row-gap-8 mx-auto sm:row-gap-10 lg:max-w-screen-lg sm:grid-cols-2 lg:grid-cols-3 pb-2">
-              {teamMembers.map((member, index) =>
+              {teamMember.map((member, index) =>
                 member !== null ? (
                   <div className="flex items-center" key={index}>
                     {member.photoURL !== null ? (
@@ -188,8 +246,8 @@ const TeamOverview = ({team}) => {
                 </div>
               </li>
 
-              {teamProjects &&
-                teamProjects.map((project) => (
+              {teamProject &&
+                teamProject.map((project) => (
                   <li className="flex flex-row justify-between border-b border-gray-700 w-full items-center">
                     <div class="flex items-center text-sm  px-1 pb-2 transition-transform duration-300 transform hover:scale-105">
                       <div class="relative w-10 h-10 mr-3 rounded-full md:block">
@@ -212,7 +270,7 @@ const TeamOverview = ({team}) => {
             </ul>
           </div>
         </div>
-        {console.log(teamProjects)}
+        {console.log(teamProject)}
         <div class="w-full lg:w-4/12 flex flex-col mt-0 mb-2 lg:mt-0">
           <div className="w-full bg-glasses backdrop-blur-12 p-4 rounded-xl text-gray-700 mb-4">
             <div className="text-2xl font-bold">About Us</div>
