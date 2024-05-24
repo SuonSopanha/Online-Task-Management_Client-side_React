@@ -29,8 +29,6 @@ const ProjectMember = () => {
     queryFn: fetchTeamProjects,
   });
 
-
-
   async function fetchTeamProjects() {
     const response = await apiRequest(
       "get",

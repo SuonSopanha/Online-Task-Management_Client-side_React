@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createProject } from "../../firebase/projectCRUD";
 import { auth } from "../../firebase/config";
+import { apiRequest } from "../../api/api";
 
 const TeamCreate = () => {
   const [name, setName] = useState("");
@@ -18,16 +19,14 @@ const TeamCreate = () => {
     }
 
     // Create the project or perform any further actions
-    const project_id = await createProject({
-      project_name: name,
-      description,
-      industry,
-      email,
-      owner_id: auth.currentUser.uid,
-      members: [],
+    const project_id = await apiRequest("post", "api/v1/organizations", {
+      name: name,
+      description: description,
+      industry: industry,
+      email: email,
     });
     console.log(project_id);
-    navigate("/teamMember", { state: { team_id: 1 } });
+    navigate("/teamMember", { state: { project_id: 1 } });
   };
 
   return (
