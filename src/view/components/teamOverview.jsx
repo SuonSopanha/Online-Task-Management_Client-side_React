@@ -10,6 +10,7 @@ import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
 
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
+import LoadingBalls from "../../utils/loading";
 
 // const mockTeam = {
 //   id: "1",
@@ -69,7 +70,7 @@ const TeamOverview = ({team}) => {
   };
 
   const addMember = async (user) => {
-    navigate('/team',{ state: { team_id:mockTeam.id } });
+    navigate('/team',{ state: { team_id:team.id } });
   };
 
 
@@ -84,7 +85,7 @@ const TeamOverview = ({team}) => {
     error: teamMemberError,
   } = useQuery({
     queryKey: ["teamOverview_teamMember"],
-    queryFn: fetchTeamMember(team.id),
+    queryFn: fetchTeamMember,
   });
 
   
@@ -94,7 +95,7 @@ const TeamOverview = ({team}) => {
     error: teamProjectError,
   } = useQuery({
     queryKey: ["teamOverview_teamProject"],
-    queryFn: fetchTeamProject(team.id),
+    queryFn: fetchTeamProject,
   });
 
   
@@ -104,23 +105,23 @@ const TeamOverview = ({team}) => {
     error: teamGoalError,
   } = useQuery({
     queryKey: ["teamOverview_teamGoal"],
-    queryFn: fetchTeamGoal(team.id),
+    queryFn: fetchTeamGoal,
   });
 
-  async function fetchTeamMember(teamID) {
-    const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + teamID);
+  async function fetchTeamMember() {
+    const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
     return response.data;
-  }
+  };
 
-  async function fetchTeamProject(teamID) {
-    const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + teamID);
+  async function fetchTeamProject() {
+    const response = await apiRequest("get", "api/v1/projects?organization_id[eq]=" + team.id);
     return response.data;
-  }
+  };
 
-  async function fetchTeamGoal(teamID) {
-    const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + teamID);
+  async function fetchTeamGoal() {
+    const response = await apiRequest("get", "api/v1/goals?organization_id[eq]=" + team.id);
     return response.data;
-  }
+  };
 
   if (teamMemberLoading || teamProjectLoading || teamGoalLoading) {
     return (
@@ -128,7 +129,7 @@ const TeamOverview = ({team}) => {
         <LoadingBalls />
       </div>
     );
-  }
+  };
 
   if (teamMemberError || teamProjectError || teamGoalError)
     return <div>Error: {teamMemberError || teamProjectError || teamGoalError}</div>;
@@ -276,7 +277,7 @@ const TeamOverview = ({team}) => {
             <div className="text-2xl font-bold">About Us</div>
 
             <div className="p-2">
-              <EditableBox init={teamDesciption} OnChange={() => {}} />
+              <EditableBox init={team.description} OnChange={() => {}} />
             </div>
           </div>
 

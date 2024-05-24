@@ -80,8 +80,9 @@ const TeamHeader = () => {
     queryFn: fetchTeam,
   });
 
-  async function fetchTeam(tabID) {
+  async function fetchTeam() {
     const response = await apiRequest("get", "api/v1/organizations?project_id[eq]" + tabID);
+    console.log(response);
     return response.data;
   }
 
