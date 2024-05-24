@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { apiRequest } from "../../api/api";
+import LoadingBalls from "../../utils/loading";
+import { modalContext } from "../part/test";
+
 
 const mockProjectData = {
   project_name: "Mock Project",
@@ -11,9 +16,24 @@ const mockProjectData = {
 
 const ProjectDetail = () => {
   const { projectId } = useParams();
+  const { tabID } = useContext(modalContext);
   const navigate = useNavigate();
-  const [project, setProject] = useState(mockProjectData);
+  // const [project, setProject] = useState(mockProjectData);
   const [isEditing, setIsEditing] = useState(false);
+
+  const {
+    data: project,
+    isLoading: projectLoading,
+    error: projectError,
+  } = useQuery({
+    queryKey: ["projectDetail_project"],
+    queryFn: fetchProject,
+  });
+
+  async function fetchProject() {
+    const response = await apiRequest("get", "api/v1/projects/" + tabID);
+    return response.data;
+  };
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -21,7 +41,7 @@ const ProjectDetail = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProject((prevProject) => ({
+    project((prevProject) => ({
       ...prevProject,
       [name]: value,
     }));
@@ -38,6 +58,17 @@ const ProjectDetail = () => {
     console.log("Project deleted");
     navigate("/projects");
   };
+
+  if (projectLoading) {
+    return (
+      <div className="flex justify-center items-center h-72">
+        <LoadingBalls />
+      </div>
+    );
+  }
+
+  if (projectError)
+    return <div>Error: {projectError}</div>;
 
   return (
     <div className="p-10 w-auto">
