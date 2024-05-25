@@ -159,15 +159,15 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <FaCalendarAlt size={16} className="-mr-2" />
                 <div className="flex items-center w-20 font-semibold">
-                  DueDate
+                  StartDate
                 </div>
                 <TaskDueDate
-                  DueDate={task.due_date}
+                  DueDate={task.start_date}
                   OnChange={onDueDateChange}
                 />
                 <FaCalendarAlt size={16} className="-mr-4" />
                 <div className="flex items-center w-20 font-semibold ">
-                  StartDate
+                  DueDate
                 </div>
                 <TaskDueDate
                   DueDate={task.due_date}

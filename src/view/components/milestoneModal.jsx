@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import api, { apiRequest } from "../../api/api";
 // import { useNavigate } from "react-router-dom";
 
-
-
 const MilestoneModal = ({ onClose, initialValue }) => {
   const [milestoneName, setMilestoneName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   // const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,17 +34,26 @@ const MilestoneModal = ({ onClose, initialValue }) => {
       alert("Please enter a milestone name.");
       return;
     }
-    
-    const milestone_id = await apiRequest("post", "api/v1/milestones", {
-      milestone_name: milestoneName,
-      start_date: startDate,
-      end_date: endDate,
-    });
 
-    console.log(milestone_id);
-    // navigate("/app", { state: { milestone_id: 1 } });
-    // Close the modal after saving
-    onClose();
+    setIsLoading(true); // Disable button when request starts
+
+    try {
+      const milestone_id = await apiRequest("post", "api/v1/milestones", {
+        milestone_name: milestoneName,
+        start_date: startDate,
+        end_date: endDate,
+      });
+
+      console.log(milestone_id);
+      // navigate("/app", { state: { milestone_id: 1 } });
+      // Close the modal after saving
+      onClose();
+    } catch (error) {
+      console.error("Failed to save milestone:", error);
+      alert("An error occurred while saving the milestone.");
+    } finally {
+      setIsLoading(false); // Re-enable button after request completes
+    }
   };
 
   return (
@@ -96,14 +104,16 @@ const MilestoneModal = ({ onClose, initialValue }) => {
               <button
                 type="button"
                 onClick={handleSave}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isLoading} // Disable button when loading
               >
-                Save
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
               <button
                 type="button"
                 onClick={onClose}
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md ml-2 hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+                disabled={isLoading} // Disable button when loading
               >
                 Close
               </button>

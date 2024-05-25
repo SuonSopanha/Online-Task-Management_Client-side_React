@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import MemberDropdown from "./memberDropdown";
 import { apiRequest } from "../../api/api";
+import { modalContext } from "../part/test";
 
 const mockMembers = [
   { id: 1, name: "John Doe" },
@@ -17,6 +18,11 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
   const [period, setPeriod] = useState("");
   const [complete, setComplete] = useState(false);
   const [completeDate, setCompleteDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+
+  const { tabID } = useContext(modalContext);
+
+  const project_id = parseInt(tabID);
 
   useEffect(() => {
     if (initialValue) {
@@ -54,32 +60,34 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
   };
 
   const handleSave = async () => {
-
     if (stageName.trim() === "") {
       alert("Please enter a stage name.");
       return;
     }
-    // // You can perform any action here with the stage data, such as saving it to a database
-    // console.log("Stage Name:", stageName);
-    // console.log("Start Date:", startDate);
-    // console.log("End Date:", endDate);
-    // console.log("Period:", period);
-    // console.log("Complete:", complete);
-    // console.log("Complete Date:", completeDate);
 
-    const stage_id = await apiRequest("post", "api/v1/project-stages", {
-      stage_name: stageName,
-      start_date: startDate,
-      end_date: endDate,
-      period: period,
-      completed: complete,
-      completion_date: completeDate,
-    });
+    setIsLoading(true); // Disable button when request starts
 
-    console.log(stage_id);
+    try {
+      const stage_id = await apiRequest("post", "api/v1/project-stages", {
+        project_id: project_id,
+        stage_name: stageName,
+        start_date: startDate,
+        end_date: endDate,
+        period: period,
+        completed: complete,
+        completion_date: completeDate,
+      });
 
-    // Close the modal after saving
-    onClose();
+      console.log(stage_id);
+
+      // Close the modal after saving
+      onClose();
+    } catch (error) {
+      console.error("Failed to save project stage:", error);
+      alert("An error occurred while saving the project stage.");
+    } finally {
+      setIsLoading(false); // Re-enable button after request completes
+    }
   };
 
   return (
@@ -133,7 +141,7 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
                   Period:
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   value={period}
                   onChange={handlePeriodChange}
                   className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:border-blue-500"
@@ -162,20 +170,23 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
                   />
                 </div>
               )}
-
             </div>
             <div className="bg-gray-100 py-3 px-4 flex justify-end">
               <button
                 type="button"
                 onClick={handleSave}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${
+                  isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isLoading} // Disable button when loading
               >
-                Save
+                {isLoading ? "Saving..." : "Save"}
               </button>
               <button
                 type="button"
                 onClick={onClose}
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md ml-2 hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+                disabled={isLoading} // Disable button when loading
               >
                 Close
               </button>
