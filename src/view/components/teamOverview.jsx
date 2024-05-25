@@ -1,6 +1,7 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { modalContext } from "../part/test";
 
 import EditableBox from "./editableBox";
 import { getUserByID } from "../../firebase/usersCRUD";
@@ -9,14 +10,23 @@ import UserProfilePic from "../../utils/photoGenerator";
 import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
 
 import { apiRequest } from "../../api/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery,useQueryClient } from "@tanstack/react-query";
 import LoadingBalls from "../../utils/loading";
 
 
 
 const TeamOverview = ({team}) => {
+  const { tabID } = useContext(modalContext);
+  const queryClient = useQueryClient();
+  
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    
+    queryClient.invalidateQueries('teamOverview_teamMember');
+
+  }, [tabID, team]);
   const handleChangeCreateProject = () => {
     navigate("/projectCreate");
   };
@@ -25,10 +35,6 @@ const TeamOverview = ({team}) => {
     navigate('/team',{ state: { team_id:team.id } });
   };
 
-
-
-
-  
   const {
     data: teamMember,
     isLoading: teamMemberLoading,
@@ -85,6 +91,8 @@ const TeamOverview = ({team}) => {
       </div>
     );
   };
+
+
 
 
 
@@ -189,35 +197,7 @@ const TeamOverview = ({team}) => {
             </div>
           </div>
 
-          <div class="flex flex-col  bg-glasses backdrop-blur-12 p-4 rounded-xl text-gray-700 w-full h-fit ">
-            <div>
-              <span class="text-xs">{team.name}</span>
-            </div>
-            <div>
-              {!teamGoalLoading && teamGoal && teamGoal.length > 0 && (
-                <p className="text-xl font-bold my-1">
-                  {teamGoal[0].goal_name}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <p class="text-xs">{teamGoal[0].description}</p>
-              <div class="px-2 py-1 text-xs my-1 font-semibold leading-tight w-fit text-green-700 bg-green-100 rounded-lg">
-                {teamGoal[0].completed ? "Completed" : "InProgress"}
-              </div>
-            </div>
-
-            {!teamGoalLoading && teamGoal && teamGoal.length > 0 && (
-              <div class="text-xs mb-2">
-                Due Date : {teamGoal[0].due_date}
-              </div>
-            )}
-
-            <div class="w-full bg-gray-400 p-0">
-              <div class="w-[50%] bg-blue-500 h-1"></div>
-            </div>
-          </div>
 
 
         </div>
