@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useContext} from "react";
 import MemberDropdown from "./memberDropdown";
 import { apiRequest } from "../../api/api";
+import { modalContext } from "../part/test";
 
 const mockMembers = [
   { id: 1, name: "John Doe" },
@@ -17,6 +18,10 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
   const [period, setPeriod] = useState("");
   const [complete, setComplete] = useState(false);
   const [completeDate, setCompleteDate] = useState("");
+
+  const { tabID } = useContext(modalContext);
+
+  const project_id = parseInt(tabID);
 
   useEffect(() => {
     if (initialValue) {
@@ -68,6 +73,7 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
     // console.log("Complete Date:", completeDate);
 
     const stage_id = await apiRequest("post", "api/v1/project-stages", {
+      project_id: project_id,
       stage_name: stageName,
       start_date: startDate,
       end_date: endDate,

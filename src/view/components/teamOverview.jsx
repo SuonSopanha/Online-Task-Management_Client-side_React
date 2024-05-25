@@ -7,7 +7,6 @@ import { getUserByID } from "../../firebase/usersCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
 import UserProfilePic from "../../utils/photoGenerator";
 import { FaClipboardList, FaPlusCircle, FaPlusSquare } from "react-icons/fa";
-import LoadingBalls from "../../utils/loading";
 
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
