@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import LoadingBalls from "../../utils/loading";
 
 
+
 const TeamOverview = ({team}) => {
 
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ const TeamOverview = ({team}) => {
 
   async function fetchTeamMember() {
     const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
+
     return [...response.data];
   }
 
@@ -76,6 +78,7 @@ const TeamOverview = ({team}) => {
 
 
 
+
   if (teamMemberError || teamProjectError || teamGoalError) {
     return (
       <div>
@@ -83,7 +86,6 @@ const TeamOverview = ({team}) => {
       </div>
     );
   };
-
 
 
 

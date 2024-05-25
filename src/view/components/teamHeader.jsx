@@ -37,7 +37,9 @@ const TeamHeader = () => {
   });
 
   async function fetchTeam() {
+
     const response = await apiRequest("get", "api/v1/organizations/" + tabID);
+
 
     return response.data;
   }

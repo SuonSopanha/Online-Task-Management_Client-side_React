@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createProject } from "../../firebase/projectCRUD";
 import { auth } from "../../firebase/config";
+import { apiRequest } from "../../api/api";
 
 const ProjectCreate = () => {
   const [projectName, setProjectName] = useState("");
@@ -18,7 +19,7 @@ const ProjectCreate = () => {
     }
 
     // Create the project or perform any further actions
-    const project_id = await createProject({
+    const project_id = await apiRequest("post", "api/v1/projects", {
       project_name: projectName,
       start_date: startDate,
       end_date: endDate,

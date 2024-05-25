@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MemberDropdown from "./memberDropdown";
+import { apiRequest } from "../../api/api";
 
 const mockMembers = [
   { id: 1, name: "John Doe" },
@@ -52,14 +53,30 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
     setCompleteDate(event.target.value);
   };
 
-  const handleSave = () => {
-    // You can perform any action here with the stage data, such as saving it to a database
-    console.log("Stage Name:", stageName);
-    console.log("Start Date:", startDate);
-    console.log("End Date:", endDate);
-    console.log("Period:", period);
-    console.log("Complete:", complete);
-    console.log("Complete Date:", completeDate);
+  const handleSave = async () => {
+
+    if (stageName.trim() === "") {
+      alert("Please enter a stage name.");
+      return;
+    }
+    // // You can perform any action here with the stage data, such as saving it to a database
+    // console.log("Stage Name:", stageName);
+    // console.log("Start Date:", startDate);
+    // console.log("End Date:", endDate);
+    // console.log("Period:", period);
+    // console.log("Complete:", complete);
+    // console.log("Complete Date:", completeDate);
+
+    const stage_id = await apiRequest("post", "api/v1/project-stages", {
+      stage_name: stageName,
+      start_date: startDate,
+      end_date: endDate,
+      period: period,
+      completed: complete,
+      completion_date: completeDate,
+    });
+
+    console.log(stage_id);
 
     // Close the modal after saving
     onClose();

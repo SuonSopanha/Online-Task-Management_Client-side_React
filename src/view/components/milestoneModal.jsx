@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
+import api, { apiRequest } from "../../api/api";
+// import { useNavigate } from "react-router-dom";
+
+
 
 const MilestoneModal = ({ onClose, initialValue }) => {
   const [milestoneName, setMilestoneName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  // const navigate = useNavigate();
 
   useEffect(() => {
     if (initialValue) {
@@ -25,12 +30,20 @@ const MilestoneModal = ({ onClose, initialValue }) => {
     setEndDate(event.target.value);
   };
 
-  const handleSave = () => {
-    // You can perform any action here with the milestone data, such as saving it to a database
-    console.log("Milestone Name:", milestoneName);
-    console.log("Start Date:", startDate);
-    console.log("End Date:", endDate);
+  const handleSave = async () => {
+    if (milestoneName.trim() === "") {
+      alert("Please enter a milestone name.");
+      return;
+    }
+    
+    const milestone_id = await apiRequest("post", "api/v1/milestones", {
+      milestone_name: milestoneName,
+      start_date: startDate,
+      end_date: endDate,
+    });
 
+    console.log(milestone_id);
+    // navigate("/app", { state: { milestone_id: 1 } });
     // Close the modal after saving
     onClose();
   };
