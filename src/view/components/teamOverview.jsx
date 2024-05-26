@@ -32,7 +32,7 @@ const TeamOverview = ({team}) => {
   };
 
   const addMember = async (user) => {
-    navigate('/team',{ state: { team_id:team.id } });
+    navigate('/teamMember',{ state: { org_id: tabID} });
   };
 
   const {

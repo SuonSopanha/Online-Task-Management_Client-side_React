@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserByEmail } from "../../firebase/usersCRUD";
 import { useLocation } from "react-router-dom";
-import { updateByPushNewMembers } from "../../firebase/projectCRUD";
+// import { updateByPushNewMembers } from "../../firebase/projectCRUD";
+import {apiRequest} from '../../api/api';
 
 const Teamates = () => {
   const [members, setMembers] = useState([{ email: "", role: "" }]);
   const location = useLocation();
   const { state } = location;
   const { project_id } = state;
+
   const navigate = useNavigate();
 
   const addInputRow = () => {
@@ -32,8 +34,8 @@ const Teamates = () => {
 
     const userIds = await Promise.all(
       nonEmptyMembers.map(async (member) => {
-        const user = await getUserByEmail(member.email);
-        return user ? { id: user.id, role: member.role } : null;
+        // const user = await getUserByEmail(member.email);
+        return member ? { email: member.email, role: member.role } : null;
       })
     );
 
@@ -45,10 +47,21 @@ const Teamates = () => {
     if (invalidUsers.length > 0) {
       alert(`Invalid emails: ${invalidUsers.join(', ')}`);
     } else {
-      await updateByPushNewMembers(project_id, validMembers);
-      navigate("/app");
+      console.log(project_id);
+      // // await updateByPushNewMembers(project_id, validMembers);
+      try {
+        const request = await apiRequest("post", "api/v1/add-project-members", {
+          project_id: project_id,
+          members: validMembers
+        });
+        console.log(request);
+        navigate("/app");
+      } catch (error) {
+        console.error('Failed to add project members:', error);
+      }
     }
   };
+
 
   return (
     <div className="p-10 h-screen">
