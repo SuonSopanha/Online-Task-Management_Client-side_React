@@ -91,7 +91,7 @@ const MyTask = () => {
       <div className="flex flex-row justify-start border-b border-gray-500  ">
         <div className="flex items-center p-3 ml-1">
           <div class="relative w-12 h-12 rounded-full md:block">
-            {user.photoURL === null ? (
+            {user.photo_url === null ? (
               <div className="flex h-12 w-12 items-center justify-center rounded-full">
                 <UserProfilePic name={user.full_name} size={8}></UserProfilePic>
               </div>
@@ -99,7 +99,7 @@ const MyTask = () => {
               // You can replace this with the desired content for true condition
               <div className="flex h-10 w-10 items-center justify-center rounded-full">
                 <img
-                  src={user.photoURL}
+                  src={user.photo_url}
                   alt="plus-math"
                   className="rounded-full"
                 />

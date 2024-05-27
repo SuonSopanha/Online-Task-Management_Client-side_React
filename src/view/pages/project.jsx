@@ -19,9 +19,11 @@ import ProjectStageModal from "../components/projectStageModal";
 import Dropdown from "../components/dropDown";
 import ProjectDetail from "../components/projectDetail";
 
-import { getprojecByID } from "../../firebase/projectCRUD";
+// import { getprojecByID } from "../../firebase/projectCRUD";
 
 import { modalContext } from "../part/test";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "../../api/api";
 
 export const projectTaskContext = createContext(null);
 
@@ -39,6 +41,7 @@ const mockProject = {
 const Project = () => {
   const [activeTab, setActiveTab] = useState("List");
   const [isOpenStageModal, setIsOpenStageModal] = useState(false);
+  
 
   const openStageModal = () => {
     setIsOpenStageModal(true);
@@ -57,6 +60,23 @@ const Project = () => {
   } = useContext(modalContext);
   const [project, setProject] = useState(mockProject);
   const [sortCriteria, setSortCriteria] = useState("Default");
+
+  // const {
+  //   data: project,
+  //   isLoading: projectLoading,
+  //   error: projectError,
+  // } = useQuery({
+  //   queryKey: ["project_project"],
+  //   queryFn: fetchProject,
+  // });
+
+  // async function fetchProject() {
+  //   const response = await apiRequest("get", "api/v1/projects/" + tabID);
+  //   console.log(tabID);
+  //   console.log(response);
+  //   return response.data;
+  // }
+
 
   const onSortChange = (sort) => {
     setSortCriteria(sort);

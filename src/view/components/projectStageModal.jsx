@@ -111,7 +111,7 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
                   placeholder="Enter stage name"
                 />
               </div>
-              <MemberDropdown members={mockMembers} />
+              {/* <MemberDropdown members={mockMembers} /> */}
               <div className="flex flex-wrap -mx-3 mb-4 mt-2">
                 <div className="w-full md:w-1/2 px-3">
                   <label className="block text-sm font-semibold mb-1">
