@@ -95,7 +95,6 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
   //   return () => unsubscribe();
   // }, []);
 
-
   const handleClose = () => {
     setIsModalOpen(false);
     isClose();
@@ -217,6 +216,7 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
       {isModalOpen && (
         <div className="fixed inset-0 z-10 top-12 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
           <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-64">
+            {console.log(taskData)}
             <div className="relative flex flex-col w-full bg-white border-0 rounded-lg">
               <div className="flex items-center justify-between p-2 border-b border-gray-500">
                 <CompleteBox
@@ -235,17 +235,24 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   name={taskData.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-                <DropdownButton
-                  type="category"
-                  initState={taskData.task_category}
-                  handleChange={onCategoryChange}
-                />
+
+                {taskData.stage && (
+                  <select
+                    className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
+                    onChange={(e) => onCategoryChange(e.target.value)}
+                  >
+                    <option value={taskData.stage[0]?.stage_name}>
+                      {taskData.stage[0]?.stage_name}
+                    </option>
+                    {taskData.stage?.map((stage) => (
+                      <option value={stage.stage_name}>
+                        {stage.stage_name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
-              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
-                <div className="w-24 font-semibold">Assignee</div>
-                  <MemberDropdown 
-                    members={[]}></MemberDropdown>
-              </div>
+
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <div className="w-20 font-semibold">DueDate</div>
                 <TaskDueDate DueDate="04/10/2023" OnChange={onDueDateChange} />
@@ -269,12 +276,13 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
-                <div className="w-10 font-semibold text-sm">Project</div>
-                
-                  <ProjectDropdown projects={[{id: 1, name: "Project 1"}, {id: 2, name: "Project 2"}]}></ProjectDropdown>
-              
-                <div className="w-6 font-semibold text-sm">Tags</div>
-                <TagInput />
+                <div className="w-24 font-semibold">Assignee</div>
+                {taskData.member && (
+                  <MemberDropdown
+                    members={taskData.member}
+                    OnChange={onAssigneeChange}
+                  />
+                )}
               </div>
               <div className="flex flex-col justify-start space-y-3 border-b border-gray-500 p-3 items-start">
                 <div className="w-24 font-semibold">Description</div>

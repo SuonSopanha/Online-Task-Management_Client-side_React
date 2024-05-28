@@ -11,6 +11,8 @@ import HomeTab from "../components/homeTab";
 import { formattedDate } from "../../utils/formatDate";
 import { auth } from "../../firebase/config";
 import { getUserByID } from "../../firebase/usersCRUD";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "../../api/api";
 
 import { modalContext } from "../part/test";
 import UserProfilePic from "../../utils/photoGenerator";
@@ -40,25 +42,19 @@ const MyTask = () => {
   };
 
 
+  const {
+    data: milestoneList,
+    isLoading: milestoneLoading,
+    error: milestoneError,
+  } = useQuery({
+    queryKey: ["taskList_milestone"],
+    queryFn: fetchMilestones,
+  });
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userData = await getUserByID(auth.currentUser.uid);
-        setUser(userData);
-      } else {
-        // User is signed out.
-        console.log("User is signed out");
-      }
-    });
-
-    // No need to return an unsubscribe function, as onAuthStateChanged directly returns it
-
-    // Cleanup logic (optional): Unsubscribe when the component unmounts
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  async function fetchMilestones() {
+    const response = await apiRequest("get", "/api/v1/milestones");
+    return response.data;
+  }
 
   const onSortChange = (sort) => {
     setSortCriteria(sort);
@@ -67,8 +63,8 @@ const MyTask = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-
-  const taskSample = {
+  
+  let taskSample = {
     project_id: "",
     user_id: "",
     task_name: "Name",
@@ -84,6 +80,30 @@ const MyTask = () => {
     complete: false,
     complete_date: "",
   };
+
+  if(!milestoneLoading){
+
+    taskSample = {
+      project_id: "",
+      user_id: "",
+      task_name: "Name",
+      description: "",
+      due_date: "01/01/2023",
+      task_category: "To Do",
+      tracking: [],
+      work_hour_required: 0,
+      status: "On Track",
+      priority: "Low",
+      assignee_id: "",
+      assignee_dates: undefined,
+      complete: false,
+      complete_date: "",
+      milestone: milestoneList
+    };
+
+  }
+
+
 
   return (
     <div className="w-full h-full bg-glasses backdrop-blur-12 rounded-lg">

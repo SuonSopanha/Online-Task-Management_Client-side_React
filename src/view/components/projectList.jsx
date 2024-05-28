@@ -18,16 +18,16 @@ import {
   sortByWorkHoursRequired,
   sortByTaskName,
   sortByID,
-  sortByAssignDate
+  sortByAssignDate,
 } from "../../utils/sortTask";
 
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
 import { id } from "date-fns/locale";
 
-
 const ProjectList = () => {
-  const { tabID, setTabID, openProjectModal, setModalTask } = useContext(modalContext);
+  const { tabID, setTabID, openProjectModal, setModalTask, setProjectStage } =
+    useContext(modalContext);
 
   const { sortCriteria } = useContext(projectTaskContext);
 
@@ -51,7 +51,6 @@ const ProjectList = () => {
     }
   };
 
-
   const {
     data: projectStageList,
     isLoading: projectStageListLoading,
@@ -64,25 +63,30 @@ const ProjectList = () => {
   const {
     data: taskList,
     isLoading: taskLoading,
-    error: taskError, 
+    error: taskError,
   } = useQuery({
     queryKey: ["projectList_taskList"],
     queryFn: fetchTasks,
   });
 
   async function fetchprojectStages() {
-    const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID);
+    const response = await apiRequest(
+      "get",
+      "api/v1/project-stages?project_id[eq]=" + tabID
+    );
     console.log(response);
-    console.log(tabID)
+    console.log(tabID);
     return response.data;
   }
 
   async function fetchTasks() {
-    const response = await apiRequest("get", "api/v1/tasks-by-project-id/" + tabID);
+    const response = await apiRequest(
+      "get",
+      "api/v1/tasks-by-project-id/" + tabID
+    );
     console.log(response);
     return response.data;
   }
-
 
   let sortedTaskList = [];
 
@@ -90,7 +94,7 @@ const ProjectList = () => {
     sortedTaskList = sortTasks(taskList, sortCriteria);
   }
 
-  if (projectStageListLoading) {
+  if (projectStageListLoading || taskLoading) {
     return (
       <div className="flex justify-center items-center h-72">
         <LoadingBalls />
@@ -106,6 +110,7 @@ const ProjectList = () => {
     <>
       <section class="container mx-auto px-6 pb-2 font-mono">
         <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+          {console.log(taskList)}
           <div class="w-full overflow-x-auto">
             <table class="w-full">
               <thead>
@@ -118,13 +123,16 @@ const ProjectList = () => {
                 </tr>
               </thead>
               <tbody class="">
-                {taskLoading ? null : taskList.map((task) => (
-                  <tr key={task.id} class="text-gray-700">
+                {taskList.map((task, index) => (
+                  <tr key={index} class="text-gray-700">
                     <td class="px-4 py-2 border">
                       <button
                         onClick={() => {
-                          openProjectModal();
+                          console.log("Selected Task", task);
+                          
                           setModalTask(task);
+                          setProjectStage(projectStageList);
+                          openProjectModal();
                         }}
                       >
                         <div class="flex justify-center items-center text-sm">
@@ -182,8 +190,8 @@ const ProjectList = () => {
                   </tr>
                 ))}
 
-                {projectStageList.map((stage) => (
-                  <React.Fragment key={stage.id}>
+                {projectStageList.map((stage, index) => (
+                  <React.Fragment key={index}>
                     <tbody class="text-gray-700">
                       <td class="px-4 py-2 border" colSpan="5">
                         <div class="flex justify-center items-center text-sm">
@@ -195,13 +203,17 @@ const ProjectList = () => {
                         </div>
                       </td>
                     </tbody>
-                    {taskLoading ? null : taskList.map((task) => (
-                      <tr key={task.id} class="text-gray-700">
+                    {taskList.map((task, index) => (
+                      <tr key={index} class="text-gray-700">
+                        {console.log(task)}
                         <td class="px-4 py-2 border">
                           <button
                             onClick={() => {
-                              openProjectModal();
+                              console.log("Selected Task", task);
+
                               setModalTask(task);
+                              setProjectStage(projectStageList);
+                              openProjectModal();
                             }}
                           >
                             <div class="flex justify-center items-center text-sm">

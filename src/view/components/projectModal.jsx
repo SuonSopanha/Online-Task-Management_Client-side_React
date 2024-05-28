@@ -10,6 +10,8 @@ import {
   FaTimesCircle,
   FaTrash,
   FaTrashRestore,
+  FaCalendarAlt,
+
   FaClipboardList,
 } from "react-icons/fa";
 
@@ -23,6 +25,9 @@ import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
 import MemberDropdown from "./memberDropdown";
+import TagInput from "./modalComponents/taskTag";
+import Timer from "./modalComponents/timer";
+import UserProfilePic from "../../utils/photoGenerator";
 
 import { auth } from "../../firebase/config";
 import {
@@ -35,16 +40,15 @@ import { getUserByID,getUserFullNameById} from "../../firebase/usersCRUD";
 
 import { modalContext } from "../part/test";
 
-const ProjectModal = ({ isOpen, isClose, taskData }) => {
+const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const [task, setTask] = useState(taskData ? taskData : {});
   const { tabID } = useContext(modalContext);
-  const [members, setMembers] = useState([]);
-  const [project, setProject] = useState({});
-  const [userName,setUserName] = useState("");
-  
 
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  useEffect(() => {
+    setTask(taskData);
+  }, [taskData]);
+
 
   
   const timestamp = Date.now();
@@ -66,44 +70,8 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
     setIsModalOpen(isOpen);
   }, [isOpen]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       if (task.project_id !== null && task.project_id.length === 20) {
-  //         const project = await getprojecByID(task.project_id);
-  //         setProject(project);
-  //         const memberIdList = project.members.map((member) => member.id);
-  //         console.log(memberIdList);
-  //         // Fetch user information for each member ID
-  //         const users = await Promise.all(
-  //           memberIdList.map(async (memberId) => {
-  //             // Assuming you have a function to get user information by ID
-  //             const user = await getUserByID(memberId);
-  //             return user;
-  //           })
-  //         );
 
-  //         // Only set the state if the component is still mounted
-  //         setMembers(users);
-  //         const name = await getUserFullNameById(taskData.assignee_id)
-  //         setUserName(name);
-  //         setIsDataLoaded(true);
- 
-  //       }
-  //     } catch (error) {
-  //       // Handle errors
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
 
-  //   fetchData();
-
-  //   return () => {
-  //     setIsDataLoaded(false); // Reset the flag if the component is unmounted
-  //   };
-
-  //   // Cleanup function to cancel any ongoing async operations if the component is unmounted
-  // }, [taskData,isModalOpen,setIsModalOpen,isOpen,task]);
 
 
   const handleClose = () => {
@@ -112,41 +80,41 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
   };
 
   const handleTaskNameChange = (newName) => {
-    setTask({ ...taskData, task_name: newName });
+    setTask({ ...task, task_name: newName });
     console.log(task.name);
   };
 
   const onCompletedChange = (complete) => {
-    setTask({ ...taskData, complete: complete });
+    setTask({ ...task, complete: complete });
   };
 
   const onAssigneeChange = (newAssignee) => {
-    setTask({ ...taskData, assignee_id: newAssignee });
+    setTask({ ...task, assignee_id: newAssignee });
     console.log(task.assignee_id);
   };
 
   const onDescriptionChange = (newDescription) => {
-    setTask({ ...taskData, description: newDescription });
+    setTask({ ...task, description: newDescription });
     console.log(task.description);
   };
 
   const onDueDateChange = (newDueDate) => {
-    setTask({ ...taskData, due_date: formatDate(newDueDate) });
+    setTask({ ...task, due_date: formatDate(newDueDate) });
     console.log(task.due_date);
   };
 
   const onProjectChange = (newProject) => {
-    setTask({ ...taskData, project_id: newProject });
+    setTask({ ...task, project_id: newProject });
     console.log(task.project_id);
   };
 
   const onHourRequiredChange = (newHourRequired) => {
-    setTask({ ...taskData, work_hour_required: newHourRequired });
+    setTask({ ...task, work_hour_required: newHourRequired });
     console.log(task.work_hour_required);
   };
 
   const onCategoryChange = (newCategory) => {
-    setTask({ ...taskData, task_category: newCategory });
+    setTask({ ...task, task_category: newCategory });
     console.log(task.task_category);
   };
 
@@ -190,16 +158,13 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
 
   return (
     <>
-      {isModalOpen &&(
-        <div className="fixed inset-0 z-10 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-48">
-            {console.log(members, "members")}
-            {/* Content */}
-            <div className="relative flex flex-col w-full bg-sky-200 bg-opacity-75 backdrop-blur-12 border-0 rounded-lg outline-none focus:outline-none">
-              {/* Header */}
-              <div className="flex items-center justify-between p-2 border-b border-solid border-gray-500 rounded-t">
+      {isModalOpen && (
+        <div className="fixed inset-0 z-10 top-12 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="w-full sm:w-screen max-h-3xl max-w-2xl mx-auto my-4 mt-48">
+            <div className="relative flex flex-col w-full bg-white border-0 rounded-lg outline-none focus:outline-none">
+              <div className="flex items-center justify-between p-2 border-b-2 border-solid border-gray-500 rounded-t">
                 <CompleteBox
-                  IsComplete={taskData.complete}
+                  IsComplete={task.complete}
                   OnChange={onCompletedChange}
                   className="ml-2"
                 />
@@ -207,65 +172,124 @@ const ProjectModal = ({ isOpen, isClose, taskData }) => {
                   className="p-1 ml-auto bg-transparent border-0 text-gray-600 text-lg leading-none font-semibold items-center"
                   onClick={handleClose}
                 >
-                  <FaTimesCircle className="w-6 h-6" />
+                  <FaTimesCircle className="w-6 h-6 hover:text-black" />
+                  {console.log(task)}
                 </button>
               </div>
-              <div className="flex items-center justify-start px-2 py-3 border-b border-solid border-gray-500 rounded-t">
+              <div className="flex items-center justify-between px-2 py-3 border-b-2 border-solid border-gray-500 rounded-t">
                 <TaskName
-                  name={taskData.task_name}
+                  name={task.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-
-                <DropdownButton
+                {/* <DropdownButton
                   type={"category"}
-                  initState={taskData.task_category}
+                  initState={task.task_category}
                   handleChange={onCategoryChange}
-                />
+                /> */}
+                <select
+                  className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
+                  onChange={(e) => onCategoryChange(e.target.value)}
+                >
+                  <option value={projectStage[0].stage_name}>
+                    {projectStage[0].stage_name}
+                  </option>
+                  {projectStage.map((stage) => (
+                    <option value={stage.stage_name}>
+                      {stage.stage_name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              {/* Body */}
-              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-cente text-sm sm:text-base">
-                <div className="w-24">Assignee</div>
-                    <MemberDropdown 
-                      members={[]}/>
+              <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
+                <div className="w-24 font-semibold">Assignee</div>
+                
+                <div className="flex items-center text-sm">
+                        <div className="flex flex-row items-center space-x-2 justify-center">
+                          <div className="flex flex-row items-center justify-center w-6 h-6 rounded-full md:block">
+                            {task.assignee_photo != null ? (
+                              <img
+                                className="object-cover w-full h-full rounded-full"
+                                src={task.assignee_photo}
+                                alt=""
+                                loading="lazy"
+                              />
+                            ) : (
+                              <UserProfilePic
+                                className="w-2 h-2 items-center"
+                                name={task.assignee_name}
+                                size={6}
+                              />
+                            )}
+                          </div>
+                          <div className="ml-2">
+                            <span>{task.assignee_name}</span>
+                          </div>
+                        </div>
+                </div>
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-24">DueDate</div>
+                <FaCalendarAlt size={16} className="-mr-2" />
+                <div className="flex items-center w-20 font-semibold">
+                  StartDate
+                </div>
                 <TaskDueDate
-                  DueDate={taskData.due_date}
+                  DueDate={task.start_date}
                   OnChange={onDueDateChange}
                 />
-                <div className="w-28">Hour Required</div>
-                <NumberInput
-                  init={taskData.work_hour_required}
-                  OnChange={onHourRequiredChange}
+                <FaCalendarAlt size={16} className="-mr-4" />
+                <div className="flex items-center w-20 font-semibold ">
+                  DueDate
+                </div>
+                <TaskDueDate
+                  DueDate={task.due_date}
+                  OnChange={onDueDateChange}
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
+                <div className="flex items-center w-20 font-semibold text-xs">
+                  Hour Required
+                </div>
+                <NumberInput
+                  init={task.work_hour_required}
+                  OnChange={onHourRequiredChange}
+                />
+                <div className="flex items-center w-10 font-semibold text-xs">
+                  Timer
+                </div>
+                <Timer />
+              </div>
+              <div className="flex flex-row justify-start space-x-5  text-sm sm:text-base border-gray-500 p-3 items-center">
                 <TaskStatus
-                  StatusState={taskData.status}
-                  PrioritySate={taskData.priority}
+                  StatusState={task.status}
+                  PrioritySate={task.priority}
                   OnChange={onChangeStatusAndPrority}
                 />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
-                <div className="w-24">Project</div>
-                <div className="flex flex-row items-center justify-between space-x-2">
+                <div className="flex items-center w-10 font-semibold text-sm">
+                  Project
+                </div>
+                <div className="flex flex-row items-center justify-between space-x-2 border-2 rounded-lg p-2 bg-gray-50">
                   <div className="flex w-6 h-6 items-center justify-center rounded-lg bg-sky-600 text-white">
                     <FaClipboardList className="w-4 h-4" />
                   </div>
-
-                  <span>{project.project_name}</span>
+                  <span>
+                    {task.project_name ? task.project_name : "No Project"}
+                  </span>
                 </div>
+
               </div>
-              <div className="flex flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
-                <div className="w-24">Description</div>
+              <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
+                <div className="flex items-center w-24 font-semibold">
+                  Description
+                </div>
                 <EditableBox
-                  init={taskData.description}
+                  init={task.description}
+
                   OnChange={onDescriptionChange}
                   className="w-full"
                 ></EditableBox>
               </div>
-              {/* Footer */}
               <div className="flex items-center justify-end space-x-2 p-6 border-t border-solid border-gray-300 rounded-b">
                 <div className="flex flex-row px-2 py-1 justify-center items-center bg-rose-600 rounded-lg">
                   <FaTrash className="w-3 h-3 text-white" />

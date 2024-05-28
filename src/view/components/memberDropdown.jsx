@@ -47,10 +47,10 @@ const MemberDropdown = ({ members }) => {
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex items-center"
                   role="menuitem"
                 >
-                  {member.photoUrl ? (
+                  {member.photo_url ? (
                     <img
-                      src={member.photoUrl}
-                      alt={member.name}
+                      src={member.photo_url}
+                      alt={member.full_name}
                       className="w-8 h-8 rounded-full mr-2"
                     />
                   ) : (
@@ -60,7 +60,7 @@ const MemberDropdown = ({ members }) => {
                       className="w-8 h-8 rounded-full mr-2"
                     />
                   )}
-                  {member.name}
+                  {member.full_name}
                 </div>
               );
             })}

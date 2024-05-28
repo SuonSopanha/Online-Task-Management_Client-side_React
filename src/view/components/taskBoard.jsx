@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const TaskBoard = () => {
 
-  const { openModal, setModalTask } = useContext(modalContext);
+  const { openModal, setModalTask ,setMilestoneData} = useContext(modalContext);
   const { sortCriteria } = useContext(mytaskContext);
 
   const sortTasks = (tasks, criteria) => {
@@ -116,6 +116,7 @@ const TaskBoard = () => {
                   className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
+                    setMilestoneData(milestoneList)
                     openModal();
                   }}
                 >

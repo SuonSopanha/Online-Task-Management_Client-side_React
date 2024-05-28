@@ -31,6 +31,8 @@ const Main = () => {
   const [isCreateProjectTaskModalOpen, setIsCreateProjectTaskModalOpen] = useState(false);
   const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
   const [modalTask, setModalTask] = useState({});
+  const [milestoneData, setMilestoneData] = useState({});
+  const [projectStage, setProjectStage] = useState({});
 
 
 
@@ -113,6 +115,8 @@ const Main = () => {
               openModal,
               modalTask,
               setModalTask,
+              setProjectStage,
+              setMilestoneData,
               isCreateModalOpen,
               setIsCreateModalOpen,
               closeCreateModal,
@@ -144,11 +148,13 @@ const Main = () => {
                 isOpen={isModalOpen}
                 isClose={closeModal}
                 taskData={modalTask}
+                taskMilestone={milestoneData}
               />
               <ProjectModal
                 isOpen={isProjectModalOpen}
                 isClose={closeProjectModal}
                 taskData={modalTask}
+                projectStage={projectStage}
               />
               <CreateTaskModal
                 isOpen={isCreateModalOpen}

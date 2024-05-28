@@ -29,7 +29,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const TaskList = () => {
 
-  const { openModal, isModalOpen, setModalTask, closeCreateModal } =
+  const { openModal, isModalOpen, setModalTask, closeCreateModal,setMilestoneData } =
     useContext(modalContext);
   const { sortCriteria } = useContext(mytaskContext);
 
@@ -142,6 +142,7 @@ const TaskList = () => {
                         onClick={() => {
                           openModal();
                           setModalTask(task);
+                          setMilestoneData(milestoneList);
                         }}
                       >
                         <div className="flex justify-center items-center text-sm">
@@ -234,6 +235,7 @@ const TaskList = () => {
                               onClick={() => {
                                 openModal();
                                 setModalTask(task);
+                                setMilestoneData(milestoneList)
                               }}
                             >
                               <div className="flex justify-center items-center text-sm">
