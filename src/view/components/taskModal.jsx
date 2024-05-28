@@ -27,11 +27,12 @@ import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
 import Timer from "./modalComponents/timer";
 import TagInput from "./modalComponents/taskTag";
+import MilestoneDropDown from "./mileStoneDropdown";
 
 import { updateRtTaskByID, deleteRtTaskByID } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
 
-const TaskModal = ({ isOpen, isClose, taskData }) => {
+const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const [task, setTask] = useState(taskData ? taskData : {});
   const [assigneeOption, setAssigneeOption] = useState(null);
@@ -43,21 +44,6 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
 
   useEffect(() => {
     setTask(taskData);
-    if (
-      taskData &&
-      taskData.project_id !== undefined &&
-      taskData.project_id !== null
-    ) {
-      if (taskData.project_id.length === 20) {
-        getprojecByID(taskData.project_id).then((project) => {
-          setProjectOption(project);
-        });
-      } else {
-        setProjectOption(null);
-      }
-    } else {
-      setProjectOption(null);
-    }
   }, [taskData]);
 
   const handleClose = () => {
@@ -143,6 +129,7 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   onClick={handleClose}
                 >
                   <FaTimesCircle className="w-6 h-6 hover:text-black" />
+                  {console.log(task)}
                 </button>
               </div>
               <div className="flex items-center justify-between px-2 py-3 border-b-2 border-solid border-gray-500 rounded-t">
@@ -150,11 +137,24 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                   name={task.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-                <DropdownButton
+                {/* <DropdownButton
                   type={"category"}
                   initState={task.task_category}
                   handleChange={onCategoryChange}
-                />
+                /> */}
+                <select
+                  className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
+                  onChange={(e) => onCategoryChange(e.target.value)}
+                >
+                  <option value={taskMilestone[0].milestone_name}>
+                    {taskMilestone[0].milestone_name}
+                  </option>
+                  {taskMilestone.map((taskMilestone) => (
+                    <option value={taskMilestone.milestone_name}>
+                      {taskMilestone.milestone_name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <FaCalendarAlt size={16} className="-mr-2" />
@@ -203,16 +203,11 @@ const TaskModal = ({ isOpen, isClose, taskData }) => {
                     <FaClipboardList className="w-4 h-4" />
                   </div>
                   <span>
-                    {projectOption !== null
-                      ? projectOption.project_name
-                      : "No Project"}
+                    {task.project_name ? task.project_name : "No Project"}
                   </span>
                 </div>
 
-                <div className="flex items-center w-6 font-semibold text-sm">
-                  Tags
-                </div>
-                <TagInput />
+                
               </div>
               <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
                 <div className="flex items-center w-24 font-semibold">

@@ -27,16 +27,6 @@ import { apiRequest } from "../../api/api";
 
 export const projectTaskContext = createContext(null);
 
-//mock data
-const mockProject = {
-  project_name: "Sample Project",
-  project_status: "Not Started",
-  project_description: "This is a sample project for testing purposes.",
-  start_date: "2022-01-01",
-  end_date: "2022-12-31",
-  project_manager: "John Doe",
-  // Add more properties as needed
-};
 
 const Project = () => {
   const [activeTab, setActiveTab] = useState("List");
@@ -58,43 +48,73 @@ const Project = () => {
     setModalTask,
     opentCreateProjectTaskModal,
   } = useContext(modalContext);
-  const [project, setProject] = useState(mockProject);
   const [sortCriteria, setSortCriteria] = useState("Default");
 
-  // const {
-  //   data: project,
-  //   isLoading: projectLoading,
-  //   error: projectError,
-  // } = useQuery({
-  //   queryKey: ["project_project"],
-  //   queryFn: fetchProject,
-  // });
+  const {
+    data: project,
+    isLoading: projectLoading,
+    error: projectError,
+  } = useQuery({
+    queryKey: ["project_project"],
+    queryFn: fetchProject,
+  });
 
-  // async function fetchProject() {
-  //   const response = await apiRequest("get", "api/v1/projects/" + tabID);
-  //   console.log(tabID);
-  //   console.log(response);
-  //   return response.data;
-  // }
+  const {
+    data: projectMember,
+    isLoading: projectMemberLoading,
+    error: projectMemberError,
+  } = useQuery({
+    queryKey: ["project_member"],
+    queryFn: fetchProjectMember,
+  }); 
+  
+  async function fetchProjectMember() {
+    const response = await apiRequest(
+      "get",
+      "api/v1/project-members-by-project-id/" + tabID
+    );
+    return response.data;
+  }
+
+  const {
+    data: projectStages,
+    isLoading: projectStagesLoading,
+    error: projectStagesError,
+  } = useQuery({
+    queryKey: ["project_stages"],
+    queryFn: fetchprojectStages,
+  });
+
+
+  async function fetchprojectStages() {
+    const response = await apiRequest(
+      "get",
+      "api/v1/project-stages?project_id[eq]=" + tabID
+    );
+    console.log(response);
+    console.log(tabID);
+    return response.data;
+  }
+
+  async function fetchProject() {
+    const response = await apiRequest("get", "api/v1/projects/" + tabID);
+    console.log(tabID);
+    console.log(response);
+    return response.data;
+  }
 
 
   const onSortChange = (sort) => {
     setSortCriteria(sort);
   };
 
-  //get projectData by ID
-  // useEffect(() => {
-  //   getprojecByID(tabID).then((data) => {
-  //     setProject(data);
-  //   });
-  // }, [tabID]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     console.log(activeTab);
   };
 
-  const taskSample = {
+  let taskSample = {
     project_id: tabID,
     user_id: "",
     task_name: "Name",
@@ -111,6 +131,30 @@ const Project = () => {
     complete_date: "",
   };
 
+
+  if(!projectMemberLoading && !projectStagesLoading){
+    taskSample = {
+      project_id: tabID,
+      user_id: "",
+      task_name: "Name",
+      description: "",
+      due_date: "01/01/2023",
+      task_category: "To Do",
+      tracking: [],
+      work_hour_required: 0,
+      status: "On Track",
+      priority: "Low",
+      assignee_id: "",
+      assignee_dates: undefined,
+      complete: false,
+      complete_date: "",
+      member : projectMember,
+      stage : projectStages,
+    };
+  }
+
+
+
   return (
     <div className="w-full h-[1200px] bg-glasses backdrop-blur-12 rounded-lg">
       {/* Header */}
@@ -122,10 +166,10 @@ const Project = () => {
         </div>
         <div className="text-sm font-medium text-gray-500 flex flex-col justify-between">
           <h1 className="text-lg font-semibold text-gray-500 pt-3 pb-1 px-1">
-            {project.project_name}
+            {projectLoading ? "Loading..." : project.project_name}
           </h1>
           <span class=" w-fit ml-1 px-1 font-semibold text-xs leading-tight text-green-700 bg-green-100 rounded-sm whitespace-nowrap">
-            {project.project_status}
+            {projectLoading ? "Loading..." : project.project_status}
           </span>
           <div>
             <ul className="flex flex-wrap -mb-px">
@@ -211,7 +255,7 @@ const Project = () => {
       {/* Body content */}
 
       <div>
-        {activeTab !== "Dashboard" && activeTab !== "Member" && (
+        {activeTab !== "Dashboard" && activeTab !== "Member" &&  activeTab !== "Details" && (
           <div className="flex items-center justify-between m-4">
             <div className="flex items-center space-x-2">
               <Dropdown

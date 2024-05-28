@@ -25,7 +25,7 @@ import { projectTaskContext } from "../pages/project";
 
 
 const ProjectBoard = () => {
-  const { tabID, setTabID, openProjectModal, setModalTask } =
+  const { tabID, setTabID, openProjectModal, setModalTask,setProjectStage } =
     useContext(modalContext);
 
   const { sortCriteria } = useContext(projectTaskContext);
@@ -116,7 +116,10 @@ const ProjectBoard = () => {
   }
 
   async function fetchTasks() {
-    const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
+    const response = await apiRequest(
+      "get",
+      "api/v1/tasks-by-project-id/" + tabID
+    );
     console.log(response);
     return response.data;
   }
@@ -144,6 +147,7 @@ const ProjectBoard = () => {
   return (
     <div className="container mx-auto mt-6 overflow-x-auto">
       <h1 className="text-2xl ml-4 font-semibold mb-4">Task Board</h1>
+      {console.log(taskList)}
       <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
         {projectStageList.map((ProjectStage, index) => (
           <div
@@ -160,6 +164,7 @@ const ProjectBoard = () => {
                   className="flex justify-center items-center transition duration-300 transform hover:scale-105"
                   onClick={() => {
                     setModalTask(task);
+                    setProjectStage(projectStageList);
                     openProjectModal();
                   }}
                 >

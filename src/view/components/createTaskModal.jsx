@@ -37,36 +37,6 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
 
   let newData = {}
 
-  useEffect(() =>{
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      // The user object will be null if no user is logged in
-      newData = {
-        project_id: taskData.project_id ? taskData.project_id : "",
-        user_id: auth.currentUser.uid,
-        task_name: taskData.task_name ? taskData.task_name : "",
-        description: taskData.description ? taskData.description : "",
-        due_date: taskData.due_date ? taskData.due_date : "",
-        task_category: taskData.task_category ? taskData.task_category : "To Do",
-        tracking: [],
-        work_hour_required: taskData.work_hour_required
-          ? taskData.work_hour_required
-          : "",
-        status: taskData.status ? taskData.status : "On Track",
-        priority: taskData.priority ? taskData.priority : "Low",
-        assignee_id: taskData.assignee_id ? taskData.assignee_id : "",
-        assignee_dates: taskData.assignee_dates ? taskData.assignee_dates : "",
-        complete: taskData.complete ? taskData.complete : false,
-        complete_date: taskData.complete_date ? taskData.complete_date : "",
-    
-      }
-      setTask(newData);
-    });
-
-    return () => unsubscribe();
-
-  }, [])
-
-
 
   const timestamp = Date.now();
   const formattedDate = new Date(timestamp).toLocaleDateString("en-KH", {
@@ -231,11 +201,27 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   name={taskData.task_name}
                   onNameChange={handleTaskNameChange}
                 />
-                <DropdownButton
+                {/* <DropdownButton
                   type={"category"}
                   initState={taskData.task_category}
                   handleChange={onCategoryChange}
-                />
+                /> */}
+
+                <select
+                  className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
+                  onChange={(e) => onCategoryChange(e.target.value)}
+                >
+                  <option value={taskData.milestone[0].milestone_name}>
+                    {taskData.milestone[0].milestone_name}
+                  </option>
+                  {taskData.milestone.map((taskMilestone) => (
+                    <option value={taskMilestone.milestone_name}>
+                      {taskMilestone.milestone_name}
+                    </option>
+                  ))}
+                </select>
+
+
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <FaCalendarAlt size={16} className="-mr-2" />
@@ -277,10 +263,6 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
 
-                <div className="flex items-center w-6 font-semibold text-sm">
-                  Tags
-                </div>
-                <TagInput />
               </div>
               <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
                 <div className="flex items-center w-24 font-semibold">
