@@ -11,6 +11,11 @@ import LineChartCompare from "./chartComponents/lineChartCompare";
 import RadarChart from "./chartComponents/radarChart";
 import LineAverage from "./chartComponents/lineAverage";
 
+import  DoughnutChart from "./chartComponents/doughNut";
+import PieChartRate from "./chartComponents/pieChartRate";
+import VerticalBarChart from "./chartComponents/verticalBarChart";
+import LineChartComparison from "./chartComponents/lineChartComparison";
+
 
 import { auth } from "../../firebase/config";
 
@@ -22,6 +27,32 @@ import {
 import LoadingBalls from "../../utils/loading";
 
 import { formattedDate } from "../../utils/formatDate";
+
+
+// Mock data for Doghnut and Pie
+const doughnutMockData = [
+  { status: "In Progress", quantity: 5 },
+  { status: "Completed", quantity: 7 },
+  { status: "Incompleted", quantity: 2 },
+  { status: "Not Started", quantity: 3 },
+];
+
+//Bar
+const barMockData = [
+  { status: "All", quantity: [30, 20, 40, 50, 60, 70, 80] },
+  { status: "Completed", quantity: [20, 10, 25, 40, 50, 65, 78] },
+  { status: "Incompleted", quantity: [10, 10, 15, 10, 10, 5, 12] },
+];
+
+//Mock data for Line
+const previous = [
+  10, 80, 60, 100, 68, 23, 97, 51, 23, 48, 15, 39
+];
+
+const current = [
+  90, 64, 49, 33, 167, 76, 23, 83, 54, 72, 19, 203
+];
+
 
 const MyDashboard = () => {
   const [userName, setUserName] = useState("");
@@ -39,6 +70,14 @@ const MyDashboard = () => {
   const [taskDueDateCompleteCount,setTaskDueDateCompleteCounts] = useState([]);
   const [taskCategoryAverages, setTaskCategoryAverages] = useState([]);
   const [monthlyWorkHours, setMonthlyWorkHours] = useState([]);
+
+  //MockData
+  const [doughnutData, setdoughnutData] = useState(doughnutMockData);
+
+  const [barData, setBarData] = useState(barMockData);
+
+  const [previousYear, setPreviousYear] = useState(previous);
+  const [currentYear, setCurrentYear] = useState(current);
 
 
   const convertMonthNumberToName = (monthNumber) => {
@@ -64,7 +103,7 @@ const MyDashboard = () => {
       return months[monthNumber - 1];
     }
 
-    if (monthNumber == 0){
+    if (monthNumber === 0){
       return "Dec"
     }
   
@@ -331,7 +370,7 @@ const MyDashboard = () => {
             <span className="mr-2">
               <FaCheckCircle />
             </span>
-            <span className="text-sm m-1">Completed Tasks :</span>
+            <span className="text-sm m-1">Total Task :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
               {completedTaskCount}
             </span>
@@ -340,14 +379,14 @@ const MyDashboard = () => {
             <span className="mr-2">
               <FaClipboard />
             </span>
-            <span className="text-sm m-1">All Tasks :</span>
+            <span className="text-sm m-1">Total Project :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">{taskCount}</span>
           </li>
           <li className="bg-glasses backdrop-blur-12 px-2 py-6  rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
             <span className="mr-2">
               <FaClipboardList />
             </span>
-            <span className="text-sm m-1">Uncompleted Tasks :</span>
+            <span className="text-sm m-1">Total Organization :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
               {uncompletedTaskCount}
             </span>
@@ -358,26 +397,32 @@ const MyDashboard = () => {
 
         <ul className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
           <li className=" bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
-            <BarChart Data={taskStatusCounts} />
+            {/* <BarChart Data={taskStatusCounts} /> */}
+
+            <DoughnutChart data={doughnutData} title={"Task Category Distribution"} info={"tasks"}/>
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
-            <BarChartCompare
+            {/* <BarChartCompare
               Data1={taskPriorityCounts}
               Data2={completedTaskCountsInPriority}
-            />
+            /> */}
+            <PieChartRate data={doughnutData}
+            title={"Task Completion Rate"} />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
-            <PieChart Data={taskCategoryCounts} />
+            {/* <PieChart Data={taskCategoryCounts} /> */}
+            <VerticalBarChart data={barData} title={"Task Visualization Chart"}/>
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
-            <LineChart Data={taskassignee_dateCounts} />
+            {/* <LineChart Data={taskassignee_dateCounts} /> */}
+            <LineChartComparison data1={previousYear} data2={currentYear} title={"Task Fluctuation Graph"} />
           </li>
-          <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
+          {/* <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
             <LineChartCompare Data={monthlyWorkHours}/>
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded transition duration-300 transform hover:scale-105">
             <LineAverage Data={taskCategoryAverages}/>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>
