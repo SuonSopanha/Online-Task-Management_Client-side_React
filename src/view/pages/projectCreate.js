@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createProject } from "../../firebase/projectCRUD";
-import { auth } from "../../firebase/config";
 import { apiRequest } from "../../api/api";
 
 const ProjectCreate = () => {
@@ -10,6 +8,7 @@ const ProjectCreate = () => {
   const [endDate, setEndDate] = useState("");
   const [projectStatus, setProjectStatus] = useState("Not Started");
   const [projectPriority, setProjectPriority] = useState("Low");
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   const handleContinue = async () => {
@@ -18,17 +17,31 @@ const ProjectCreate = () => {
       return;
     }
 
-    // Create the project or perform any further actions
-    const project_id = await apiRequest("post", "api/v1/projects", {
-      project_name: projectName,
-      start_date: startDate,
-      end_date: endDate,
-      project_status: projectStatus,
-      project_priority: projectPriority,
-    });
+    setLoading(true); // Set loading to true when request starts
 
-    console.log(project_id);
-    navigate("/team", { state: { project_id: 1 } });
+    try {
+      // Create the project or perform any further actions
+      const project = await apiRequest("post", "api/v1/projects", {
+        project_name: projectName,
+        start_date: startDate,
+        end_date: endDate,
+        project_status: projectStatus,
+        project_priority: projectPriority,
+      });
+
+      await apiRequest("post", "api/v1/project-members", {
+        project_id: project.data.id,
+        role: "Project Owner",
+      });
+
+      console.log(project);
+      navigate("/team", { state: { project_id: project.data.id } });
+    } catch (error) {
+      console.error("Failed to create project", error);
+      // Handle error appropriately here
+    } finally {
+      setLoading(false); // Set loading to false when request ends
+    }
   };
 
   return (
@@ -95,10 +108,11 @@ const ProjectCreate = () => {
         </div>
       </div>
       <button
-        className="mt-8 h-10 w-28 rounded-xl bg-blue-700 font-medium text-white"
+        className={`mt-8 h-10 w-28 rounded-xl font-medium text-white ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700"}`}
         onClick={handleContinue}
+        disabled={loading} // Disable the button when loading
       >
-        Continue
+        {loading ? "Loading..." : "Continue"}
       </button>
     </div>
   );

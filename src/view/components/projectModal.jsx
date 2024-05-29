@@ -28,6 +28,7 @@ import MemberDropdown from "./memberDropdown";
 import TagInput from "./modalComponents/taskTag";
 import Timer from "./modalComponents/timer";
 import UserProfilePic from "../../utils/photoGenerator";
+import TaskSeveritySelector from "./modalComponents/taskSeveritySelector";
 
 import { auth } from "../../firebase/config";
 import {
@@ -37,13 +38,19 @@ import {
 } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
 import { getUserByID,getUserFullNameById} from "../../firebase/usersCRUD";
+import { apiRequest } from "../../api/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { modalContext } from "../part/test";
 
 const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const [task, setTask] = useState(taskData ? taskData : {});
+  const [selectedStage, setSelectedStage] = useState(projectStage ? projectStage[0] : {});
+  
   const { tabID } = useContext(modalContext);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setTask(taskData);
@@ -55,14 +62,14 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
   const formattedDate = new Date(timestamp).toLocaleDateString("en-KH", {
     month: "2-digit",
     day: "2-digit",
-    year: "2-digit",
+    year: "numeric",
   });
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-KH", {
       month: "2-digit",
       day: "2-digit",
-      year: "2-digit",
+      year: "numeric",
     });
   };
 
@@ -79,6 +86,10 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
     isClose();
   };
 
+
+  const handleStageChange = (e) => {
+    setSelectedStage(e.target.value);
+  }
   const handleTaskNameChange = (newName) => {
     setTask({ ...task, task_name: newName });
     console.log(task.name);
@@ -129,32 +140,62 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
     }
   };
 
+  const onSeverityChange = (newSeverity) => {
+    setTask({ ...task, severity: newSeverity });
+    console.log(task.severity);
+  }
+
   const onSaveButton = async () => {
-    const assignID = task.assignee_id ? task.assignee_id.assignee_id : null;
-    const newFeild = {
-      project_id: task.project_id,
-      user_id: auth.currentUser.uid,
-      task_name: task.task_name,
-      description: task.description,
-      due_date: task.due_date,
-      task_category: task.task_category,
-      tracking: task.tracking,
-      work_hour_required: task.work_hour_required,
-      status: task.status,
-      priority: task.priority,
-      assignee_id: assignID,
-      assignee_dates: formattedDate,
-      complete: task.complete,
-      complete_date: task.complete_date,
-    };
-    await updateRtTaskByID(task.id, newFeild);
-    handleClose();
-  };
+    try {
+      let complete_date = null;
+      if( task.complete === true ) {
+        complete_date = formattedDate
+      }
 
-  const onDeleteButton = () => {
-    handleClose();
-  };
+      const stage_id = parseInt(selectedStage);
+      const updatedTask = { ...task, stage_id: stage_id ,complete_date: complete_date};
 
+      
+  
+      const response = await apiRequest("put", "api/v1/tasks/" + task.id, updatedTask);
+    
+  
+      if (response.status === "Request was successful") {
+        alert("Task updated successfully");
+
+        queryClient.invalidateQueries('projectList_taskList');
+        queryClient.invalidateQueries('projectBoard_taskList');
+        queryClient.invalidateQueries('projectCalendar_taskList');
+
+      } else {
+        alert("Failed to update task");
+      }
+  
+      console.log(updatedTask);
+      handleClose();
+    } catch (error) {
+      console.error("Error updating task:", error);
+      alert("An error occurred while updating the task");
+    }
+  };
+  
+  const onDeleteButton = async () => {
+    try {
+      const response = await apiRequest("delete", "api/v1/tasks/" + task.id);
+  
+      if (response.status === "Request was successful") {
+        alert("Task deleted successfully");
+      } else {
+        alert("Failed to delete task");
+      }
+  
+      handleClose();
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      alert("An error occurred while deleting the task");
+    }
+  };
+  
 
   return (
     <>
@@ -173,7 +214,6 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                   onClick={handleClose}
                 >
                   <FaTimesCircle className="w-6 h-6 hover:text-black" />
-                  {console.log(task)}
                 </button>
               </div>
               <div className="flex items-center justify-between px-2 py-3 border-b-2 border-solid border-gray-500 rounded-t">
@@ -188,13 +228,13 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                 /> */}
                 <select
                   className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
-                  onChange={(e) => onCategoryChange(e.target.value)}
+                  onChange={handleStageChange}
                 >
-                  <option value={projectStage[0].stage_name}>
-                    {projectStage[0].stage_name}
+                  <option value={taskData.stage_id === null ? null : projectStage[0].id}>
+                    {taskData.stage_id === null ? "no stage" : projectStage[0].stage_name}
                   </option>
                   {projectStage.map((stage) => (
-                    <option value={stage.stage_name}>
+                    <option value={stage.id}>
                       {stage.stage_name}
                     </option>
                   ))}
@@ -264,6 +304,10 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                   PrioritySate={task.priority}
                   OnChange={onChangeStatusAndPrority}
                 />
+                <div className="flex items-center w-10 font-semibold text-sm">
+                  Severity
+                </div>
+                <TaskSeveritySelector onChange={onSeverityChange} initValue={task.severity} />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <div className="flex items-center w-10 font-semibold text-sm">

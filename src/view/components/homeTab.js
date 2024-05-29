@@ -88,7 +88,7 @@ const HomeTab = () => {
     return <div>Error: {userError || taskError || projectError}</div>;
 
   const Team = "Team";
-  
+
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <NotificationBar type="success" message="Your account has been saved." />
@@ -254,12 +254,7 @@ const HomeTab = () => {
                         : taskList.map((task) => (
                             <tr key={task.id} className="text-gray-700">
                               <td className="px-4 py-2 border">
-                                <button
-                                  onClick={() => {
-                                    openModal();
-                                    setModalTask(task);
-                                  }}
-                                >
+                                <button>
                                   <div className="flex justify-center items-center text-sm">
                                     {task.complete ? (
                                       <FaCheckCircle className="text-emerald-500 mr-2" />

@@ -26,6 +26,7 @@ import Timer from "./modalComponents/timer";
 import TagInput from "./modalComponents/taskTag";
 import MemberDropdown from "./memberDropdown";
 import ProjectDropdown from "./projectDropdown";
+import TaskSeveritySelector from "./modalComponents/taskSeveritySelector";
 
 import { auth } from "../../firebase/config";
 import {
@@ -35,28 +36,35 @@ import {
 } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
 import { getUserByID } from "../../firebase/usersCRUD";
+import api, { apiRequest } from "../../api/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { modalContext } from "../part/test";
 import { createNotification } from "../../firebase/notification";
 
+
 const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const [task, setTask] = useState(taskData ? taskData : {});
+  const [isSaving, setIsSaving] = useState(false);
   const { tabID } = useContext(modalContext);
+  const [selectedStage, setSelectedStage] = useState(taskData.stage ? taskData.stage[0] : {});
   const [members, setMembers] = useState([]);
+
+  const queryClient = useQueryClient();
 
   const timestamp = Date.now();
   const formattedDate = new Date(timestamp).toLocaleDateString("en-KH", {
     month: "2-digit",
     day: "2-digit",
-    year: "2-digit",
+    year: "numeric",
   });
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-KH", {
       month: "2-digit",
       day: "2-digit",
-      year: "2-digit",
+      year: "numeric",
     });
   };
 
@@ -66,38 +74,25 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
 
   let newData = {};
 
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     // The user object will be null if no user is logged in
-  //     newData = {
-  //       project_id: taskData.project_id ? taskData.project_id : "",
-  //       user_id: auth.currentUser.uid,
-  //       task_name: taskData.task_name ? taskData.task_name : "",
-  //       description: taskData.description ? taskData.description : "",
-  //       due_date: taskData.due_date ? taskData.due_date : "",
-  //       task_category: taskData.task_category
-  //         ? taskData.task_category
-  //         : "To Do",
-  //       tracking: [],
-  //       work_hour_required: taskData.work_hour_required
-  //         ? taskData.work_hour_required
-  //         : "",
-  //       status: taskData.status ? taskData.status : "On Track",
-  //       priority: taskData.priority ? taskData.priority : "Low",
-  //       assignee_id: taskData.assignee_id ? taskData.assignee_id : "",
-  //       assignee_dates: taskData.assignee_dates ? taskData.assignee_dates : "",
-  //       complete: taskData.complete ? taskData.complete : false,
-  //       complete_date: taskData.complete_date ? taskData.complete_date : "",
-  //     };
-  //     setTask(newData);
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
-
   const handleClose = () => {
     setIsModalOpen(false);
     isClose();
+  };
+
+  const handleSelectedStage = (e) => {
+    setSelectedStage(e.target.value);
+  }
+
+  const handleStartDateChange = (newStartDate) => {
+    newData.start_date = formatDate(newStartDate);
+    setTask({ ...task, start_date: newStartDate });
+    console.log(task.start_date);
+  }
+
+  const handleSeverityChange = (newSeverity) => {
+    newData.severity = newSeverity;
+    setTask({ ...task, severity: newSeverity });
+    console.log(task.severity);
   };
 
   const handleTaskNameChange = (newName) => {
@@ -176,39 +171,42 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
   });
 
   const onSaveButton = async () => {
-    const assignID = task.assignee_id ? task.assignee_id.assignee_id : null;
+    const stage_id = parseInt(selectedStage)
     const newFeild = {
       project_id: tabID,
-      user_id: auth.currentUser.uid,
       task_name: task.task_name,
       description: task.description,
+      start_date: task.start_date,
       due_date: task.due_date,
       task_category: task.task_category,
       tracking: task.tracking,
       work_hour_required: task.work_hour_required,
       status: task.status,
       priority: task.priority,
-      assignee_id: task.assignee_id.assignee_id,
+      severity: task.severity,
+      assignee_id: task.assignee_id.id,
       assignee_dates: formattedDate,
       complete: task.complete,
       complete_date: task.complete_date,
+      stage_id:  stage_id,
+      complete: false,
     };
 
-    const newNoti = {
-      Date: formattedDate,
-      time: currentTime,
-      user_id: task.assignee_id.assignee_id,
-      notification_type: "task assign",
-      notification_content: task.task_name + " has been assign",
-      source: {
-        id: task.assignee_id.assignee_id,
-        type: 2,
-      },
-    };
-    console.log(task);
-    await createRtTask(task);
-    await createNotification(newNoti);
+    console.log(newFeild);
+
+    // const response = await apiRequest("post", "api/v1/tasks", newFeild);
+
+    // if (response.status === "Request was successful") {
+    //   queryClient.invalidateQueries('projectList_taskList');
+    //   queryClient.invalidateQueries('projectBoard_taskList');
+    //   queryClient.invalidateQueries('projectCalendar_taskList');
+    //   alert("Task created successfully");
+    // } else {
+    //   alert("Failed to create task");
+    // }
+
     handleClose();
+    
   };
 
   return (
@@ -216,7 +214,6 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
       {isModalOpen && (
         <div className="fixed inset-0 z-10 top-12 flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
           <div className="w-full sm:w-screen max-h-3xl max-w-3xl mx-auto my-6 mt-64">
-            {console.log(taskData)}
             <div className="relative flex flex-col w-full bg-white border-0 rounded-lg">
               <div className="flex items-center justify-between p-2 border-b border-gray-500">
                 <CompleteBox
@@ -239,13 +236,13 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                 {taskData.stage && (
                   <select
                     className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
-                    onChange={(e) => onCategoryChange(e.target.value)}
+                    onChange={handleSelectedStage}
                   >
-                    <option value={taskData.stage[0]?.stage_name}>
+                    <option value={taskData.stage[0].id}>
                       {taskData.stage[0]?.stage_name}
                     </option>
                     {taskData.stage?.map((stage) => (
-                      <option value={stage.stage_name}>
+                      <option value={stage.id}>
                         {stage.stage_name}
                       </option>
                     ))}
@@ -254,9 +251,9 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
               </div>
 
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
-                <div className="w-20 font-semibold">DueDate</div>
-                <TaskDueDate DueDate="04/10/2023" OnChange={onDueDateChange} />
                 <div className="w-20 font-semibold">StartDate</div>
+                <TaskDueDate DueDate="04/10/2023" OnChange={handleStartDateChange} />
+                <div className="w-20 font-semibold">DueDate</div>
                 <TaskDueDate DueDate="04/10/2023" OnChange={onDueDateChange} />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
@@ -265,8 +262,6 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   init={task.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
-                <div className="w-10 font-semibold text-xs">Timer</div>
-                <Timer />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <TaskStatus
@@ -274,13 +269,19 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   PrioritySate={task.priority}
                   OnChange={onChangeStatusAndPrority}
                 />
+
+                <div className="w-16 font-semibold">Severity</div>
+                <TaskSeveritySelector
+                  initValue={task.severity}
+                  onChange={handleSeverityChange}
+                />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <div className="w-24 font-semibold">Assignee</div>
                 {taskData.member && (
                   <MemberDropdown
                     members={taskData.member}
-                    OnChange={onAssigneeChange}
+                    onChange={onAssigneeChange}
                   />
                 )}
               </div>

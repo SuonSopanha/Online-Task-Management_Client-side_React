@@ -23,6 +23,10 @@ const TeamMember = () => {
     setMembers(newMembers);
   };
 
+
+  const handleSkip = () => {
+    navigate("/app")
+  }
   const handleContinue = async () => {
     // Filter out empty emails
     const nonEmptyMembers = members.filter(
@@ -117,6 +121,12 @@ const TeamMember = () => {
           onClick={handleContinue}
         >
           Continue
+        </button>
+        <button
+          className="mt-4 h-10 w-28 rounded-xl bg-blue-700 text-white font-medium"
+          onClick={handleSkip}
+        >
+          Skip
         </button>
       </div>
     </>

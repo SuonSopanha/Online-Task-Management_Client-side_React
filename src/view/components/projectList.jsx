@@ -128,7 +128,6 @@ const ProjectList = () => {
                     <td class="px-4 py-2 border">
                       <button
                         onClick={() => {
-                          console.log("Selected Task", task);
                           
                           setModalTask(task);
                           setProjectStage(projectStageList);
@@ -205,11 +204,9 @@ const ProjectList = () => {
                     </tbody>
                     {taskList.map((task, index) => (
                       <tr key={index} class="text-gray-700">
-                        {console.log(task)}
                         <td class="px-4 py-2 border">
                           <button
                             onClick={() => {
-                              console.log("Selected Task", task);
 
                               setModalTask(task);
                               setProjectStage(projectStageList);

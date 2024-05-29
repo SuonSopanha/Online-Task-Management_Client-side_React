@@ -28,15 +28,21 @@ import NumberInput from "./modalComponents/numberInput";
 import Timer from "./modalComponents/timer";
 import TagInput from "./modalComponents/taskTag";
 import MilestoneDropDown from "./mileStoneDropdown";
+import TaskSeveritySelector from "./modalComponents/taskSeveritySelector";
+import { apiRequest } from "../../api/api";
 
 import { updateRtTaskByID, deleteRtTaskByID } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
+import { formatDate } from "date-fns";
 
 const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const [task, setTask] = useState(taskData ? taskData : {});
   const [assigneeOption, setAssigneeOption] = useState(null);
   const [projectOption, setProjectOption] = useState(null);
+  const [isSaving,setIsSaving] = useState(false);
+  const [isDeleting,setIsDeleting] = useState(false);
+  const [selectedMilestone, setSelectedMilestone] = useState({});
 
   useEffect(() => {
     setIsModalOpen(isOpen);
@@ -49,6 +55,10 @@ const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
   const handleClose = () => {
     setIsModalOpen(false);
     isClose();
+  };
+
+  const handleMilestoneChange = (e) => {
+    setSelectedMilestone(e.target.value);
   };
 
   const handleTaskNameChange = (newName) => {
@@ -101,16 +111,88 @@ const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
     }
   };
 
-  const onSaveButton = () => {
-    console.log(task.id);
-    updateRtTaskByID(task.id, task);
-    handleClose();
+  const onSeverityChange = (severity) => {
+    setTask({ ...task, severity: severity });
+    console.log(task.severity);
   };
 
-  const onDeleteButton = () => {
-    deleteRtTaskByID(task.id);
-    handleClose();
+  const timestamp = Date.now();
+  const formattedDate = new Date(timestamp).toLocaleDateString("en-KH", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  });
+
+  const onSaveButton = async () => {
+    setIsSaving(true);
+    let complete_date = null;
+    if(task.complete === true) {
+      complete_date = formattedDate;
+    }
+
+  
+    try {
+      const milestone_object = taskMilestone.find(
+        (milestone) => milestone.milestone_name === selectedMilestone
+      );
+      const milestone_id = milestone_object ? milestone_object.id : null;// assuming you have a way to format dates
+      const updatedTask = { ...task, milestone_id, task_category: milestone_object?.milestone_name,complete_date: complete_date};
+  
+      const response = await apiRequest("put", "api/v1/tasks/" + task.id, updatedTask);
+  
+      if (response.status === "Request was successful") {
+        alert("Task updated successfully");
+        handleClose();
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      
+      const statusCode = error.response.status;
+      if (statusCode === 403) {
+        alert("Unauthorized: You don't have permission to delete this task");
+      } else {
+        alert(`Error: ${statusCode}`);
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
+  
+  
+
+  const onDeleteButton = async () => {
+    setIsDeleting(true);
+  
+    try {
+      const response = await apiRequest("delete", "api/v1/tasks/" + task.id);
+  
+      // Check if the response indicates success
+      if (response.status === "Request was successful") {
+        alert("Task deleted successfully");
+      } else {
+        alert("Task not deleted successfully, Unauthorized");
+      }
+    } catch (error) {
+      // Handle the error
+      if (error.response) {
+        // Server responded with an error status code
+        const statusCode = error.response.status;
+        if (statusCode === 403) {
+          alert("Unauthorized: You don't have permission to delete this task");
+        } else {
+          alert(`Error: ${statusCode}`);
+        }
+      } else {
+        // Network error or other client-side error
+        alert("Error: Unable to delete task. Please try again later.");
+      }
+    }
+  
+    handleClose();
+    setIsDeleting(false);
+  };
+  
 
   return (
     <>
@@ -142,19 +224,22 @@ const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
                   initState={task.task_category}
                   handleChange={onCategoryChange}
                 /> */}
-                <select
-                  className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
-                  onChange={(e) => onCategoryChange(e.target.value)}
-                >
-                  <option value={taskMilestone[0].milestone_name}>
-                    {taskMilestone[0].milestone_name}
-                  </option>
-                  {taskMilestone.map((taskMilestone) => (
-                    <option value={taskMilestone.milestone_name}>
-                      {taskMilestone.milestone_name}
+
+                {taskMilestone && (
+                  <select
+                    className="border-0 text-gray-600 text-sm bg-yellow-50 leading-none rounded-md font-semibold hover:text-black"
+                    onChange={handleMilestoneChange}
+                  >
+                    <option value={null}>
+                      {taskData.milestone_id === null ? "no milestone" : taskData.task_category}
                     </option>
-                  ))}
-                </select>
+                    {taskMilestone.map((taskMilestone) => (
+                      <option value={taskMilestone.milestone_name}>
+                        {taskMilestone.milestone_name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <FaCalendarAlt size={16} className="-mr-2" />
@@ -193,6 +278,12 @@ const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
                   PrioritySate={task.priority}
                   OnChange={onChangeStatusAndPrority}
                 />
+
+                <div className="flex items-center w-14 font-semibold">
+                  Severity
+                </div>
+
+                <TaskSeveritySelector initValue={task.severity} onChange={onSeverityChange}/>
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <div className="flex items-center w-10 font-semibold text-sm">
@@ -206,8 +297,6 @@ const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
                     {task.project_name ? task.project_name : "No Project"}
                   </span>
                 </div>
-
-                
               </div>
               <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
                 <div className="flex items-center w-24 font-semibold">
@@ -227,7 +316,7 @@ const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
                     type="button"
                     onClick={onDeleteButton}
                   >
-                    Delete
+                    {isDeleting ? "Deleting..." : "Delete"}
                   </button>
                 </div>
                 <div className="flex flex-row px-2 py-1 justify-center items-center bg-blue-500 hover:bg-blue-800 rounded-lg">
@@ -237,7 +326,7 @@ const TaskModal = ({ isOpen, isClose, taskData, taskMilestone }) => {
                     type="button"
                     onClick={onSaveButton}
                   >
-                    Save
+                    {isSaving ? "Save..." : "Save"}
                   </button>
                 </div>
               </div>

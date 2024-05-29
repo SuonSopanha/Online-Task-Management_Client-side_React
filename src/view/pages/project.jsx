@@ -115,27 +115,28 @@ const Project = () => {
   };
 
   let taskSample = {
-    project_id: tabID,
-    user_id: "",
+    project_id: "",
     task_name: "Name",
     description: "",
     due_date: "01/01/2023",
-    task_category: "To Do",
+    start_date: "01/01/2023",
+    task_category: "to do",
     tracking: [],
     work_hour_required: 0,
     status: "On Track",
-    priority: "Low",
+    priority: "Medium",
+    severity: "Low",
     assignee_id: "",
     assignee_dates: undefined,
     complete: false,
     complete_date: "",
+
   };
 
 
   if(!projectMemberLoading && !projectStagesLoading){
     taskSample = {
       project_id: tabID,
-      user_id: "",
       task_name: "Name",
       description: "",
       due_date: "01/01/2023",
@@ -147,7 +148,6 @@ const Project = () => {
       assignee_id: "",
       assignee_dates: undefined,
       complete: false,
-      complete_date: "",
       member : projectMember,
       stage : projectStages,
     };

@@ -11,7 +11,7 @@ import {
   FaTrash,
   FaTrashRestore,
   FaCalendarAlt,
-  FaClipboardList
+  FaClipboardList,
 } from "react-icons/fa";
 
 import EditableBox from "./editableBox";
@@ -25,31 +25,42 @@ import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
 import Timer from "./modalComponents/timer";
 import TagInput from "./modalComponents/taskTag";
+import TaskSeveritySelector from "./modalComponents/taskSeveritySelector";
 
 
 import { auth } from "../../firebase/config";
-import { updateRtTaskByID, deleteRtTaskByID ,createRtTask} from "../../firebase/taskCRUD";
+import {
+  updateRtTaskByID,
+  deleteRtTaskByID,
+  createRtTask,
+} from "../../firebase/taskCRUD";
 import { createNotification } from "../../firebase/notification";
+import { apiRequest } from "../../api/api";
+
 
 const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const [task, setTask] = useState(taskData ? taskData : {});
+  const [selectedMilestone, setSelectedMilestone] = useState(
+    taskData.milestone ? taskData.milestone[0] : {}
+  );
 
-  let newData = {}
+  const [isSaving, setIsSaving] = useState(false);
 
+  let newData = {};
 
   const timestamp = Date.now();
   const formattedDate = new Date(timestamp).toLocaleDateString("en-KH", {
     month: "2-digit",
     day: "2-digit",
-    year: "2-digit",
+    year: "numeric",
   });
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-KH", {
       month: "2-digit",
       day: "2-digit",
-      year: "2-digit",
+      year: "numeric",
     });
   };
 
@@ -60,6 +71,10 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
   const handleClose = () => {
     setIsModalOpen(false);
     isClose();
+  };
+
+  const handleMilestoneChange = (e) => {
+    setSelectedMilestone(e.target.value);
   };
 
   const handleTaskNameChange = (newName) => {
@@ -87,8 +102,14 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
 
   const onDueDateChange = (newDueDate) => {
     newData.due_date = formatDate(newDueDate);
-    setTask({ ...task, due_date: formatDate(newDueDate)});
+    setTask({ ...task, due_date: formatDate(newDueDate) });
     console.log(task.due_date);
+  };
+
+  const onStartDateChange = function (newStartDate) {
+    newData.start_date = formatDate(newStartDate);
+    setTask({ ...task, start_date: formatDate(newStartDate) });
+    console.log(task.start_date);
   };
 
   const onProjectChange = (newProject) => {
@@ -122,6 +143,12 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
     }
   };
 
+  const onSeverityChange = (severity) => {
+    newData.severity = severity;
+    setTask({ ...task, severity: severity });
+    console.log(task.severity);
+  };
+
   const currentDate = new Date();
 
   // Get the current time in 12-hour format with AM/PM
@@ -139,43 +166,45 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
   });
 
   const onSaveButton = async () => {
-    const newFeild =  {
-      project_id:task.project_id,
-      user_id: auth.currentUser.uid,
-      task_name:task.task_name,
-      description:task.description,
-      due_date:task.due_date,
-      task_category:task.task_category,
-      tracking:task.tracking,
-      work_hour_required:task.work_hour_required,
-      status:task.status,
-      priority:task.priority,
-      assignee_id:task.assignee_id,
-      assignee_dates: formattedDate,
-      complete:task.complete,
-      complete_date:task.complete_date,
-    };
+    setIsSaving(true);
 
-    const newNoti = {
-      Date: formattedDate,
-      time: currentTime,
-      user_id: auth.currentUser.uid,
-      notification_type: "task assign",
-      notification_content: task.task_name + " has been assign",
-      source : {
-        id: auth.currentUser.uid,
-        type: 1
+  
+    try {
+      // Find milestone id
+      const milestone_object = taskData.milestone.find(
+        (milestone) => milestone.milestone_name === selectedMilestone
+      );
+      const milestone_id = milestone_object ? milestone_object.id : null;
+  
+      const newField = {
+        milestone_id: milestone_id,
+        task_name: task.task_name,
+        description: task.description,
+        start_date: task.start_date,
+        due_date: task.due_date,
+        task_category: selectedMilestone,
+        tracking: false,
+        work_hour_required: task.work_hour_required,
+        status: task.status,
+        priority: task.priority,
+        assignee_dates: formattedDate,
+        complete: false,
+        severity: task.severity,
+      };
+  
+      const response = await apiRequest("post", "api/v1/tasks", newField);
+      if (response.status === "Request was successful") {
+        alert("Task created successfully");
       }
-
+    } catch (error) {
+      console.error("An error occurred while creating the task:", error);
+      alert("An error occurred while creating the task. Please try again later.");
+    } finally {
+      setIsSaving(false);
+      handleClose();
     }
-    console.log(task)
-    console.log(task);
-    await createRtTask(task);
-    console.log(newNoti)
-    await createNotification(newNoti)
-    handleClose();
   };
-
+  
 
   return (
     <>
@@ -207,34 +236,34 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   handleChange={onCategoryChange}
                 /> */}
 
-                <select
-                  className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
-                  onChange={(e) => onCategoryChange(e.target.value)}
-                >
-                  <option value={taskData.milestone[0].milestone_name}>
-                    {taskData.milestone[0].milestone_name}
-                  </option>
-                  {taskData.milestone.map((taskMilestone) => (
-                    <option value={taskMilestone.milestone_name}>
-                      {taskMilestone.milestone_name}
+                {taskData.milestone && (
+                  <select
+                    className="border-0 bg-yellow-50 text-gray-600 text-sm leading-none rounded-md font-semibold hover:text-black"
+                    onChange={handleMilestoneChange}
+                  >
+                    <option value={taskData.milestone[0]}>
+                      {taskData.milestone[0].milestone_name}
                     </option>
-                  ))}
-                </select>
-
-
+                    {taskData.milestone.map((taskMilestone) => (
+                      <option value={taskMilestone.milestone_name}>
+                        {taskMilestone.milestone_name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <FaCalendarAlt size={16} className="-mr-2" />
                 <div className="flex items-center w-20 font-semibold">
-                  DueDate
+                  StartDate
                 </div>
                 <TaskDueDate
-                  DueDate={taskData.due_date}
-                  OnChange={onDueDateChange}
+                  DueDate={taskData.start_date}
+                  OnChange={onStartDateChange}
                 />
                 <FaCalendarAlt size={16} className="-mr-4" />
                 <div className="flex items-center w-20 font-semibold ">
-                  StartDate
+                  DueDate
                 </div>
                 <TaskDueDate
                   DueDate={taskData.due_date}
@@ -249,10 +278,6 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   init={taskData.work_hour_required}
                   OnChange={onHourRequiredChange}
                 />
-                <div className="flex items-center w-10 font-semibold text-xs">
-                  Timer
-                </div>
-                <Timer />
               </div>
               <div className="flex flex-row justify-start space-x-5  text-sm sm:text-base border-gray-500 p-3 items-center">
                 <TaskStatus
@@ -260,10 +285,17 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   PrioritySate={taskData.priority}
                   OnChange={onChangeStatusAndPrority}
                 />
-              </div>
-              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
 
+                <div className="flex items-center w-12 font-semibold">
+                  Severity
+                </div>
+                <TaskSeveritySelector
+                  initValue={taskData.severity}
+                  onChange={onSeverityChange}
+                />
               </div>
+
+              <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center"></div>
               <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
                 <div className="flex items-center w-24 font-semibold">
                   Description
@@ -282,7 +314,7 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
                     type="button"
                     onClick={onSaveButton}
                   >
-                    Save
+                    {isSaving ? "Save.." : "Save"}
                   </button>
                 </div>
               </div>
