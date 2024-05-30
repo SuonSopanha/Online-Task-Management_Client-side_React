@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect,useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { FaCheckCircle, FaClipboard, FaClipboardList } from "react-icons/fa";
 
@@ -11,19 +11,67 @@ import LineChartCompare from "./chartComponents/lineChartCompare";
 import RadarChart from "./chartComponents/radarChart";
 import LineAverage from "./chartComponents/lineAverage";
 
+import DoughnutChart from "./chartComponents/doughNut";
+import PieChartRate from "./chartComponents/pieChartRate";
+import VerticalBarChart from "./chartComponents/verticalBarChart";
+import LineChartComparison from "./chartComponents/lineChartComparison";
+import ProgressBar from "./chartComponents/progressBar";
 
 import { auth } from "../../firebase/config";
 
 import {
   getRtTaskByUserID,
   getRtTaskByAssigneeID,
-  getRtTaskByProjectID
+  getRtTaskByProjectID,
 } from "../../firebase/taskCRUD";
 
 import LoadingBalls from "../../utils/loading";
 
 import { formattedDate } from "../../utils/formatDate";
 import { modalContext } from "../part/test";
+
+// Mock data for Doghnut and Pie
+const doughnutMockData = [
+  { status: "In Progress", quantity: 5 },
+  { status: "Completed", quantity: 7 },
+  { status: "Incompleted", quantity: 2 },
+  { status: "Not Started", quantity: 3 },
+];
+
+// Mock data for Doghnut and Pie
+const projectMemberMockData = [
+  { status: "Desginer", quantity: 3 },
+  { status: "Developer", quantity: 5 },
+  { status: "Tester", quantity: 2 },
+  { status: "Manager", quantity: 1 },
+];
+
+// Mock data for Doghnut and Pie
+const milestoneMockData = [
+  { status: "Ended", quantity: 79 },
+  { status: "Ongoing", quantity: 27 },
+];
+
+//Bar
+const barMockData = [
+  { status: "All", quantity: [30, 20, 40, 50, 60, 70, 80] },
+  { status: "Completed", quantity: [20, 10, 25, 40, 50, 65, 78] },
+  { status: "Incompleted", quantity: [10, 10, 15, 10, 10, 5, 12] },
+];
+
+//Mock data for Line
+const previous = [10, 80, 60, 100, 68, 23, 97, 51, 23, 48, 15, 39];
+
+const current = [90, 64, 49, 33, 167, 76, 23, 83, 54, 72, 19, 203];
+
+const progressData = [
+  { title: "kola", percentage: 90, color: "primary" },
+  { title: "malie", percentage: 20, color: "success" },
+  { title: "panha", percentage: 90, color: "notstart" },
+  { title: "rathana", percentage: 67, color: "progress" },
+  { title: "sanin", percentage: 65, color: "danger" },
+  { title: "meme", percentage: 75, color: "warning" },
+];
 
 const TeamDashboard = () => {
   const [taskList, setTaskList] = useState([]);
@@ -34,14 +82,29 @@ const TeamDashboard = () => {
   const [uncompletedTaskCount, setUncompletedTaskCount] = useState(0);
   const [taskStatusCounts, setTaskStatusCounts] = useState([]);
   const [taskCategoryCounts, setTaskCategoryCounts] = useState([]);
-  const [completedTaskCountsInPriority, setCompletedTaskCountsInPriority] = useState([]);
+  const [completedTaskCountsInPriority, setCompletedTaskCountsInPriority] =
+    useState([]);
   const [taskPriorityCounts, setTaskPriorityCounts] = useState([]);
   const [taskassignee_dateCounts, setTaskassignee_dateCounts] = useState([]);
-  const [taskDueDateCompleteCount,setTaskDueDateCompleteCounts] = useState([]);
+  const [taskDueDateCompleteCount, setTaskDueDateCompleteCounts] = useState([]);
   const [taskCategoryAverages, setTaskCategoryAverages] = useState([]);
   const [monthlyWorkHours, setMonthlyWorkHours] = useState([]);
 
-  const {tabID} = useContext(modalContext);
+  //MockData
+  const [doughnutData, setdoughnutData] = useState(doughnutMockData);
+  const [projectMemberData, setProjectMemberDataa] = useState(
+    projectMemberMockData
+  );
+  const [milestoneData, setMilestoneData] = useState(milestoneMockData);
+
+  const [milestoneProgress, setMilestoneProgress] = useState(progressData);
+
+  const [barData, setBarData] = useState(barMockData);
+
+  const [previousYear, setPreviousYear] = useState(previous);
+  const [currentYear, setCurrentYear] = useState(current);
+
+  const { tabID } = useContext(modalContext);
   const convertMonthNumberToName = (monthNumber) => {
     const months = [
       "Jan",
@@ -58,17 +121,15 @@ const TeamDashboard = () => {
       "Dec",
     ];
 
-
-  
     // Check if monthNumber is valid
     if (monthNumber >= 1 && monthNumber <= 12) {
       return months[monthNumber - 1];
     }
 
-    if (monthNumber == 0){
-      return "Dec"
+    if (monthNumber == 0) {
+      return "Dec";
     }
-  
+
     return "Unknown";
   };
 
@@ -91,12 +152,12 @@ const TeamDashboard = () => {
     return order[month] || 999; // Use 999 for unknown months
   };
 
-  useEffect( () => {
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         console.log("User is signed in:", user);
 
-        await getRtTaskByProjectID(tabID,setTaskList)
+        await getRtTaskByProjectID(tabID, setTaskList);
         setLoading(false);
       } else {
         setError(true);
@@ -215,8 +276,8 @@ const TeamDashboard = () => {
 
     const calculateTaskCompleteDueDateCounts = () => {
       const dueDateCounts = taskList.reduce((counts, task) => {
-        const dueDate = task.due_date || 'Unknown';
-        const monthNumber = parseInt(dueDate.split('/')[0], 10);
+        const dueDate = task.due_date || "Unknown";
+        const monthNumber = parseInt(dueDate.split("/")[0], 10);
         const monthName = convertMonthNumberToName(monthNumber);
 
         counts[monthName] = counts[monthName] || { total: 0, completed: 0 };
@@ -239,7 +300,7 @@ const TeamDashboard = () => {
 
     const calculateTaskCategoryAverages = () => {
       const taskCategoryTotals = taskList.reduce((totals, task) => {
-        const category = task.task_category || 'Unknown';
+        const category = task.task_category || "Unknown";
         totals[category] = totals[category] || { total: 0, sum: 0 };
 
         totals[category].total += 1;
@@ -249,7 +310,10 @@ const TeamDashboard = () => {
       }, {});
 
       const averagesArray = Object.entries(taskCategoryTotals)
-        .map(([category, { total, sum }]) => ({ category, average: sum / total }))
+        .map(([category, { total, sum }]) => ({
+          category,
+          average: sum / total,
+        }))
         .sort((a, b) => b.average - a.average); // Sort by average in descending order
 
       setTaskCategoryAverages(averagesArray);
@@ -258,7 +322,10 @@ const TeamDashboard = () => {
     const calculateMonthlyWorkHours = () => {
       const monthlyWorkHourTotals = taskList.reduce((totals, task) => {
         const month = task.due_date ? new Date(task.due_date).getMonth() : -1;
-        totals[month] = totals[month] || { work_hour_required: 0, hour_spend: 0 };
+        totals[month] = totals[month] || {
+          work_hour_required: 0,
+          hour_spend: 0,
+        };
 
         totals[month].work_hour_required += task.work_hour_required || 0;
 
@@ -285,7 +352,7 @@ const TeamDashboard = () => {
     calculateTaskCategoryAverages();
 
     calculateTaskassignee_dateCounts();
-    
+
     calculateTaskCompleteDueDateCounts();
 
     calculateTaskPriorityCounts();
@@ -309,7 +376,7 @@ const TeamDashboard = () => {
             <span className="mr-2">
               <FaCheckCircle />
             </span>
-            <span className="text-sm m-1">Completed Tasks :</span>
+            <span className="text-sm m-1">Total Milstone :</span>
             <span className="text-3xl font-semibold mx-3">
               {completedTaskCount}
             </span>
@@ -318,14 +385,14 @@ const TeamDashboard = () => {
             <span className="mr-2">
               <FaClipboard />
             </span>
-            <span className="text-sm m-1">All Tasks :</span>
+            <span className="text-sm m-1">Total Task :</span>
             <span className="text-3xl font-semibold mx-3">{taskCount}</span>
           </li>
           <li className="bg-glasses backdrop-blur-12 px-2 py-6  rounded flex justify-center items-center">
             <span className="mr-2">
               <FaClipboardList />
             </span>
-            <span className="text-sm m-1">Uncompleted Tasks :</span>
+            <span className="text-sm m-1">Total Member :</span>
             <span className="text-3xl font-semibold mx-3">
               {uncompletedTaskCount}
             </span>
@@ -336,25 +403,59 @@ const TeamDashboard = () => {
 
         <ul className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-3">
           <li className=" bg-glasses backdrop-blur-lg p-2 rounded">
-            <BarChart Data={taskStatusCounts} />
-          </li>
-          <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <BarChartCompare
-              Data1={taskPriorityCounts}
-              Data2={completedTaskCountsInPriority}
+            {/* <BarChart Data={taskStatusCounts} /> */}
+            <DoughnutChart
+              data={doughnutData}
+              title={"Task Category Distribution"}
+              info={"tasks"}
             />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <PieChart Data={taskCategoryCounts} />
+            {/* <BarChartCompare
+              Data1={taskPriorityCounts}
+              Data2={completedTaskCountsInPriority}
+            /> */}
+            <DoughnutChart
+              data={projectMemberData}
+              title={"Member Role Distribution"}
+              info={"people"}
+            />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <LineChart Data={taskassignee_dateCounts} />
+            <PieChart
+              data={milestoneData}
+              title={"Milestone Completion Rate"}
+            />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <LineChartCompare Data={monthlyWorkHours}/>
+            {/* <LineChart Data={taskassignee_dateCounts} /> */}
+            <PieChartRate data={doughnutData} title={"Task Completion Rate"} />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <LineAverage Data={taskCategoryAverages}/>
+            {/* <LineChartCompare Data={monthlyWorkHours} /> */}
+            <p className="text-xs font-medium text-gray-800 flex justify-center font-sans p-4 mb-4">Progress Bars</p>
+            {progressData.map((item, index) => (
+              <ProgressBar
+                key={index}
+                title={item.title}
+                percentage={item.percentage}
+                color={item.color}
+              />
+            ))}
+          </li>
+          <li className="bg-glasses backdrop-blur-lg p-2 rounded">
+            {/* <LineChartCompare Data={monthlyWorkHours} /> */}
+            <VerticalBarChart
+              data={barData}
+              title={"Organization Distribution Visualization Chart"}
+            />
+          </li>
+          <li className="bg-glasses backdrop-blur-lg p-2 rounded">
+            <LineChartComparison
+              data1={previousYear}
+              data2={currentYear}
+              title={"Organization Fluctuation Graph"}
+            />
           </li>
         </ul>
       </div>

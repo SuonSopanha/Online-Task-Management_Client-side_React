@@ -2,7 +2,7 @@ import React from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 
-const PieChart = ({ data, title }) => {
+const PieChartRate = ({ data, title }) => {
   if (!Array.isArray(data) || data.length === 0) {
     return <p>No data available</p>;
   }
@@ -12,29 +12,27 @@ const PieChart = ({ data, title }) => {
   const total = data.reduce((acc, item) => acc + item.quantity, 0);
   console.log(total);
 
-  const endedProjectStage = data.reduce((acc, item) => {
-    if (item.status === "Ended") {
+  //   const category = data.map((item) => item.category);
+  //   const counts = data.map((item) => item.count);
+
+  const completeTask = data.reduce((acc, item) => {
+    if (item.status === "Completed") {
       return acc + item.quantity;
     }
     return acc;
   }, 0);
 
-  const onProjectStage = data.reduce((acc, item) => {
-    if (item.status === "Ongoing") {
-      return acc + item.quantity;
-    }
-    return acc;
-  }, 0);
+  console.log(completeTask);
 
-  const endedPercentage = Math.round((endedProjectStage / total) * 100);
-  const onPercentage = Math.round((onProjectStage / total) * 100);
+  const completedPercentage = Math.round((completeTask / total) * 100);
 
+  const inCompletedPercentage = Math.round(
+    ((total - completeTask) / total) * 100
+  );
 
   const filteredData = [
-    { status: "Ended", quantity: endedPercentage },
-    { status: "Ongoing", quantity: onPercentage },
-    
-    
+    { status: "Others", quantity: inCompletedPercentage },
+    { status: "Completed", quantity: completedPercentage },
   ];
 
   const chartData = {
@@ -45,8 +43,8 @@ const PieChart = ({ data, title }) => {
       {
         label: "Task Status",
         data: filteredData.map((item) => item.quantity),
-        backgroundColor: [ "rgba(75, 192, 192, 0.8)", "rgb(255, 205, 86)"],
-        borderColor: [ "rgba(32,178,170, 1)", "rgb(255, 205, 8)"],
+        backgroundColor: ["rgba(255, 99, 132, 0.8)", "rgba(75, 192, 192, 0.8)"],
+        borderColor: ["rgba(255,65,90, 1)", "rgba(32,178,170, 1)"],
         borderWidth: 2,
       },
     ],
@@ -85,4 +83,4 @@ const PieChart = ({ data, title }) => {
   );
 };
 
-export default PieChart;
+export default PieChartRate;

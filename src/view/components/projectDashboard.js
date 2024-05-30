@@ -11,6 +11,11 @@ import LineChartCompare from "./chartComponents/lineChartCompare";
 import RadarChart from "./chartComponents/radarChart";
 import LineAverage from "./chartComponents/lineAverage";
 
+import  DoughnutChart from "./chartComponents/doughNut";
+import PieChartRate from "./chartComponents/pieChartRate";
+import VerticalBarChart from "./chartComponents/verticalBarChart";
+import LineChartComparison from "./chartComponents/lineChartComparison";
+
 
 import { auth } from "../../firebase/config";
 
@@ -24,6 +29,45 @@ import LoadingBalls from "../../utils/loading";
 
 import { formattedDate } from "../../utils/formatDate";
 import { modalContext } from "../part/test";
+
+
+// Mock data for Doghnut and Pie
+const doughnutMockData = [
+  { status: "In Progress", quantity: 90 },
+  { status: "Completed", quantity: 65 },
+  { status: "Incompleted", quantity: 25 },
+  { status: "Not Started", quantity: 15 },
+];
+
+// Mock data for Doghnut and Pie
+const projectMemberMockData = [
+  { status: "Desginer", quantity: 3 },
+  { status: "Developer", quantity: 5 },
+  { status: "Tester", quantity: 2 },
+  { status: "Manager", quantity: 1 },
+];
+
+// Mock data for Doghnut and Pie
+const projectMockData = [
+  { status: "Ended", quantity: 79 },
+  { status: "Ongoing", quantity: 27 },
+];
+
+//Vertical Bar
+const barMockData = [
+  { status: "Project Stage", quantity: [30, 20, 40, 50, 60, 70, 80] },
+  { status: "Task", quantity: [20, 10, 25, 40, 50, 65, 78] },
+  { status: "Member", quantity: [10, 10, 15, 10, 10, 5, 12] },
+];
+
+//Mock data for Line
+const previous = [
+  10, 80, 60, 100, 68, 23, 97, 51, 23, 48, 15, 39
+];
+
+const current = [
+  90, 64, 49, 33, 167, 76, 23, 83, 54, 72, 19, 203
+];
 
 const ProjectDashboard = () => {
     const {tabID} = useContext(modalContext);
@@ -42,6 +86,14 @@ const ProjectDashboard = () => {
   const [taskCategoryAverages, setTaskCategoryAverages] = useState([]);
   const [monthlyWorkHours, setMonthlyWorkHours] = useState([]);
 
+  //MockData
+  const [doughnutData, setDoughnutData] = useState(doughnutMockData);
+  const [projectMemberData, setProjectMemberDataa] = useState(projectMemberMockData);
+  const [projectData, setProjectData] = useState(projectMockData);
+
+  const [barData, setBarData] = useState(barMockData);
+  const [previousYear, setPreviousYear] = useState(previous);
+  const [currentYear, setCurrentYear] = useState(current);
 
   const convertMonthNumberToName = (monthNumber) => {
     const months = [
@@ -310,7 +362,7 @@ const ProjectDashboard = () => {
             <span className="mr-2">
               <FaCheckCircle />
             </span>
-            <span className="text-sm m-1">Completed Tasks :</span>
+            <span className="text-sm m-1">Total Project Stage :</span>
             <span className="text-3xl font-semibold mx-3">
               {completedTaskCount}
             </span>
@@ -319,14 +371,14 @@ const ProjectDashboard = () => {
             <span className="mr-2">
               <FaClipboard />
             </span>
-            <span className="text-sm m-1">All Tasks :</span>
+            <span className="text-sm m-1">Total Task :</span>
             <span className="text-3xl font-semibold mx-3">{taskCount}</span>
           </li>
           <li className="bg-glasses backdrop-blur-12 px-2 py-6  rounded flex justify-center items-center">
             <span className="mr-2">
               <FaClipboardList />
             </span>
-            <span className="text-sm m-1">Uncompleted Tasks :</span>
+            <span className="text-sm m-1">Total Member :</span>
             <span className="text-3xl font-semibold mx-3">
               {uncompletedTaskCount}
             </span>
@@ -337,25 +389,35 @@ const ProjectDashboard = () => {
 
         <ul className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-3">
           <li className=" bg-glasses backdrop-blur-lg p-2 rounded">
-            <BarChart Data={taskStatusCounts} />
+            {/* <BarChart Data={taskStatusCounts} /> */}
+            <DoughnutChart data={doughnutData} title={"Task Category Distribution"} info={"tasks"}/>
+          </li>
+          <li className=" bg-glasses backdrop-blur-lg p-2 rounded">
+            {/* <BarChart Data={taskStatusCounts} /> */}
+            <DoughnutChart data={projectMemberData} title={"Member Role Distribution"} info={"people"}/>
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <BarChartCompare
+            {/* <BarChartCompare
               Data1={taskPriorityCounts}
               Data2={completedTaskCountsInPriority}
-            />
+            /> */}
+            <PieChart data={projectData} title={"Project Stage Completion Rate"} />
+          </li>
+          
+          <li className="bg-glasses backdrop-blur-lg p-2 rounded">
+            {/* <BarChartCompare
+              Data1={taskPriorityCounts}
+              Data2={completedTaskCountsInPriority}
+            /> */}
+            <PieChartRate data={doughnutData} title={"Task Completion Rate"} />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <PieChart Data={taskCategoryCounts} />
+            {/* <LineChart Data={taskassignee_dateCounts} /> */}
+            <VerticalBarChart  data={barData} title={"Project Distribution Visualization Chart"}/>
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <LineChart Data={taskassignee_dateCounts} />
-          </li>
-          <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <LineChartCompare Data={monthlyWorkHours}/>
-          </li>
-          <li className="bg-glasses backdrop-blur-lg p-2 rounded">
-            <LineAverage Data={taskCategoryAverages}/>
+            {/* <LineChartCompare Data={monthlyWorkHours}/> */}
+            <LineChartComparison data1={previousYear} data2={currentYear} title={"Project Fluctuation Graph"} />
           </li>
         </ul>
       </div>
