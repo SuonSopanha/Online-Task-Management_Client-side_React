@@ -17,7 +17,7 @@ import {
   sortByStatus,
   sortByTaskName,
   sortByID,
-  sortByAssignDate
+  sortByAssignDate,
 } from "../../utils/sortTask";
 import { modalContext } from "../part/test";
 import { mytaskContext } from "../pages/myTask";
@@ -26,16 +26,28 @@ import api, { apiRequest } from "../../api/api";
 import UserProfilePic from "../../utils/photoGenerator";
 import { useQuery } from "@tanstack/react-query";
 
-
-
 const TaskList = () => {
-
-  const { openModal, isModalOpen, setModalTask, closeCreateModal,setMilestoneData ,tabID} =
-    useContext(modalContext);
+  const {
+    openModal,
+    isModalOpen,
+    setModalTask,
+    closeCreateModal,
+    setMilestoneData,
+    tabID,
+  } = useContext(modalContext);
   const { sortCriteria } = useContext(mytaskContext);
 
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
-  const [milestoneinit,setMilestone] = useState({})
+  const [milestoneinit, setMilestone] = useState({});
+
+  const [visibleStages, setVisibleStages] = useState({});
+
+  const toggleVisibility = (milestone_id) => {
+    setVisibleStages((prevState) => ({
+      ...prevState,
+      [milestone_id]: !prevState[milestone_id],
+    }));
+  };
 
   const onMilestoneModalClose = () => {
     setIsMilestoneModalOpen(false);
@@ -70,16 +82,16 @@ const TaskList = () => {
     isLoading: milestoneLoading,
     error: milestoneError,
   } = useQuery({
-    queryKey: ["taskList_milestone",tabID],
+    queryKey: ["taskList_milestone"],
     queryFn: fetchMilestones,
   });
 
   const {
     data: taskList,
     isLoading: taskLoading,
-    error: taskError, 
+    error: taskError,
   } = useQuery({
-    queryKey: ["taskList_taskList",tabID],
+    queryKey: ["taskList_taskList"],
     queryFn: fetchTasks,
   });
 
@@ -95,15 +107,11 @@ const TaskList = () => {
     return [...response1.data];
   }
 
-
-
   let sortedTaskList = [];
 
-  if(!taskLoading){
+  if (!taskLoading) {
     sortedTaskList = sortTasks(taskList, sortCriteria);
   }
-
-
 
   if (milestoneLoading || taskLoading) {
     return (
@@ -147,80 +155,95 @@ const TaskList = () => {
                 </tr>
               </thead>
               <tbody>
-                {taskList.map((task, index) => (
-                  <tr key={index} className="text-gray-700">
-                    <td className="px-4 py-2 border">
-                      <button
-                        onClick={() => {
-                          openModal();
-                          setModalTask(task);
-                          setMilestoneData(milestoneList);
-                        }}
-                      >
-                        <div className="flex justify-center items-center text-sm">
-                          {task.complete ? (
-                            <FaCheckCircle className="text-emerald-500 mr-2" />
-                          ) : (
-                            <FaMinusCircle className=" text-violet-600 mr-2" />
-                          )}
+                {taskList
+                  .filter((task) => task.milestone_id === null)
+                  .map((task, index) => (
+                    <tr key={index} className="text-gray-700">
+                      <td className="px-4 py-2 border">
+                        <button
+                          onClick={() => {
+                            openModal();
+                            setModalTask(task);
+                            setMilestoneData(milestoneList);
+                          }}
+                        >
+                          <div className="flex justify-center items-center text-sm">
+                            {task.complete ? (
+                              <FaCheckCircle className="text-emerald-500 mr-2" />
+                            ) : (
+                              <FaMinusCircle className=" text-violet-600 mr-2" />
+                            )}
 
-                          <div className="flex flex-col justify-center items-center">
-                            <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
-                              {task.task_name}
-                            </p>
+                            <div className="flex flex-col justify-center items-center">
+                              <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
+                                {task.task_name}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </button>
-                    </td>
+                        </button>
+                      </td>
 
-                    <td className="px-4 py-2 text-ms font-semibold border">
-                      <div className="flex items-center text-sm">
-                        <div className="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
-                          {task.project_id !== null ? <FaUsers /> : <FaUser />}
-                          <div
-                            className="absolute inset-0 rounded-full shadow-inner"
-                            aria-hidden="true"
-                          ></div>
+                      <td className="px-4 py-2 text-ms font-semibold border">
+                        <div className="flex items-center text-sm">
+                          <div className="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
+                            {task.project_id !== null ? (
+                              <FaUsers />
+                            ) : (
+                              <FaUser />
+                            )}
+                            <div
+                              className="absolute inset-0 rounded-full shadow-inner"
+                              aria-hidden="true"
+                            ></div>
+                          </div>
+                          {task.project_id !== null ? (
+                            <span className="text-x whitespace-nowrap">
+                              {task.project
+                                ? task.project.project_name
+                                : "Team"}
+                            </span>
+                          ) : (
+                            <span className="text-xs">Only Me</span>
+                          )}
                         </div>
-                        {task.project_id !== null ? (
-                          <span className="text-x whitespace-nowrap">
-                            {task.project ? task.project.project_name : "Team"}
-                          </span>
-                        ) : (
-                          <span className="text-xs">Only Me</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 text-xs border">
-                      <span
-                        className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
-                          task.priority
-                        )}-700 rounded-sm bg-${priorityColor(
-                          task.priority
-                        )}-100`}
-                      >
-                        {task.priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 text-sm border">
-                      {task.due_date}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-4 py-2 text-xs border">
+                        <span
+                          className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
+                            task.priority
+                          )}-700 rounded-sm bg-${priorityColor(
+                            task.priority
+                          )}-100`}
+                        >
+                          {task.priority}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-sm border">
+                        {task.due_date}
+                      </td>
+                    </tr>
+                  ))}
                 {/* Render milestone */}
+
                 {milestoneList.map((milestone, index) => (
                   <React.Fragment key={index}>
-                    <tr className="text-gray-700">
+                    <tr className="text-gray-700 bg-blue-300 border bg-opacity-50">
                       <td colSpan="4">
                         <div className="flex justify-between items-center">
-                          <button onClick={async () => {
-                            await setMilestone(milestone);
-                            onMilestoneModalOpen();
-                          }} className="px-4 py-2 text-xxl font-semibold">
+                          <button
+                            onClick={async () => {
+                              await setMilestone(milestone);
+                              onMilestoneModalOpen();
+                            }}
+                            className="px-4 py-1 text-sm font-semibold"
+                          >
                             {milestone.milestone_name}
                           </button>
-                          <div className="px-4 py-2">
-                            <button className="">
+                          <div className="px-4 py-1">
+                            <button
+                              onClick={() => toggleVisibility(milestone.id)}
+                              className=""
+                            >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-6 w-6 text-gray-500"
@@ -241,75 +264,78 @@ const TaskList = () => {
                       </td>
                     </tr>
                     {/* Render tasks under milestone */}
-                    {taskList.map((task, taskIndex) => (
-                      <React.Fragment key={taskIndex}>
-                        {/* Render tasks */}
-                        <tr className="text-gray-700">
-                          <td className="px-4 py-2 border">
-                            <button
-                              onClick={() => {
-                                openModal();
-                                setModalTask(task);
-                                setMilestoneData(milestoneList)
-                              }}
-                            >
-                              <div className="flex justify-center items-center text-sm">
-                                {task.complete ? (
-                                  <FaCheckCircle className="text-emerald-500 mr-2" />
-                                ) : (
-                                  <FaMinusCircle className=" text-violet-600 mr-2" />
-                                )}
+                    {visibleStages[milestone.id] &&
+                      taskList
+                        .filter((task) => task.milestone_id === milestone.id)
+                        .map((task, taskIndex) => (
+                          <React.Fragment key={taskIndex}>
+                            {/* Render tasks */}
+                            <tr className="text-gray-700">
+                              <td className="px-4 py-2 border">
+                                <button
+                                  onClick={() => {
+                                    openModal();
+                                    setModalTask(task);
+                                    setMilestoneData(milestoneList);
+                                  }}
+                                >
+                                  <div className="flex justify-center items-center text-sm">
+                                    {task.complete ? (
+                                      <FaCheckCircle className="text-emerald-500 mr-2" />
+                                    ) : (
+                                      <FaMinusCircle className=" text-violet-600 mr-2" />
+                                    )}
 
-                                <div className="flex flex-col justify-center items-center">
-                                  <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
-                                    {task.task_name}
-                                  </p>
+                                    <div className="flex flex-col justify-center items-center">
+                                      <p className="font-semibold text-black whitespace-nowrap transform transition-transform hover:scale-105">
+                                        {task.task_name}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </button>
+                              </td>
+
+                              <td className="px-4 py-2 text-ms font-semibold border">
+                                <div className="flex items-center text-sm">
+                                  <div className="flex items-center relative w-4 h-4 mr-3 rounded-full md:block">
+                                    {task.project_id !== null ? (
+                                      <FaUsers />
+                                    ) : (
+                                      <FaUser />
+                                    )}
+                                    <div
+                                      className="absolute inset-0 rounded-full shadow-inner"
+                                      aria-hidden="true"
+                                    ></div>
+                                  </div>
+                                  {task.project_id !== null ? (
+                                    <span className="text-x whitespace-nowrap">
+                                      {task.project
+                                        ? task.project.project_name
+                                        : "Team"}
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs">Only Me</span>
+                                  )}
                                 </div>
-                              </div>
-                            </button>
-                          </td>
-
-                          <td className="px-4 py-2 text-ms font-semibold border">
-                            <div className="flex items-center text-sm">
-                              <div className="flex items- center relative w-4 h-4 mr-3 rounded-full md:block">
-                                {task.project_id !== null ? (
-                                  <FaUsers />
-                                ) : (
-                                  <FaUser />
-                                )}
-                                <div
-                                  className="absolute inset-0 rounded-full shadow-inner"
-                                  aria-hidden="true"
-                                ></div>
-                              </div>
-                              {task.project_id !== null ? (
-                                <span className="text-x whitespace-nowrap">
-                                  {task.project
-                                    ? task.project.project_name
-                                    : "Team"}
+                              </td>
+                              <td className="px-4 py-2 text-xs border">
+                                <span
+                                  className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
+                                    task.priority
+                                  )}-700 rounded-sm bg-${priorityColor(
+                                    task.priority
+                                  )}-100`}
+                                >
+                                  {task.priority}
                                 </span>
-                              ) : (
-                                <span className="text-xs">Only Me</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 text-xs border">
-                            <span
-                              className={`px-2 py-1 whitespace-nowrap font-semibold leading-tight text-${priorityColor(
-                                task.priority
-                              )}-700 rounded-sm bg-${priorityColor(
-                                task.priority
-                              )}-100`}
-                            >
-                              {task.priority}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 text-sm border">
-                            {task.due_date}
-                          </td>
-                        </tr>
-                      </React.Fragment>
-                    ))}
+                              </td>
+                              <td className="px-4 py-2 text-sm border">
+                                {task.due_date}
+                              </td>
+                            </tr>
+                          </React.Fragment>
+                        ))}
                   </React.Fragment>
                 ))}
               </tbody>
@@ -318,12 +344,11 @@ const TaskList = () => {
         </div>
       </section>
       {isMilestoneModalOpen && (
-          <MilestoneModal
-            onClose={onMilestoneModalClose}
-            initialValue={milestoneinit}
-          />
-          
-        )}
+        <MilestoneModal
+          onClose={onMilestoneModalClose}
+          initialValue={milestoneinit}
+        />
+      )}
     </>
   );
 };

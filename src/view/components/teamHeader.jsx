@@ -49,7 +49,7 @@ const TeamHeader = () => {
   return (
     <div
       className={`w-full ${
-        !teamLoading ? "h-fit" : "h-screen"
+        !teamLoading ? "m-h-full" : "h-screen"
       } bg-glasses backdrop-blur-12 rounded-lg mt-[-24px]`}
     >
       {/* Header */}
@@ -86,21 +86,6 @@ const TeamHeader = () => {
                 >
                   <FaObjectGroup className="inline-block mr-2" />
                   Overview
-                </a>
-              </li>
-              <li className="me-2">
-                <a
-                  href="#"
-                  className={`inline-block px-3  py-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
-                    activeTab === "Message"
-                      ? "text-blue-600 border-blue-600"
-                      : ""
-                  }`}
-                  onClick={() => handleTabClick("Message")}
-                  aria-current={activeTab === "Message"}
-                >
-                  <FaInbox className="inline-block mr-2" />
-                  Message
                 </a>
               </li>
               <li className="me-2">

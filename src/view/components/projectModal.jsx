@@ -153,24 +153,24 @@ const ProjectModal = ({ isOpen, isClose, taskData, projectStage }) => {
       return response.data;
     },
     onMutate: async (updatedTask) => {
-      await queryClient.cancelQueries(["projectList_taskList"]);
-      await queryClient.cancelQueries(["projectBoard_taskList"]);
+      await queryClient.cancelQueries(["projectList_taskList",tabID]);
+      await queryClient.cancelQueries(["projectBoard_taskList",tabID]);
 
       const previousTasksList = queryClient.getQueryData([
-        "projectList_taskList",
+        "projectList_taskList",tabID
       ]);
       const previousTasksBoard = queryClient.getQueryData([
-        "projectBoard_taskList",
+        "projectBoard_taskList",tabID
       ]);
 
-      queryClient.setQueryData(["projectList_taskList"], (old) => {
+      queryClient.setQueryData(["projectList_taskList",tabID], (old) => {
         if (!old) return [updatedTask];
         return old.map((task) =>
           task.id === updatedTask.id ? updatedTask : task
         );
       });
 
-      queryClient.setQueryData(["projectBoard_taskList"], (old) => {
+      queryClient.setQueryData(["projectBoard_taskList",tabID], (old) => {
         if (!old) return [updatedTask];
         return old.map((task) =>
           task.id === updatedTask.id ? updatedTask : task
@@ -183,13 +183,13 @@ const ProjectModal = ({ isOpen, isClose, taskData, projectStage }) => {
       console.error("Error occurred:", err);
       if (context.previousTasksList) {
         queryClient.setQueryData(
-          ["projectList_taskList"],
+          ["projectList_taskList",tabID],
           context.previousTasksList
         );
       }
       if (context.previousTasksBoard) {
         queryClient.setQueryData(
-          ["projectBoard_taskList"],
+          ["projectBoard_taskList",tabID],
           context.previousTasksBoard
         );
       }
@@ -197,8 +197,8 @@ const ProjectModal = ({ isOpen, isClose, taskData, projectStage }) => {
       alert("An error occurred while updating the task");
     },
     onSettled: () => {
-      queryClient.invalidateQueries(["projectList_taskList"]);
-      queryClient.invalidateQueries(["projectBoard_taskList"]);
+      queryClient.invalidateQueries(["projectList_taskList",tabID]);
+      queryClient.invalidateQueries(["projectBoard_taskList",tabID]);
 
       alert("Task updated successfully");
     },
@@ -240,22 +240,22 @@ const ProjectModal = ({ isOpen, isClose, taskData, projectStage }) => {
       return response.data;
     },
     onMutate: async (taskId) => {
-      await queryClient.cancelQueries(["projectList_taskList"]);
-      await queryClient.cancelQueries(["projectBoard_taskList"]);
+      await queryClient.cancelQueries(["projectList_taskList",tabID]);
+      await queryClient.cancelQueries(["projectBoard_taskList",tabID]);
 
       const previousTasksList = queryClient.getQueryData([
-        "projectList_taskList",
+        "projectList_taskList",tabID
       ]);
       const previousTasksBoard = queryClient.getQueryData([
-        "projectBoard_taskList",
+        "projectBoard_taskList",tabID
       ]);
 
-      queryClient.setQueryData(["projectList_taskList"], (old) => {
+      queryClient.setQueryData(["projectList_taskList",tabID], (old) => {
         if (!old) return [];
         return old.filter((task) => task.id !== taskId);
       });
 
-      queryClient.setQueryData(["projectBoard_taskList"], (old) => {
+      queryClient.setQueryData(["projectBoard_taskList",tabID], (old) => {
         if (!old) return [];
         return old.filter((task) => task.id !== taskId);
       });
@@ -266,13 +266,13 @@ const ProjectModal = ({ isOpen, isClose, taskData, projectStage }) => {
       console.error("Error occurred:", err);
       if (context.previousTasksList) {
         queryClient.setQueryData(
-          ["projectList_taskList"],
+          ["projectList_taskList",tabID],
           context.previousTasksList
         );
       }
       if (context.previousTasksBoard) {
         queryClient.setQueryData(
-          ["projectBoard_taskList"],
+          ["projectBoard_taskList",tabID],
           context.previousTasksBoard
         );
       }
@@ -280,8 +280,8 @@ const ProjectModal = ({ isOpen, isClose, taskData, projectStage }) => {
       alert("An error occurred while deleting the task");
     },
     onSettled: () => {
-      queryClient.invalidateQueries(["projectList_taskList"]);
-      queryClient.invalidateQueries(["projectBoard_taskList"]);
+      queryClient.invalidateQueries(["projectList_taskList",tabID]);
+      queryClient.invalidateQueries(["projectBoard_taskList",tabID]);
 
       alert("Task deleted successfully");
     },
