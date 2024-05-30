@@ -25,16 +25,20 @@ const VerticalBarChart = ({ data, title}) => {
 
   const colors = [
     {
-      backgroundColor: "rgba(54, 162, 235, 0.4)",
+      backgroundColor: "rgba(54, 162, 235, 0.5)",
       borderColor: "rgba(54, 162, 235, 1)",
     },
     {
-      backgroundColor: "rgba(75, 192, 192, 0.4)",
+      backgroundColor: "rgba(75, 192, 192, 0.5)",
       borderColor: "rgba(75, 192, 192, 1)",
     },
     {
-      backgroundColor: "rgba(255, 99, 132, 0.4)",
+      backgroundColor: "rgba(255, 99, 132, 0.5)",
       borderColor: "rgba(255, 99, 132, 1)",
+    },
+    {
+      backgroundColor: "rgba(153, 102, 255, 0.5)",
+      borderColor: "rgba(153, 102, 255, 1)",
     },
   ];
 
