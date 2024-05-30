@@ -19,6 +19,7 @@ import {
   sortByTaskName,
   sortByID,
   sortByAssignDate,
+  sortByCreated_at
 } from "../../utils/sortTask";
 
 import { modalContext } from "../part/test";
@@ -47,7 +48,7 @@ const ProjectList = () => {
         return sortByTaskName(tasks);
       // Add more cases for other criteria as needed
       default:
-        return sortByAssignDate;
+        return sortByCreated_at(tasks);
     }
   };
 
@@ -110,7 +111,6 @@ const ProjectList = () => {
     <>
       <section class="container mx-auto px-6 pb-2 font-mono">
         <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-          {console.log(taskList)}
           <div class="w-full overflow-x-auto">
             <table class="w-full">
               <thead>
@@ -128,8 +128,6 @@ const ProjectList = () => {
                     <td class="px-4 py-2 border">
                       <button
                         onClick={() => {
-                          console.log("Selected Task", task);
-                          
                           setModalTask(task);
                           setProjectStage(projectStageList);
                           openProjectModal();
@@ -162,10 +160,11 @@ const ProjectList = () => {
                                 loading="lazy"
                               />
                             ) : (
-                              <UserProfilePic
+                              <img
                                 className="w-2 h-2 items-center"
-                                name={task.assignee_name}
-                                size={6}
+                                src="https://source.unsplash.com/ILip77SbmOE/900x900"
+                                alt=""
+                                loading="lazy"
                               />
                             )}
                           </div>
@@ -205,12 +204,9 @@ const ProjectList = () => {
                     </tbody>
                     {taskList.map((task, index) => (
                       <tr key={index} class="text-gray-700">
-                        {console.log(task)}
                         <td class="px-4 py-2 border">
                           <button
                             onClick={() => {
-                              console.log("Selected Task", task);
-
                               setModalTask(task);
                               setProjectStage(projectStageList);
                               openProjectModal();
@@ -243,10 +239,11 @@ const ProjectList = () => {
                                     loading="lazy"
                                   />
                                 ) : (
-                                  <UserProfilePic
+                                  <img
                                     className="w-2 h-2 items-center"
-                                    name={task.assignee_name}
-                                    size={6}
+                                    src="https://source.unsplash.com/ILip77SbmOE/900x900"
+                                    alt=""
+                                    loading="lazy"
                                   />
                                 )}
                               </div>

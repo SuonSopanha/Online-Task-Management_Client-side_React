@@ -29,6 +29,10 @@ const Teamates = () => {
     setMembers(newMembers);
   };
 
+  const handleSkip = () => {
+    navigate("/app")
+  }
+
   const handleContinue = async () => {
     const nonEmptyMembers = members.filter((member) => member.email.trim() !== '');
 
@@ -104,6 +108,12 @@ const Teamates = () => {
         onClick={handleContinue}
       >
         Continue
+      </button>
+      <button
+        className="mt-4 h-10 w-28 rounded-xl bg-blue-700 text-white font-medium"
+        onClick={handleSkip}
+      >
+        Skip
       </button>
     </div>
   );

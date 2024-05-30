@@ -89,16 +89,18 @@ const MyTask = () => {
       task_name: "Name",
       description: "",
       due_date: "01/01/2023",
+      start_date: "01/01/2023",
       task_category: "To Do",
       tracking: [],
       work_hour_required: 0,
       status: "On Track",
       priority: "Low",
+      severity: "Low",
       assignee_id: "",
       assignee_dates: undefined,
       complete: false,
       complete_date: "",
-      milestone: milestoneList
+      milestone: milestoneList,
     };
 
   }

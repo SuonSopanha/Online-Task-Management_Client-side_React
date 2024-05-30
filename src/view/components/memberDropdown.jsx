@@ -1,10 +1,19 @@
 import React, { useState } from "react";
 
-const MemberDropdown = ({ members }) => {
+const MemberDropdown = ({ members, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleMemberSelect = (member) => {
+    setSelectedMember(member);
+    setIsOpen(false);
+    if (onChange) {
+      onChange(member);
+    }
   };
 
   return (
@@ -15,7 +24,7 @@ const MemberDropdown = ({ members }) => {
           className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           onClick={toggleDropdown}
         >
-          Select Member
+          {selectedMember ? selectedMember.full_name : "Select Member"}
           <svg
             className="-mr-1 ml-2 h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +53,12 @@ const MemberDropdown = ({ members }) => {
               return (
                 <div
                   key={member.id}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex items-center"
+                  className={`block px-4 py-2 text-sm cursor-pointer ${
+                    selectedMember && selectedMember.id === member.id
+                      ? "bg-gray-100 text-gray-900"
+                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
+                  onClick={() => handleMemberSelect(member)}
                   role="menuitem"
                 >
                   {member.photo_url ? (

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createProject } from "../../firebase/projectCRUD";
-import { auth } from "../../firebase/config";
 import { apiRequest } from "../../api/api";
 
 const TeamCreate = () => {
@@ -9,6 +7,7 @@ const TeamCreate = () => {
   const [description, setDescription] = useState("");
   const [industry, setIndustry] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   const handleContinue = async () => {
@@ -18,15 +17,31 @@ const TeamCreate = () => {
       return;
     }
 
-    // Create the project or perform any further actions
-    const project_id = await apiRequest("post", "api/v1/organizations", {
-      name: name,
-      description: description,
-      industry: industry,
-      email: email,
-    });
-    console.log(project_id);
-    navigate("/teamMember", { state: { project_id: 1 } });
+    setLoading(true); // Set loading to true when request starts
+
+    try {
+      // Create the project or perform any further actions
+      const org = await apiRequest("post", "api/v1/organizations", {
+        name: name,
+        description: description,
+        industry: industry,
+        email: email,
+      });
+
+      // Add owner as member
+      await apiRequest("post", "api/v1/org-members", {
+        org_id: org.data.id,
+        role: "Project Owner",
+      });
+
+      console.log(org);
+      navigate("/teamMember", { state: { project_id: org.data.id } });
+    } catch (error) {
+      console.error("Failed to create organization", error);
+      // Handle error appropriately here
+    } finally {
+      setLoading(false); // Set loading to false when request ends
+    }
   };
 
   return (
@@ -76,10 +91,11 @@ const TeamCreate = () => {
         />
       </div>
       <button
-        className="mt-8 h-10 w-28 rounded-xl bg-blue-700 font-medium text-white"
+        className={`mt-8 h-10 w-28 rounded-xl font-medium text-white ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700"}`}
         onClick={handleContinue}
+        disabled={loading} // Disable the button when loading
       >
-        Continue
+        {loading ? "Loading..." : "Continue"}
       </button>
     </div>
   );
