@@ -32,6 +32,10 @@ const sortByDueDate = (tasks) => {
     return tasks.sort((a, b) => new Date(a.assignee_dates) - new Date(b.assignee_dates));
   }
 
+  const sortByCreated_at = (tasks) => {
+    return tasks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+
 
   export {
     sortByDueDate,
@@ -40,6 +44,7 @@ const sortByDueDate = (tasks) => {
     sortByTaskName,
     sortByWorkHoursRequired,
     sortByID,
-    sortByAssignDate
+    sortByAssignDate,
+    sortByCreated_at
   };
 

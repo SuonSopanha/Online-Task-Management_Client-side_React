@@ -11,7 +11,6 @@ import {
   FaTrash,
   FaTrashRestore,
   FaCalendarAlt,
-
   FaClipboardList,
 } from "react-icons/fa";
 
@@ -37,17 +36,20 @@ import {
   createRtTask,
 } from "../../firebase/taskCRUD";
 import { getprojecByID } from "../../firebase/projectCRUD";
-import { getUserByID,getUserFullNameById} from "../../firebase/usersCRUD";
+import { getUserByID, getUserFullNameById } from "../../firebase/usersCRUD";
 import { apiRequest } from "../../api/api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { modalContext } from "../part/test";
 
-const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
+const ProjectModal = ({ isOpen, isClose, taskData, projectStage }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
+  const [isSaving, setIsSaving] = useState(false);
   const [task, setTask] = useState(taskData ? taskData : {});
-  const [selectedStage, setSelectedStage] = useState(projectStage ? projectStage[0] : {});
-  
+  const [selectedStage, setSelectedStage] = useState(
+    projectStage ? projectStage[0] : {}
+  );
+
   const { tabID } = useContext(modalContext);
 
   const queryClient = useQueryClient();
@@ -56,8 +58,6 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
     setTask(taskData);
   }, [taskData]);
 
-
-  
   const timestamp = Date.now();
   const formattedDate = new Date(timestamp).toLocaleDateString("en-KH", {
     month: "2-digit",
@@ -77,19 +77,14 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
     setIsModalOpen(isOpen);
   }, [isOpen]);
 
-
-
-
-
   const handleClose = () => {
     setIsModalOpen(false);
     isClose();
   };
 
-
   const handleStageChange = (e) => {
     setSelectedStage(e.target.value);
-  }
+  };
   const handleTaskNameChange = (newName) => {
     setTask({ ...task, task_name: newName });
     console.log(task.name);
@@ -143,59 +138,164 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
   const onSeverityChange = (newSeverity) => {
     setTask({ ...task, severity: newSeverity });
     console.log(task.severity);
-  }
+  };
+
+  const updateTaskMutation = useMutation({
+    mutationFn: async (updatedTask) => {
+      const response = await apiRequest(
+        "put",
+        `api/v1/tasks/${updatedTask.id}`,
+        updatedTask
+      );
+      if (!response || response.status !== "Request was successful") {
+        throw new Error("Failed to update task");
+      }
+      return response.data;
+    },
+    onMutate: async (updatedTask) => {
+      await queryClient.cancelQueries(["projectList_taskList"]);
+      await queryClient.cancelQueries(["projectBoard_taskList"]);
+
+      const previousTasksList = queryClient.getQueryData([
+        "projectList_taskList",
+      ]);
+      const previousTasksBoard = queryClient.getQueryData([
+        "projectBoard_taskList",
+      ]);
+
+      queryClient.setQueryData(["projectList_taskList"], (old) => {
+        if (!old) return [updatedTask];
+        return old.map((task) =>
+          task.id === updatedTask.id ? updatedTask : task
+        );
+      });
+
+      queryClient.setQueryData(["projectBoard_taskList"], (old) => {
+        if (!old) return [updatedTask];
+        return old.map((task) =>
+          task.id === updatedTask.id ? updatedTask : task
+        );
+      });
+
+      return { previousTasksList, previousTasksBoard };
+    },
+    onError: (err, updatedTask, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousTasksList) {
+        queryClient.setQueryData(
+          ["projectList_taskList"],
+          context.previousTasksList
+        );
+      }
+      if (context.previousTasksBoard) {
+        queryClient.setQueryData(
+          ["projectBoard_taskList"],
+          context.previousTasksBoard
+        );
+      }
+
+      alert("An error occurred while updating the task");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["projectList_taskList"]);
+      queryClient.invalidateQueries(["projectBoard_taskList"]);
+
+      alert("Task updated successfully");
+    },
+  });
 
   const onSaveButton = async () => {
     try {
+      setIsSaving(true);
       let complete_date = null;
-      if( task.complete === true ) {
-        complete_date = formattedDate
+      if (task.complete === true) {
+        complete_date = formattedDate;
       }
 
       const stage_id = parseInt(selectedStage);
-      const updatedTask = { ...task, stage_id: stage_id ,complete_date: complete_date};
+      const updatedTask = {
+        ...task,
+        stage_id: stage_id,
+        complete_date: complete_date,
+      };
 
-      
-  
-      const response = await apiRequest("put", "api/v1/tasks/" + task.id, updatedTask);
-    
-  
-      if (response.status === "Request was successful") {
-        alert("Task updated successfully");
+      console.log("Updated task data:", updatedTask);
 
-        queryClient.invalidateQueries('projectList_taskList');
-        queryClient.invalidateQueries('projectBoard_taskList');
-        queryClient.invalidateQueries('projectCalendar_taskList');
-
-      } else {
-        alert("Failed to update task");
-      }
-  
-      console.log(updatedTask);
+      updateTaskMutation.mutate(updatedTask);
       handleClose();
     } catch (error) {
       console.error("Error updating task:", error);
       alert("An error occurred while updating the task");
+    } finally {
+      setIsSaving(false);
     }
   };
-  
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (taskId) => {
+      const response = await apiRequest("delete", `api/v1/tasks/${taskId}`);
+      if (!response || response.status !== "Request was successful") {
+        throw new Error("Failed to delete task");
+      }
+      return response.data;
+    },
+    onMutate: async (taskId) => {
+      await queryClient.cancelQueries(["projectList_taskList"]);
+      await queryClient.cancelQueries(["projectBoard_taskList"]);
+
+      const previousTasksList = queryClient.getQueryData([
+        "projectList_taskList",
+      ]);
+      const previousTasksBoard = queryClient.getQueryData([
+        "projectBoard_taskList",
+      ]);
+
+      queryClient.setQueryData(["projectList_taskList"], (old) => {
+        if (!old) return [];
+        return old.filter((task) => task.id !== taskId);
+      });
+
+      queryClient.setQueryData(["projectBoard_taskList"], (old) => {
+        if (!old) return [];
+        return old.filter((task) => task.id !== taskId);
+      });
+
+      return { previousTasksList, previousTasksBoard };
+    },
+    onError: (err, taskId, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousTasksList) {
+        queryClient.setQueryData(
+          ["projectList_taskList"],
+          context.previousTasksList
+        );
+      }
+      if (context.previousTasksBoard) {
+        queryClient.setQueryData(
+          ["projectBoard_taskList"],
+          context.previousTasksBoard
+        );
+      }
+
+      alert("An error occurred while deleting the task");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["projectList_taskList"]);
+      queryClient.invalidateQueries(["projectBoard_taskList"]);
+
+      alert("Task deleted successfully");
+    },
+  });
+
   const onDeleteButton = async () => {
     try {
-      const response = await apiRequest("delete", "api/v1/tasks/" + task.id);
-  
-      if (response.status === "Request was successful") {
-        alert("Task deleted successfully");
-      } else {
-        alert("Failed to delete task");
-      }
-  
+      deleteTaskMutation.mutate(task.id);
       handleClose();
     } catch (error) {
       console.error("Error deleting task:", error);
       alert("An error occurred while deleting the task");
     }
   };
-  
 
   return (
     <>
@@ -230,41 +330,45 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                   className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
                   onChange={handleStageChange}
                 >
-                  <option value={taskData.stage_id === null ? null : projectStage[0].id}>
-                    {taskData.stage_id === null ? "no stage" : projectStage[0].stage_name}
+                  <option
+                    value={
+                      taskData.stage_id === null ? null : projectStage[0].id
+                    }
+                  >
+                    {taskData.stage_id === null
+                      ? "no stage"
+                      : projectStage[0].stage_name}
                   </option>
                   {projectStage.map((stage) => (
-                    <option value={stage.id}>
-                      {stage.stage_name}
-                    </option>
+                    <option value={stage.id}>{stage.stage_name}</option>
                   ))}
                 </select>
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b border-gray-500 p-3 items-center">
                 <div className="w-24 font-semibold">Assignee</div>
-                
+
                 <div className="flex items-center text-sm">
-                        <div className="flex flex-row items-center space-x-2 justify-center">
-                          <div className="flex flex-row items-center justify-center w-6 h-6 rounded-full md:block">
-                            {task.assignee_photo != null ? (
-                              <img
-                                className="object-cover w-full h-full rounded-full"
-                                src={task.assignee_photo}
-                                alt=""
-                                loading="lazy"
-                              />
-                            ) : (
-                              <UserProfilePic
-                                className="w-2 h-2 items-center"
-                                name={task.assignee_name}
-                                size={6}
-                              />
-                            )}
-                          </div>
-                          <div className="ml-2">
-                            <span>{task.assignee_name}</span>
-                          </div>
-                        </div>
+                  <div className="flex flex-row items-center space-x-2 justify-center">
+                    <div className="flex flex-row items-center justify-center w-6 h-6 rounded-full md:block">
+                      {task.assignee_photo != null ? (
+                        <img
+                          className="object-cover w-full h-full rounded-full"
+                          src={task.assignee_photo}
+                          alt=""
+                          loading="lazy"
+                        />
+                      ) : (
+                        <UserProfilePic
+                          className="w-2 h-2 items-center"
+                          name={task.assignee_name}
+                          size={6}
+                        />
+                      )}
+                    </div>
+                    <div className="ml-2">
+                      <span>{task.assignee_name}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
@@ -307,7 +411,10 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                 <div className="flex items-center w-10 font-semibold text-sm">
                   Severity
                 </div>
-                <TaskSeveritySelector onChange={onSeverityChange} initValue={task.severity} />
+                <TaskSeveritySelector
+                  onChange={onSeverityChange}
+                  initValue={task.severity}
+                />
               </div>
               <div className="flex flex-row justify-start space-x-5 border-b text-sm sm:text-base border-gray-500 p-3 items-center">
                 <div className="flex items-center w-10 font-semibold text-sm">
@@ -321,7 +428,6 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                     {task.project_name ? task.project_name : "No Project"}
                   </span>
                 </div>
-
               </div>
               <div className="flex-col justify-start space-y-3 border-b text-sm sm:text-base border-gray-500 p-3 items-start">
                 <div className="flex items-center w-24 font-semibold">
@@ -329,7 +435,6 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                 </div>
                 <EditableBox
                   init={task.description}
-
                   OnChange={onDescriptionChange}
                   className="w-full"
                 ></EditableBox>
@@ -352,7 +457,7 @@ const ProjectModal = ({ isOpen, isClose, taskData,projectStage }) => {
                     type="button"
                     onClick={onSaveButton}
                   >
-                    Save
+                    {isSaving ? "Updating..." : "Update"}
                   </button>
                 </div>
               </div>

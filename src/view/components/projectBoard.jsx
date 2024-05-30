@@ -18,6 +18,7 @@ import {
   sortByWorkHoursRequired,
   sortByTaskName,
   sortByID,
+  sortByCreated_at
 } from "../../utils/sortTask";
 
 import { modalContext } from "../part/test";
@@ -46,7 +47,7 @@ const ProjectBoard = () => {
         return sortByTaskName(tasks);
       // Add more cases for other criteria as needed
       default:
-        return sortByID(tasks);
+        return sortByCreated_at(tasks);
     }
   };
 

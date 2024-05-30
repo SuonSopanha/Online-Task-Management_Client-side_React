@@ -27,7 +27,6 @@ import Timer from "./modalComponents/timer";
 import TagInput from "./modalComponents/taskTag";
 import TaskSeveritySelector from "./modalComponents/taskSeveritySelector";
 
-
 import { auth } from "../../firebase/config";
 import {
   updateRtTaskByID,
@@ -36,7 +35,7 @@ import {
 } from "../../firebase/taskCRUD";
 import { createNotification } from "../../firebase/notification";
 import { apiRequest } from "../../api/api";
-
+import { useMutation ,useQueryClient} from "@tanstack/react-query";
 
 const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
@@ -46,6 +45,7 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
   );
 
   const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
 
   let newData = {};
 
@@ -165,9 +165,64 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
     year: "numeric",
   });
 
+  const createTaskMutation = useMutation({
+    mutationFn: async (newTask) => {
+      const response = await apiRequest("post", "api/v1/tasks", newTask);
+      if (!response || response.status !== "Request was successful") {
+        throw new Error("Failed to create task");
+      }
+      return response.data;
+    },
+    onMutate: async (newTask) => {
+      await queryClient.cancelQueries(["taskList_taskList"]);
+      await queryClient.cancelQueries(["taskBoard_taskList"]);
+
+      const previousTasksList = queryClient.getQueryData([
+        "taskList_taskList",
+      ]);
+      const previousTasksBoard = queryClient.getQueryData([
+        "taskBoard_taskList",
+      ]);
+
+      queryClient.setQueryData(["taskList_taskList"], (old) => {
+        if (!old) return [newTask];
+        return [newTask, ...old];
+      });
+
+      queryClient.setQueryData(["taskBoard_taskList"], (old) => {
+        if (!old) return [newTask];
+        return [newTask, ...old];
+      });
+
+      return { previousTasksList, previousTasksBoard };
+    },
+    onError: (err, newTask, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousTasksList) {
+        queryClient.setQueryData(
+          ["taskList_taskList"],
+          context.previousTasksList
+        );
+      }
+      if (context.previousTasksBoard) {
+        queryClient.setQueryData(
+          ["taskBoard_taskList"],
+          context.previousTasksBoard
+        );
+      }
+
+      alert(
+        "An error occurred while creating the task. Please try again later."
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["taskList_taskList"]);
+      queryClient.invalidateQueries(["taskBoard_taskList"]);
+    },
+  });
+
   const onSaveButton = async () => {
     setIsSaving(true);
-
   
     try {
       // Find milestone id
@@ -176,7 +231,7 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
       );
       const milestone_id = milestone_object ? milestone_object.id : null;
   
-      const newField = {
+      const newTask = {
         milestone_id: milestone_id,
         task_name: task.task_name,
         description: task.description,
@@ -192,10 +247,9 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
         severity: task.severity,
       };
   
-      const response = await apiRequest("post", "api/v1/tasks", newField);
-      if (response.status === "Request was successful") {
-        alert("Task created successfully");
-      }
+      console.log("New task data:", newTask);
+  
+      createTaskMutation.mutate(newTask);
     } catch (error) {
       console.error("An error occurred while creating the task:", error);
       alert("An error occurred while creating the task. Please try again later.");

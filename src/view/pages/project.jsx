@@ -156,7 +156,7 @@ const Project = () => {
 
 
   return (
-    <div className="w-full h-[1200px] bg-glasses backdrop-blur-12 rounded-lg">
+    <div className="w-full min-h-[1200px] max-h-full bg-glasses backdrop-blur-12 rounded-lg">
       {/* Header */}
       <div className="flex flex-row justify-start border-b border-gray-500  ">
         <div className="flex items-center p-3 ml-1">
