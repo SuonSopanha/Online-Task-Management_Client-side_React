@@ -26,7 +26,7 @@ const ProjectDetail = () => {
     isLoading: projectLoading,
     error: projectError,
   } = useQuery({
-    queryKey: ["projectDetail_project"],
+    queryKey: ["projectDetail_project",tabID],
     queryFn: fetchProject,
   });
 

@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import TaskModal from "./taskModal";
 import SendMessageModal from "./sendMessageModal";
+import MilestoneModal from "./milestoneModal";
 
 import LoadingBalls from "../../utils/loading";
 import {
@@ -29,9 +30,20 @@ import { useQuery } from "@tanstack/react-query";
 
 const TaskList = () => {
 
-  const { openModal, isModalOpen, setModalTask, closeCreateModal,setMilestoneData } =
+  const { openModal, isModalOpen, setModalTask, closeCreateModal,setMilestoneData ,tabID} =
     useContext(modalContext);
   const { sortCriteria } = useContext(mytaskContext);
+
+  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+  const [milestoneinit,setMilestone] = useState({})
+
+  const onMilestoneModalClose = () => {
+    setIsMilestoneModalOpen(false);
+  };
+
+  const onMilestoneModalOpen = () => {
+    setIsMilestoneModalOpen(true);
+  };
 
   const sortTasks = (tasks, criteria) => {
     switch (criteria) {
@@ -58,7 +70,7 @@ const TaskList = () => {
     isLoading: milestoneLoading,
     error: milestoneError,
   } = useQuery({
-    queryKey: ["taskList_milestone"],
+    queryKey: ["taskList_milestone",tabID],
     queryFn: fetchMilestones,
   });
 
@@ -67,7 +79,7 @@ const TaskList = () => {
     isLoading: taskLoading,
     error: taskError, 
   } = useQuery({
-    queryKey: ["taskList_taskList"],
+    queryKey: ["taskList_taskList",tabID],
     queryFn: fetchTasks,
   });
 
@@ -201,9 +213,12 @@ const TaskList = () => {
                     <tr className="text-gray-700">
                       <td colSpan="4">
                         <div className="flex justify-between items-center">
-                          <h1 className="px-4 py-2 text-xxl font-semibold">
+                          <button onClick={async () => {
+                            await setMilestone(milestone);
+                            onMilestoneModalOpen();
+                          }} className="px-4 py-2 text-xxl font-semibold">
                             {milestone.milestone_name}
-                          </h1>
+                          </button>
                           <div className="px-4 py-2">
                             <button className="">
                               <svg
@@ -302,6 +317,13 @@ const TaskList = () => {
           </div>
         </div>
       </section>
+      {isMilestoneModalOpen && (
+          <MilestoneModal
+            onClose={onMilestoneModalClose}
+            initialValue={milestoneinit}
+          />
+          
+        )}
     </>
   );
 };

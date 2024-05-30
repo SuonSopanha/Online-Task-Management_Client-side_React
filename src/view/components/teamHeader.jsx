@@ -32,7 +32,7 @@ const TeamHeader = () => {
     isLoading: teamLoading,
     error: teamError,
   } = useQuery({
-    queryKey: ["teamHeader_team"],
+    queryKey: ["teamHeader_team",tabID],
     queryFn: fetchTeam,
   });
 

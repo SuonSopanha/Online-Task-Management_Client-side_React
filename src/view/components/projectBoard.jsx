@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
 import { getUserFullNameById } from "../../firebase/usersCRUD";
 import LoadingBalls from "../../utils/loading";
+import ProjectStageModal from "./projectStageModal";
 
 import {
   sortByPriority,
@@ -18,18 +19,28 @@ import {
   sortByWorkHoursRequired,
   sortByTaskName,
   sortByID,
-  sortByCreated_at
+  sortByCreated_at,
 } from "../../utils/sortTask";
 
 import { modalContext } from "../part/test";
 import { projectTaskContext } from "../pages/project";
 
-
 const ProjectBoard = () => {
-  const { tabID, setTabID, openProjectModal, setModalTask,setProjectStage } =
+  const { tabID, setTabID, openProjectModal, setModalTask, setProjectStage } =
     useContext(modalContext);
 
   const { sortCriteria } = useContext(projectTaskContext);
+
+  const [isOpenStageModal, setIsOpenStageModal] = useState(false);
+  const [projectStageinit, setProjectStageinit] = useState({});
+
+  const openStageModal = () => {
+    setIsOpenStageModal(true);
+  };
+
+  const closeStageModal = () => {
+    setIsOpenStageModal(false);
+  };
 
   const sortTasks = (tasks, criteria) => {
     switch (criteria) {
@@ -50,7 +61,6 @@ const ProjectBoard = () => {
         return sortByCreated_at(tasks);
     }
   };
-
 
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -90,28 +100,29 @@ const ProjectBoard = () => {
 
   let sortTask = [];
 
-
-
   const {
     data: projectStageList,
     isLoading: projectStageListLoading,
     error: projectStageListError,
   } = useQuery({
-    queryKey: ["projectBoard_projectStageList"],
+    queryKey: ["projectBoard_projectStageList",tabID],
     queryFn: fetchprojectStages,
   });
 
   const {
     data: taskList,
     isLoading: taskLoading,
-    error: taskError, 
+    error: taskError,
   } = useQuery({
-    queryKey: ["projectBoard_taskList"],
+    queryKey: ["projectBoard_taskList",tabID],
     queryFn: fetchTasks,
   });
 
   async function fetchprojectStages() {
-    const response = await apiRequest("get", "api/v1/project-stages?project_id[eq]=" + tabID);
+    const response = await apiRequest(
+      "get",
+      "api/v1/project-stages?project_id[eq]=" + tabID
+    );
     console.log(response);
     return response.data;
   }
@@ -130,7 +141,7 @@ const ProjectBoard = () => {
   if (!taskLoading && Array.isArray(taskList)) {
     sortedTaskList = sortTasks(taskList, sortCriteria);
   }
-  
+
   if (projectStageListLoading) {
     return (
       <div className="flex justify-center items-center h-72">
@@ -143,73 +154,87 @@ const ProjectBoard = () => {
     return <p>Error: {projectStageListError || taskError}</p>;
   }
 
-  const Team = "Team";
 
   return (
     <div className="container mx-auto mt-6 overflow-x-auto">
       <h1 className="text-2xl ml-4 font-semibold mb-4">Task Board</h1>
-      {console.log(taskList)}
       <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
         {projectStageList.map((ProjectStage, index) => (
           <div
             key={index}
             className="w-full lg:w-1/3 bg-glasses backdrop-blur-12 rounded-xl p-3"
           >
-            <h2 className="text-lg font-semibold mb-4">
+            <button
+              onClick={async () => {
+                await setProjectStageinit(ProjectStage);
+                openStageModal();
+              }}
+              className="text-lg font-semibold mb-4"
+            >
               {ProjectStage.stage_name}
-            </h2>
+            </button>
             <div className="flex flex-col space-y-2">
-              {taskLoading ? null : taskList.map((task) => (
-                <button
-                  key={task.id}
-                  className="flex justify-center items-center transition duration-300 transform hover:scale-105"
-                  onClick={() => {
-                    setModalTask(task);
-                    setProjectStage(projectStageList);
-                    openProjectModal();
-                  }}
-                >
-                  <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
-                    <div className="flex flex-row space-x-1 items-center">
-                      <span>
-                        {task.project_id !== null ? (
-                          <FaUsers className="text-white text-xs" />
-                        ) : (
-                          <FaUser className="text-white text-xs" />
-                        )}
-                      </span>
-                      {task.project_id !== null ? (
-                        <span className="text-xs">
-                          {task.project ? task.project.project_name : "Team"}
-                        </span>
-                      ) : (
-                        <span className="text-xs">Only Me</span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="flex justify-start text-sm font-bold mt-1 mb-1">
-                        {task.task_name}
-                      </p>
-                    </div>
-                    <div className="mb-1 flex flex-row justify-start left-0"></div>
-                    <div className="text-xs flex space-x-1">
-                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
-                        {task.priority}
-                      </span>
-                      <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
-                        {task.status}
-                      </span>
-                    </div>
-                    <div className="text-xs pt-0.5 items-end flex justify-end">
-                      DueDate: {task.due_date}
-                    </div>
-                  </div>
-                </button>
-              ))}
+              {taskLoading
+                ? null
+                : taskList.map((task) => (
+                    <button
+                      key={task.id}
+                      className="flex justify-center items-center transition duration-300 transform hover:scale-105"
+                      onClick={() => {
+                        setModalTask(task);
+                        setProjectStage(projectStageList);
+                        openProjectModal();
+                      }}
+                    >
+                      <div className="flex flex-col bg-blue-400 pt-2 pb-1 px-2 rounded-md text-white w-full mx-auto my-auto">
+                        <div className="flex flex-row space-x-1 items-center">
+                          <span>
+                            {task.project_id !== null ? (
+                              <FaUsers className="text-white text-xs" />
+                            ) : (
+                              <FaUser className="text-white text-xs" />
+                            )}
+                          </span>
+                          {task.project_id !== null ? (
+                            <span className="text-xs">
+                              {task.project
+                                ? task.project.project_name
+                                : "Team"}
+                            </span>
+                          ) : (
+                            <span className="text-xs">Only Me</span>
+                          )}
+                        </div>
+                        <div>
+                          <p className="flex justify-start text-sm font-bold mt-1 mb-1">
+                            {task.task_name}
+                          </p>
+                        </div>
+                        <div className="mb-1 flex flex-row justify-start left-0"></div>
+                        <div className="text-xs flex space-x-1">
+                          <span className="px-1.5 py-0.5 font-semibold leading-tight text-green-700 bg-green-100 rounded-lg text-xs">
+                            {task.priority}
+                          </span>
+                          <span className="px-1.5 py-0.5 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-lg text-xs">
+                            {task.status}
+                          </span>
+                        </div>
+                        <div className="text-xs pt-0.5 items-end flex justify-end">
+                          DueDate: {task.due_date}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
             </div>
           </div>
         ))}
       </div>
+      {isOpenStageModal && (
+        <ProjectStageModal
+          onClose={closeStageModal}
+          initialValue={projectStageinit}
+        />
+      )}
     </div>
   );
 };

@@ -11,6 +11,7 @@ import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
 import { getUserFullNameById } from "../../firebase/usersCRUD";
 import LoadingBalls from "../../utils/loading";
 import UserProfilePic from "../../utils/photoGenerator";
+import ProjectStageModal from "./projectStageModal";
 import {
   sortByPriority,
   sortByDueDate,
@@ -19,7 +20,7 @@ import {
   sortByTaskName,
   sortByID,
   sortByAssignDate,
-  sortByCreated_at
+  sortByCreated_at,
 } from "../../utils/sortTask";
 
 import { modalContext } from "../part/test";
@@ -29,8 +30,18 @@ import { id } from "date-fns/locale";
 const ProjectList = () => {
   const { tabID, setTabID, openProjectModal, setModalTask, setProjectStage } =
     useContext(modalContext);
-
   const { sortCriteria } = useContext(projectTaskContext);
+
+  const [isOpenStageModal, setIsOpenStageModal] = useState(false);
+  const [projectStageinit, setProjectStageinit] = useState({});
+
+  const openStageModal = () => {
+    setIsOpenStageModal(true);
+  };
+
+  const closeStageModal = () => {
+    setIsOpenStageModal(false);
+  };
 
   const sortTasks = (tasks, criteria) => {
     switch (criteria) {
@@ -57,7 +68,7 @@ const ProjectList = () => {
     isLoading: projectStageListLoading,
     error: projectStageListError,
   } = useQuery({
-    queryKey: ["projectList_projectStageList"],
+    queryKey: ["projectList_projectStageList",tabID],
     queryFn: fetchprojectStages,
   });
 
@@ -66,7 +77,7 @@ const ProjectList = () => {
     isLoading: taskLoading,
     error: taskError,
   } = useQuery({
-    queryKey: ["projectList_taskList"],
+    queryKey: ["projectList_taskList",tabID],
     queryFn: fetchTasks,
   });
 
@@ -195,9 +206,16 @@ const ProjectList = () => {
                       <td class="px-4 py-2 border" colSpan="5">
                         <div class="flex justify-center items-center text-sm">
                           <div className="flex flex-col justify-center items-center">
-                            <p class="font-semibold text-lg text-black whitespace-nowrap">
+                            <button
+                              onClick={async () => {
+                                await setProjectStageinit(stage);
+                                openStageModal();
+                              }}
+                              class="font-semibold text-lg text-black whitespace-nowrap"
+                            >
                               {stage.stage_name}
-                            </p>
+                         
+                            </button>
                           </div>
                         </div>
                       </td>
@@ -275,6 +293,7 @@ const ProjectList = () => {
             </table>
           </div>
         </div>
+        {isOpenStageModal && <ProjectStageModal onClose={closeStageModal} initialValue={projectStageinit}/>}
       </section>
     </>
   );

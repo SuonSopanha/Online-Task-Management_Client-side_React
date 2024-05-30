@@ -21,7 +21,7 @@ const OrgDetail = ({team}) => {
       isLoading: projectLoading,
       error: projectError,
     } = useQuery({
-      queryKey: ["orgDetail_project"],
+      queryKey: ["orgDetail_project",team],
       queryFn: fetchProject,
     });
   
