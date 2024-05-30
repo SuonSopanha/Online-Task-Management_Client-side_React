@@ -237,25 +237,25 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
       return response.data;
     },
     onMutate: async ({ newTask, name, photo }) => {
-      await queryClient.cancelQueries(["projectList_taskList"]);
-      await queryClient.cancelQueries(["projectBoard_taskList"]);
+      await queryClient.cancelQueries(["projectList_taskList",tabID]);
+      await queryClient.cancelQueries(["projectBoard_taskList",tabID]);
 
       const fullNewTask = {
         ...newTask,
         assignee_name: name,
         assignee_photo: photo,
       };
-      const previousTasks = queryClient.getQueryData(["projectList_taskList"]);
+      const previousTasks = queryClient.getQueryData(["projectList_taskList",tabID]);
 
 
-      queryClient.setQueryData(["projectList_taskList"], (old) => {
+      queryClient.setQueryData(["projectList_taskList",tabID], (old) => {
         if (!old) {
           return [fullNewTask];
         }
         return [fullNewTask, ...old];
       });
 
-      queryClient.setQueryData(["projectBoard_taskList"], (old) => {
+      queryClient.setQueryData(["projectBoard_taskList",tabID], (old) => {
         if (!old) {
           return [fullNewTask];
         }
@@ -268,11 +268,11 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
       console.error("Error occurred:", err);
       if (context.previousTasks) {
         queryClient.setQueryData(
-          ["projectList_taskList"],
+          ["projectList_taskList",tabID],
           context.previousTasks
         );
         queryClient.setQueryData(
-          ["projectBoard_taskList"],
+          ["projectBoard_taskList",tabID],
           context.previousTasks
         );
       }
@@ -280,8 +280,8 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
       alert("Error occurred while creating task");
     },
     onSettled: () => {
-      queryClient.invalidateQueries(["projectList_taskList"]);
-      queryClient.invalidateQueries(["projectBoard_taskList"]);
+      queryClient.invalidateQueries(["projectList_taskList",tabID]);
+      queryClient.invalidateQueries(["projectBoard_taskList",tabID]);
 
       alert("Task created successfully");
     },

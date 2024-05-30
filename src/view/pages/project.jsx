@@ -24,6 +24,7 @@ import ProjectDetail from "../components/projectDetail";
 import { modalContext } from "../part/test";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "../../api/api";
+import { ta } from "date-fns/locale";
 
 export const projectTaskContext = createContext(null);
 
@@ -55,7 +56,7 @@ const Project = () => {
     isLoading: projectLoading,
     error: projectError,
   } = useQuery({
-    queryKey: ["project_project"],
+    queryKey: ["project_project",tabID],
     queryFn: fetchProject,
   });
 
@@ -64,7 +65,7 @@ const Project = () => {
     isLoading: projectMemberLoading,
     error: projectMemberError,
   } = useQuery({
-    queryKey: ["project_member"],
+    queryKey: ["project_member",tabID],
     queryFn: fetchProjectMember,
   }); 
   
@@ -81,7 +82,7 @@ const Project = () => {
     isLoading: projectStagesLoading,
     error: projectStagesError,
   } = useQuery({
-    queryKey: ["project_stages"],
+    queryKey: ["projectList_projectStageList",tabID],
     queryFn: fetchprojectStages,
   });
 

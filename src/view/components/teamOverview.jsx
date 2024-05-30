@@ -40,7 +40,7 @@ const TeamOverview = ({team}) => {
     isLoading: teamMemberLoading,
     error: teamMemberError,
   } = useQuery({
-    queryKey: ["teamOverview_teamMember"],
+    queryKey: ["teamOverview_teamMember",tabID],
     queryFn: fetchTeamMember,
   });
 
@@ -50,19 +50,11 @@ const TeamOverview = ({team}) => {
     isLoading: teamProjectLoading,
     error: teamProjectError,
   } = useQuery({
-    queryKey: ["teamOverview_teamProject"],
+    queryKey: ["teamOverview_teamProject",tabID],
     queryFn: fetchTeamProject,
   });
 
   
-  const {
-    data: teamGoal,
-    isLoading: teamGoalLoading,
-    error: teamGoalError,
-  } = useQuery({
-    queryKey: ["teamOverview_teamGoal"],
-    queryFn: fetchTeamGoal,
-  });
 
   async function fetchTeamMember() {
     const response = await apiRequest("get", "api/v1/org-members?org_id[eq]=" + team.id);
@@ -84,10 +76,10 @@ const TeamOverview = ({team}) => {
 
 
 
-  if (teamMemberError || teamProjectError || teamGoalError) {
+  if (teamMemberError || teamProjectError) {
     return (
       <div>
-        Error: {teamMemberError?.message || teamProjectError?.message || teamGoalError?.message}
+        Error: {teamMemberError?.message || teamProjectError?.message}
       </div>
     );
   };
@@ -99,8 +91,8 @@ const TeamOverview = ({team}) => {
   return (
     <>
       <div class="container mx-auto flex flex-col lg:flex-row lg:space-x-4 mt-3">
-        <div class="w-full lg:w-8/12 flex flex-col">
-          <div className="w-full h-fit  bg-glasses backdrop-blur-12 px-4 py-2 space-y-5 rounded-xl mb-4">
+        <div class="w-full min-h-screen lg:w-8/12 flex flex-col">
+          <div className="w-full h-fit bg-glasses backdrop-blur-12 px-4 py-2 space-y-5 rounded-xl mb-4">
             <h1 className="text-2xl font-semibold text-gray-700 pt-2">
               Member
             </h1>

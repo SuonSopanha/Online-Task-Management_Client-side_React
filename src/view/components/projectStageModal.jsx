@@ -2,14 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import MemberDropdown from "./memberDropdown";
 import { apiRequest } from "../../api/api";
 import { modalContext } from "../part/test";
-
-const mockMembers = [
-  { id: 1, name: "John Doe" },
-  { id: 2, name: "Jane Smith" },
-  { id: 3, name: "Alice Johnson" },
-  { id: 4, name: "Bob Brown" },
-  { id: 5, name: "Emily Davis" },
-];
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const ProjectStageModal = ({ onClose, initialValue }) => {
   const [stageName, setStageName] = useState("");
@@ -19,19 +12,26 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
   const [complete, setComplete] = useState(false);
   const [completeDate, setCompleteDate] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isEditing, setIsEditing] = useState(false);
 
   const { tabID } = useContext(modalContext);
+
+  const queryClient = useQueryClient();
 
   const project_id = parseInt(tabID);
 
   useEffect(() => {
     if (initialValue) {
-      setStageName(initialValue.stageName || "");
-      setStartDate(initialValue.startDate || "");
-      setEndDate(initialValue.endDate || "");
+      setStageName(initialValue.stage_name || "");
+      setStartDate(initialValue.start_date || "");
+      setEndDate(initialValue.end_date || "");
       setPeriod(initialValue.period || "");
       setComplete(initialValue.complete || false);
-      setCompleteDate(initialValue.completeDate || "");
+      setCompleteDate(initialValue.complete_date || "");
+    }
+
+    if (initialValue) {
+      setIsEditing(true);
     }
   }, [initialValue]);
 
@@ -59,6 +59,64 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
     setCompleteDate(event.target.value);
   };
 
+  const createStageMutation = useMutation({
+    mutationFn: async (newStage) => {
+      const response = await apiRequest(
+        "post",
+        "api/v1/project-stages",
+        newStage
+      );
+      if (!response || response.status !== "Request was successful") {
+        throw new Error(response.message || "Failed to save project stage");
+      }
+      return response.data;
+    },
+    onMutate: async (newStage) => {
+      await queryClient.cancelQueries(["projectList_projectStageList"]);
+      await queryClient.cancelQueries(["projectBoard_projectStageList"]);
+
+      const previousStagesList = queryClient.getQueryData([
+        "projectList_projectStageList",
+      ]);
+      const previousStagesBoard = queryClient.getQueryData([
+        "projectBoard_projectStageList",
+      ]);
+
+      queryClient.setQueryData(["projectList_projectStageList"], (old) => {
+        if (!old) return [newStage];
+        return [...old, newStage];
+      });
+
+      queryClient.setQueryData(["projectBoard_projectStageList"], (old) => {
+        if (!old) return [newStage];
+        return [...old, newStage];
+      });
+
+      return { previousStagesList, previousStagesBoard };
+    },
+    onError: (err, newStage, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousStagesList) {
+        queryClient.setQueryData(
+          ["projectList_projectStageList"],
+          context.previousStagesList
+        );
+      }
+      if (context.previousStagesBoard) {
+        queryClient.setQueryData(
+          ["projectBoard_projectStageList"],
+          context.previousStagesBoard
+        );
+      }
+
+      alert("An error occurred while saving the project stage.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["projectList_projectStageList"]);
+      queryClient.invalidateQueries(["projectBoard_projectStageList"]);
+    },
+  });
+
   const handleSave = async () => {
     if (stageName.trim() === "") {
       alert("Please enter a stage name.");
@@ -68,7 +126,7 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
     setIsLoading(true); // Disable button when request starts
 
     try {
-      const stage_id = await apiRequest("post", "api/v1/project-stages", {
+      const newStage = {
         project_id: project_id,
         stage_name: stageName,
         start_date: startDate,
@@ -76,15 +134,113 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
         period: period,
         completed: complete,
         completion_date: completeDate,
+      };
+
+      createStageMutation.mutate(newStage, {
+        onSuccess: (data) => {
+          console.log("Project stage created successfully:", data);
+          onClose(); // Close the modal after saving
+        },
       });
-
-      console.log(stage_id);
-
-      // Close the modal after saving
-      onClose();
     } catch (error) {
       console.error("Failed to save project stage:", error);
       alert("An error occurred while saving the project stage.");
+    } finally {
+      setIsLoading(false); // Re-enable button after request completes
+    }
+  };
+
+  const updateStageMutation = useMutation({
+    mutationFn: async (updatedStage) => {
+      const response = await apiRequest(
+        "put",
+        `api/v1/project-stages/${updatedStage.id}`,
+        updatedStage
+      );
+      if (!response || response.status !== "Request was successful") {
+        throw new Error(response.message || "Failed to update project stage");
+      }
+      return response.data;
+    },
+    onMutate: async (updatedStage) => {
+      await queryClient.cancelQueries(["projectList_projectStageList"]);
+      await queryClient.cancelQueries(["projectBoard_projectStageList"]);
+
+      const previousStagesList = queryClient.getQueryData([
+        "projectList_projectStageList",
+      ]);
+      const previousStagesBoard = queryClient.getQueryData([
+        "projectBoard_projectStageList",
+      ]);
+
+      queryClient.setQueryData(["projectList_stage"], (old) => {
+        if (!old) return [];
+        return old.map((stage) =>
+          stage.id === updatedStage.id ? updatedStage : stage
+        );
+      });
+
+      queryClient.setQueryData(["projectBoard_projectStageList"], (old) => {
+        if (!old) return [];
+        return old.map((stage) =>
+          stage.id === updatedStage.id ? updatedStage : stage
+        );
+      });
+
+      return { previousStagesList, previousStagesBoard };
+    },
+    onError: (err, updatedStage, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousStagesList) {
+        queryClient.setQueryData(
+          ["projectList_stage"],
+          context.previousStagesList
+        );
+      }
+      if (context.previousStagesBoard) {
+        queryClient.setQueryData(
+          ["projectBoard_projectStageList"],
+          context.previousStagesBoard
+        );
+      }
+
+      alert("An error occurred while updating the project stage.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["projectList_stage"]);
+      queryClient.invalidateQueries(["projectBoard_projectStageList"]);
+    },
+  });
+
+  const handleUpdate = async () => {
+    if (stageName.trim() === "") {
+      alert("Please enter a stage name.");
+      return;
+    }
+
+    setIsLoading(true); // Disable button when request starts
+
+    try {
+      const updatedStage = {
+        id: initialValue.id, // Assuming you have a way to get the stage ID
+        project_id: project_id,
+        stage_name: stageName,
+        start_date: startDate,
+        end_date: endDate,
+        period: period,
+        completed: complete,
+        completion_date: completeDate,
+      };
+
+      updateStageMutation.mutate(updatedStage, {
+        onSuccess: (data) => {
+          console.log("Project stage updated successfully:", data);
+          onClose(); // Close the modal after updating
+        },
+      });
+    } catch (error) {
+      console.error("Failed to update project stage:", error);
+      alert("An error occurred while updating the project stage.");
     } finally {
       setIsLoading(false); // Re-enable button after request completes
     }
@@ -172,16 +328,32 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
               )}
             </div>
             <div className="bg-gray-100 py-3 px-4 flex justify-end">
-              <button
-                type="button"
-                onClick={handleSave}
-                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${
-                  isLoading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isLoading} // Disable button when loading
-              >
-                {isLoading ? "Saving..." : "Save"}
-              </button>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={handleUpdate}
+                  className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isLoading} // Disable button when loading
+                >
+                  {isLoading ? "Update..." : "Update"}
+                </button>
+              )}
+
+              {!isEditing && (
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isLoading} // Disable button when loading
+                >
+                  {isLoading ? "Saving..." : "Save"}
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={onClose}

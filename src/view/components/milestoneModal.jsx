@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api, { apiRequest } from "../../api/api";
+import { useMutation , useQueryClient } from "@tanstack/react-query";
 // import { useNavigate } from "react-router-dom";
 
 const MilestoneModal = ({ onClose, initialValue }) => {
@@ -8,12 +9,19 @@ const MilestoneModal = ({ onClose, initialValue }) => {
   const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading state
   // const navigate = useNavigate();
+  const [editState,setEditState] = useState(false);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (initialValue) {
-      setMilestoneName(initialValue.milestoneName || "");
-      setStartDate(initialValue.startDate || "");
-      setEndDate(initialValue.endDate || "");
+      setMilestoneName(initialValue.milestone_name || "");
+      setStartDate(initialValue.start_date || "");
+      setEndDate(initialValue.end_date || "");
+    }
+
+    if(initialValue.milestone_name){
+      setEditState(true);
     }
   }, [initialValue]);
 
@@ -29,25 +37,86 @@ const MilestoneModal = ({ onClose, initialValue }) => {
     setEndDate(event.target.value);
   };
 
+  const createMilestoneMutation = useMutation({
+    mutationFn: async (newMilestone) => {
+      const response = await apiRequest(
+        "post",
+        "api/v1/milestones",
+        newMilestone
+      );
+      if (!response || response.status !== "Request was successful") {
+        throw new Error(response.message || "Failed to save milestone");
+      }
+      return response.data;
+    },
+    onMutate: async (newMilestone) => {
+      await queryClient.cancelQueries(["taskList_milestone"]);
+      await queryClient.cancelQueries(["taskBoard_milestone"]);
+
+      const previousMilestonesList = queryClient.getQueryData([
+        "taskList_milestone",
+      ]);
+      const previousMilestonesBoard = queryClient.getQueryData([
+        "taskBoard_milestone",
+      ]);
+
+      queryClient.setQueryData(["taskList_milestone"], (old) => {
+        if (!old) return [newMilestone];
+        return [...old, newMilestone];
+      });
+
+      queryClient.setQueryData(["taskBoard_milestone"], (old) => {
+        if (!old) return [newMilestone];
+        return [...old, newMilestone];
+      });
+
+      return { previousMilestonesList, previousMilestonesBoard };
+    },
+    onError: (err, newMilestone, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousMilestonesList) {
+        queryClient.setQueryData(
+          ["taskList_milestone"],
+          context.previousMilestonesList
+        );
+      }
+      if (context.previousMilestonesBoard) {
+        queryClient.setQueryData(
+          ["taskBoard_milestone"],
+          context.previousMilestonesBoard
+        );
+      }
+
+      alert("An error occurred while saving the milestone.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["taskList_milestone"]);
+      queryClient.invalidateQueries(["taskBoard_milestone"]);
+    },
+  });
+
   const handleSave = async () => {
     if (milestoneName.trim() === "") {
       alert("Please enter a milestone name.");
       return;
     }
-
+  
     setIsLoading(true); // Disable button when request starts
-
+  
     try {
-      const milestone_id = await apiRequest("post", "api/v1/milestones", {
+      const newMilestone = {
         milestone_name: milestoneName,
         start_date: startDate,
         end_date: endDate,
+      };
+  
+      createMilestoneMutation.mutate(newMilestone, {
+        onSuccess: (data) => {
+          console.log("Milestone created successfully:", data);
+          // navigate("/app", { state: { milestone_id: data.id } });
+          onClose(); // Close the modal after saving
+        },
       });
-
-      console.log(milestone_id);
-      // navigate("/app", { state: { milestone_id: 1 } });
-      // Close the modal after saving
-      onClose();
     } catch (error) {
       console.error("Failed to save milestone:", error);
       alert("An error occurred while saving the milestone.");
@@ -55,6 +124,86 @@ const MilestoneModal = ({ onClose, initialValue }) => {
       setIsLoading(false); // Re-enable button after request completes
     }
   };
+
+  const updateMilestoneMutation = useMutation({
+    mutationFn: async (updatedMilestone) => {
+      const response = await apiRequest("put", `api/v1/milestones/${updatedMilestone.id}`, updatedMilestone);
+      if (!response || response.status !== "Request was successful") {
+        throw new Error(response.message || "Failed to update milestone");
+      }
+      return response.data;
+    },
+    onMutate: async (updatedMilestone) => {
+      await queryClient.cancelQueries(["taskList_milestone"]);
+      await queryClient.cancelQueries(["taskBoard_milestone"]);
+  
+      const previousMilestonesList = queryClient.getQueryData(["taskList_milestone"]);
+      const previousMilestonesBoard = queryClient.getQueryData(["taskBoard_milestone"]);
+  
+      queryClient.setQueryData(["taskList_milestone"], (old) => {
+        if (!old) return [];
+        return old.map(milestone => milestone.id === updatedMilestone.id ? updatedMilestone : milestone);
+      });
+  
+      queryClient.setQueryData(["taskBoard_milestone"], (old) => {
+        if (!old) return [];
+        return old.map(milestone => milestone.id === updatedMilestone.id ? updatedMilestone : milestone);
+      });
+  
+      return { previousMilestonesList, previousMilestonesBoard };
+    },
+    onError: (err, updatedMilestone, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousMilestonesList) {
+        queryClient.setQueryData(["taskList_milestone"], context.previousMilestonesList);
+      }
+      if (context.previousMilestonesBoard) {
+        queryClient.setQueryData(["taskBoard_milestone"], context.previousMilestonesBoard);
+      }
+  
+      alert("An error occurred while updating the milestone.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["taskList_milestone"]);
+      queryClient.invalidateQueries(["taskBoard_milestone"]);
+    },
+  });
+
+
+  const handleUpdate = async () => {
+    if (milestoneName.trim() === "") {
+      alert("Please enter a milestone name.");
+      return;
+    }
+  
+    setIsLoading(true); // Disable button when request starts
+  
+    try {
+
+      const updatedMilestone = {
+        id:initialValue.id,
+        milestone_name: milestoneName,
+        start_date: startDate,
+        end_date: endDate,
+      };
+  
+      updateMilestoneMutation.mutate(updatedMilestone, {
+        onSuccess: (data) => {
+          console.log("Milestone updated successfully:", data);
+          // navigate("/app", { state: { milestone_id: data.id } });
+          onClose(); // Close the modal after updating
+        },
+      });
+    } catch (error) {
+      console.error("An error occurred while updating the milestone:", error);
+      alert("An error occurred while updating the milestone. Please try again later.");
+    } finally {
+      setIsLoading(false); // Re-enable button after request completes
+    }
+  };
+  
+  
+  
 
   return (
     <>
@@ -101,14 +250,33 @@ const MilestoneModal = ({ onClose, initialValue }) => {
               </div>
             </div>
             <div className="bg-gray-100 py-3 px-4 flex justify-end">
-              <button
+              {editState && (
+                <button
                 type="button"
-                onClick={handleSave}
-                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={handleUpdate}
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${
+                  isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 disabled={isLoading} // Disable button when loading
               >
-                {isLoading ? 'Saving...' : 'Save'}
+                {isLoading ? "Updating..." : "Update"}
               </button>
+              )}
+
+              {!editState && (
+                <button
+                type="button"
+                onClick={handleSave}
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${
+                  isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isLoading} // Disable button when loading
+              >
+                {isLoading ? "Saving..." : "Save"}
+              </button>
+              )}
+
+
               <button
                 type="button"
                 onClick={onClose}

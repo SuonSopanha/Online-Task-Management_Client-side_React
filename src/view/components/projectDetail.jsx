@@ -1,25 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useState, useContext } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiRequest } from "../../api/api";
 import LoadingBalls from "../../utils/loading";
 import { modalContext } from "../part/test";
 
-
-const mockProjectData = {
-  project_name: "Mock Project",
-  start_date: "2024-01-01",
-  end_date: "2024-12-31",
-  project_status: "In Progress",
-  project_priority: "High",
-};
-
 const ProjectDetail = () => {
   const { projectId } = useParams();
   const { tabID } = useContext(modalContext);
   const navigate = useNavigate();
-  // const [project, setProject] = useState(mockProjectData);
+  const queryClient = useQueryClient();
+  
   const [isEditing, setIsEditing] = useState(false);
+  const [editProject, setEditProject] = useState(null);
 
   const {
     data: project,
@@ -33,30 +26,68 @@ const ProjectDetail = () => {
   async function fetchProject() {
     const response = await apiRequest("get", "api/v1/projects/" + tabID);
     return response.data;
-  };
+  }
+
+  useEffect(() => {
+    if (project) {
+      setEditProject(project);
+    }
+  }, [project]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
+    setEditProject(project);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    project((prevProject) => ({
+    setEditProject((prevProject) => ({
       ...prevProject,
       [name]: value,
     }));
   };
 
+  const saveProjectMutation = useMutation({
+    mutationFn: async (updatedProject) => {
+      const response = await apiRequest("put", "api/v1/projects/" + updatedProject.id, updatedProject);
+      if (!response || response.status !== "Request was successful") {
+        throw new Error(response.message || "Failed to update project");
+      }
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["projectDetail_project"]);
+      setIsEditing(false);
+    },
+  });
+
   const handleSave = () => {
-    // Save changes to mock data (In real scenario, you would update the database here)
-    setIsEditing(false);
-    console.log("Project saved:", project);
+    if (editProject) {
+      saveProjectMutation.mutate(editProject);
+    }
   };
 
-  const handleDelete = () => {
-    // Delete the project from mock data (In real scenario, you would delete from the database here)
-    console.log("Project deleted");
-    navigate("/projects");
+  const handleDelete = async () => {
+    try {
+      const response = await apiRequest("delete", "api/v1/projects/" + project.id);
+      if (response.status === "Request was successful") {
+        alert("Project deleted successfully");
+        navigate("/projects");
+      } else {
+        alert("Task not deleted successfully, Unauthorized");
+      }
+    } catch (error) {
+      if (error.response) {
+        const statusCode = error.response.status;
+        if (statusCode === 403) {
+          alert("Unauthorized: You don't have permission to delete this project");
+        } else {
+          alert(`Error: ${statusCode}`);
+        }
+      } else {
+        alert("Error: Unable to delete project. Please try again later.");
+      }
+    }
   };
 
   if (projectLoading) {
@@ -67,12 +98,11 @@ const ProjectDetail = () => {
     );
   }
 
-  if (projectError)
-    return <div>Error: {projectError}</div>;
+  if (projectError) return <div>Error: {projectError.message}</div>;
 
   return (
     <div className="p-10 w-auto">
-      <div className=" bg-glasses bg-opacity-50 shadow-md rounded-lg p-6">
+      <div className="bg-glasses bg-opacity-50 shadow-md rounded-lg p-6">
         <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Project Details</h1>
           <p className="text-lg text-gray-600">{isEditing ? "Edit your project details below" : "View your project details below"}</p>
@@ -85,7 +115,7 @@ const ProjectDetail = () => {
                 className="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
                 type="text"
                 name="project_name"
-                value={project.project_name}
+                value={editProject?.project_name || ""}
                 onChange={handleChange}
               />
             ) : (
@@ -100,7 +130,7 @@ const ProjectDetail = () => {
                   className="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
                   type="date"
                   name="start_date"
-                  value={project.start_date}
+                  value={editProject?.start_date || ""}
                   onChange={handleChange}
                 />
               ) : (
@@ -114,7 +144,7 @@ const ProjectDetail = () => {
                   className="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
                   type="date"
                   name="end_date"
-                  value={project.end_date}
+                  value={editProject?.end_date || ""}
                   onChange={handleChange}
                 />
               ) : (
@@ -130,7 +160,7 @@ const ProjectDetail = () => {
                   className="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
                   type="text"
                   name="project_status"
-                  value={project.project_status}
+                  value={editProject?.project_status || ""}
                   onChange={handleChange}
                 />
               ) : (
@@ -144,7 +174,7 @@ const ProjectDetail = () => {
                   className="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
                   type="text"
                   name="project_priority"
-                  value={project.project_priority}
+                  value={editProject?.project_priority || ""}
                   onChange={handleChange}
                 />
               ) : (
