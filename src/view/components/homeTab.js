@@ -47,10 +47,8 @@ const HomeTab = () => {
 
   // Fetch tasks data
   async function fetchTasks() {
-    const [response1] = await Promise.all([
-      apiRequest("get", "api/v1/user-tasks"),
-    ]);
-    return [...response1.data];
+    const response = await apiRequest("get", "api/v1/my-tasks");
+    return response.data;
   }
 
   // Fetch projects data
@@ -91,7 +89,6 @@ const HomeTab = () => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-
       <div className="container w-full">
         <div className="mt-8 text-center animate-in duration-300 ease-in-out">
           <p className="font-medium">{new Date().toLocaleDateString()}</p>
@@ -249,7 +246,7 @@ const HomeTab = () => {
                     <tbody className="">
                       {!taskList
                         ? null
-                        : taskList.map((task) => (
+                        : taskList.slice(0, 5).map((task) => (
                             <tr key={task.id} className="text-gray-700">
                               <td className="px-4 py-2 border">
                                 <button>
@@ -286,7 +283,7 @@ const HomeTab = () => {
                                     <span className="text-x whitespace-nowrap">
                                       {task.project
                                         ? task.project.project_name
-                                        : Team}
+                                        : "Team"}
                                     </span>
                                   ) : (
                                     <span className="text-xs">Only Me</span>
