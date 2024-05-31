@@ -1,8 +1,9 @@
-import React, { useState,useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { apiRequest } from "../../api/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const ProjectCreate = () => {
+const OrgProject = () => {
   const [projectName, setProjectName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -10,52 +11,85 @@ const ProjectCreate = () => {
   const [projectPriority, setProjectPriority] = useState("Low");
   const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
+  const location = useLocation();
+  const { state } = location;
+  const { org_id } = state;
+  const queryClient = useQueryClient();
 
-  const token = sessionStorage.getItem('token');
+  const mutation = useMutation({
+    mutationFn: async (newProject) => {
+      const response = await apiRequest("post", "api/v1/projects", newProject);
+      if (!response || !response.data) {
+        throw new Error("Invalid response data");
+      }
+      return response.data;
+    },
+    onMutate: async (newProject) => {
+      setLoading(true);
+
+      await queryClient.cancelQueries(["teamOverview_teamProject", org_id]);
+      await queryClient.cancelQueries(["project"]);
+
+      const previousProjects = queryClient.getQueryData(["teamOverview_teamProject", org_id]);
 
 
-  useEffect(() => {
-    if (token) {
-      console.log("isSignIn");
-
-    } else {
-      navigate("/login");
-    }
-      
-  }, [token]);
+      queryClient.setQueryData(["teamOverview_teamProject", org_id], (old) => {
+        if (!old) {
+          return [newProject];
+        }
+        return [...old, newProject];
+      });
 
 
-  const handleContinue = async () => {
+      queryClient.setQueryData(["project"], (old) => {
+        if (!old) {
+          return [newProject];
+        }
+        return [...old, newProject];
+      });
+
+      return { previousProjects };
+    },
+    onError: (err, newProject, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousProjects) {
+        queryClient.setQueryData(["teamOverview_teamProject", org_id], context.previousProjects);
+        queryClient.setQueryData(["project"], context.previousProjects);
+      }
+
+      alert("Error occurred while creating the project");
+      setLoading(false);
+    },
+    onSuccess: async (data, newProject) => {
+      await apiRequest("post", "api/v1/project-members", {
+        project_id: data.id,
+        role: "Project Owner",
+      });
+      navigate("/team", { state: { project_id: data.id } });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["teamOverview_teamProject", org_id]);
+      queryClient.invalidateQueries(["project"]);
+      setLoading(false);
+    },
+  });
+
+  const handleContinue = () => {
     if (projectName.trim() === "") {
       alert("Please enter a project name.");
       return;
     }
 
-    setLoading(true); // Set loading to true when request starts
+    const newProject = {
+      organization_id: org_id,
+      project_name: projectName,
+      start_date: startDate,
+      end_date: endDate,
+      project_status: projectStatus,
+      project_priority: projectPriority,
+    };
 
-    try {
-      // Create the project or perform any further actions
-      const project = await apiRequest("post", "api/v1/projects", {
-        project_name: projectName,
-        start_date: startDate,
-        end_date: endDate,
-        project_status: projectStatus,
-        project_priority: projectPriority,
-      });
-
-      await apiRequest("post", "api/v1/project-members", {
-        project_id: project.data.id,
-        role: "Project Owner",
-      });
-
-      console.log(project);
-      navigate("/team", { state: { project_id: project.data.id } });
-    } catch (error) {
-      console.error("Failed to create project", error);
-      // Handle error appropriately here
-    } finally {
-      setLoading(false); // Set loading to false when request ends
-    }
+    mutation.mutate(newProject);
   };
 
   return (
@@ -132,4 +166,4 @@ const ProjectCreate = () => {
   );
 };
 
-export default ProjectCreate;
+export default OrgProject;

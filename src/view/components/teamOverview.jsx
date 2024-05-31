@@ -28,7 +28,7 @@ const TeamOverview = ({team}) => {
 
   }, [tabID, team]);
   const handleChangeCreateProject = () => {
-    navigate("/projectCreate");
+    navigate("/orgProject",{state: {org_id: tabID}});
   };
 
   const addMember = async (user) => {

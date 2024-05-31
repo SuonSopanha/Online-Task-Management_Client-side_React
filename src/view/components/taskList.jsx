@@ -6,8 +6,6 @@ import {
   FaUser,
   FaSortDown,
 } from "react-icons/fa";
-import TaskModal from "./taskModal";
-import SendMessageModal from "./sendMessageModal";
 import MilestoneModal from "./milestoneModal";
 
 import LoadingBalls from "../../utils/loading";

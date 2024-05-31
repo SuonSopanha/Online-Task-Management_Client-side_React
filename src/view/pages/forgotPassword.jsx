@@ -10,9 +10,7 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      // Your password reset logic goes here
-      // For example, you can send a request to your backend API
-      // and handle the response accordingly
+
       const response = await fetch("/api/reset-password", {
         method: "POST",
         headers: {

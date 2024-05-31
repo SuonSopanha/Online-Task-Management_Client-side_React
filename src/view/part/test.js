@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext,useEffect } from "react";
 import Navbar from "./navbar";
 import Sidebar from "./sidebar";
 import Inbox from "../pages/inbox";
@@ -18,6 +18,8 @@ import ProjectModal from "../components/projectModal";
 import ProjectCreateTaskModal from "../components/projectCreateTaskModal";
 import MilestoneModal from "../components/milestoneModal";
 
+import { useNavigate } from "react-router-dom";
+
 export const modalContext = createContext(null);
 
 const Main = () => {
@@ -34,6 +36,20 @@ const Main = () => {
   const [milestoneData, setMilestoneData] = useState({});
   const [projectStage, setProjectStage] = useState({});
 
+  
+  const token = sessionStorage.getItem('token');
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      console.log("isSignIn");
+
+    } else {
+      navigate("/login");
+    }
+      
+  }, [token]);
 
 
   const openModal = () => {

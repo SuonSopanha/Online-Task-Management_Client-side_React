@@ -31,9 +31,7 @@ const mockTaskList = [
 ];
 
 const TaskCalender = () => {
-  // const [taskList, setTaskList] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
+
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
 

@@ -11,19 +11,11 @@ import {
 
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-import { auth } from "../../firebase/config";
-
-import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
-import { getUserFullNameById } from "../../firebase/usersCRUD";
-import LoadingBalls from "../../utils/loading";
-
 import { modalContext } from "../part/test";
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
 
-
 const ProjectCalender = () => {
-
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const nextMonth = () => {
@@ -40,27 +32,26 @@ const ProjectCalender = () => {
     return eachDayOfInterval({ start, end });
   };
 
-  const { tabID, setTabID,openProjectModal,setModalTask } = useContext(modalContext);
-
-
+  const { tabID, setTabID, openProjectModal, setModalTask } =
+    useContext(modalContext);
 
   const {
     data: taskList,
     isLoading: taskLoading,
-    error: taskError, 
+    error: taskError,
   } = useQuery({
     queryKey: ["projectCalendar_taskList"],
     queryFn: fetchTasks,
   });
 
-
   async function fetchTasks() {
-    const response = await apiRequest("get", "api/v1/tasks?project_id[eq]=" + tabID);
+    const response = await apiRequest(
+      "get",
+      "api/v1/tasks?project_id[eq]=" + tabID
+    );
     console.log(response);
     return response.data;
   }
-
-
 
   if (taskError) {
     return <p>Error: {taskError}</p>;
@@ -102,26 +93,28 @@ const ProjectCalender = () => {
           >
             <div className="flex flex-col items-start p-2">
               <span className="text-sm font-semibold">{format(date, "d")}</span>
-              {taskLoading ? null : taskList.map((task) => {
-                console.log(task)
-                let calenderDate = format(date, "MM/dd/yyyy");
-                if (task.due_date === calenderDate) {
-                  return (
-                    <button
-                      key={task.id}
-                      className="mt-1"
-                      onClick={() => {
-                        openProjectModal();
-                        setModalTask(task);
-                      }}
-                    >
-                      <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-sm whitespace-nowrap">
-                        {task.task_name}
-                      </span>
-                    </button>
-                  );
-                }
-              })}
+              {taskLoading
+                ? null
+                : taskList.map((task) => {
+                    console.log(task);
+                    let calenderDate = format(date, "MM/dd/yyyy");
+                    if (task.due_date === calenderDate) {
+                      return (
+                        <button
+                          key={task.id}
+                          className="mt-1"
+                          onClick={() => {
+                            openProjectModal();
+                            setModalTask(task);
+                          }}
+                        >
+                          <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-sm whitespace-nowrap">
+                            {task.task_name}
+                          </span>
+                        </button>
+                      );
+                    }
+                  })}
             </div>
           </div>
         ))}

@@ -3,12 +3,11 @@ import React, { useState, useEffect, useContext } from "react";
 
 import { FaUser, FaUsers } from "react-icons/fa";
 
-import { auth } from "../../firebase/config";
+
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
 
-import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
-import { getUserFullNameById } from "../../firebase/usersCRUD";
+
 import LoadingBalls from "../../utils/loading";
 import ProjectStageModal from "./projectStageModal";
 
@@ -16,9 +15,9 @@ import {
   sortByPriority,
   sortByDueDate,
   sortByStatus,
-  sortByWorkHoursRequired,
+
   sortByTaskName,
-  sortByID,
+
   sortByCreated_at,
 } from "../../utils/sortTask";
 

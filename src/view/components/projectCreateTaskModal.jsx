@@ -172,61 +172,6 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
     year: "numeric",
   });
 
-  // const OnSaveButton = async () => {
-  //   setIsSaving(true);
-  //   const stage_id = parseInt(selectedStage);
-  //   const newFeild = {
-  //     project_id: tabID,
-  //     task_name: task.task_name,
-  //     description: task.description,
-  //     start_date: task.start_date,
-  //     due_date: task.due_date,
-  //     task_category: task.task_category,
-  //     tracking: task.tracking,
-  //     work_hour_required: task.work_hour_required,
-  //     status: task.status,
-  //     priority: task.priority,
-  //     severity: task.severity,
-  //     assignee_id: task.assignee_id.user_id,
-  //     assignee_dates: formattedDate,
-  //     complete: task.complete,
-  //     complete_date: task.complete_date,
-  //     stage_id: stage_id,
-  //     task_category: "random",
-  //     complete: false,
-  //   };
-
-  //   const { mutate, isloading } = useMutation({
-  //     mutationFn: async () => {
-  //       const response = await apiRequest("post", "api/v1/tasks", newFeild);
-  //       response.data;
-  //     },
-  //     onMutate: async () => {
-  //       await queryClient.cancelQueries(["projectList_taskList"]);
-  //       const currentTask = queryClient.getQueriesData([
-  //         "projectList_taskList",
-  //       ]);
-
-  //       queryClient.setQueryData(["projectList_taskList"], (old) => {
-  //         return [...old, newFeild];
-  //       });
-
-  //       return { currentTask };
-  //     },
-  //     onError: (error, variables, context) => {
-  //       queryClient.setQueryData(["projectList_taskList"], context.currentTask);
-  //     },
-  //     onSettled: () => {
-  //       queryClient.invalidateQueries(["projectList_taskList"]);
-  //     },
-
-  //   });
-
-  //   mutate();
-
-  //   handleClose();
-  //   setIsSaving(false);
-  // };
 
   const mutation = useMutation({
     mutationFn: async ({ newTask, name, photo }) => {
@@ -349,7 +294,7 @@ const ProjectCreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   onNameChange={handleTaskNameChange}
                 />
 
-                {taskData.stage && (
+                {taskData.stage.length > 0 && (
                   <select
                     className="border-0 text-gray-600 text-lg leading-none rounded-md font-semibold hover:text-black"
                     onChange={handleSelectedStage}

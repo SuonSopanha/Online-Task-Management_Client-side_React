@@ -59,7 +59,7 @@ const Navbar = ({ toggleSidebar }) => {
           </ul>
 
           <div className="hidden xl:flex space-x-5 items-center">
-            <a className="flex items-center hover:text-gray-200" href="#">
+            <a className="flex items-center hover:text-gray-200" href="/userProfile">
               {loading === true ? (
                 <div className="w-6 h-6 bg-gray-200 animate-pulse rounded-full"></div>
               ) : (

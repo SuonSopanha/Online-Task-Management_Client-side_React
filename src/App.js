@@ -26,6 +26,7 @@ import AdminOrg from "./view/components/adminOrg";
 import AdminUser from "./view/components/adminUser";
 import UserProfile from "./view/pages/userProfile";
 import AuthCallback from "./view/pages/authCallback";
+import OrgProject from "./view/pages/orgProject";
 
 const queryClient = new QueryClient();
 function App() {
@@ -53,6 +54,7 @@ function App() {
             <Route path="/adminDashboard" element={<AdminDashboard />} />
             <Route path="/adminOrg" element={<AdminOrg />} />
             <Route path="/adminUser" element={<AdminUser />} />
+            <Route path="/orgProject" element={<OrgProject />} />
             <Route path="*" element={<Error404 />} />
             <Route path="/userProfile" element={<UserProfile />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
