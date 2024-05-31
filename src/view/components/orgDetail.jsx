@@ -8,12 +8,7 @@ import LoadingBalls from "../../utils/loading";
 import { te } from "date-fns/locale";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-// const mockProjectData = {
-//   name: "Mock Project",
-//   industry: "Technology",
-//   email: "project@example.com",
-//   description: "This is a mock project description."
-// };
+
 const OrgDetail = ({ team }) => {
   const navigate = useNavigate();
   const [project, setProject] = useState(team);

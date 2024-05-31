@@ -35,6 +35,7 @@ function Sidebar({ isOpen, TabNavigate }) {
   const [isOpendropTeam, setIsOpendropTeam] = useState(false);
 
   const [loading, setLoading] = useState(true);
+  const [isLogout, setIsLogout] = useState(false);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -63,9 +64,20 @@ function Sidebar({ isOpen, TabNavigate }) {
     navigate("/teamCreate");
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    navigate("/");
+  const handleLogout = async () => {
+    setIsLogout(true);
+    try{
+      const response = await apiRequest("post","api/v1/logout");
+      if (response.status == "Request was successful") {
+        sessionStorage.removeItem("token");
+        setIsLogout(false);
+        navigate("/");
+      }
+      
+    } catch(err){
+      console.log(err);
+    }
+
   };
 
   async function fetchProjects() {
@@ -298,7 +310,7 @@ function Sidebar({ isOpen, TabNavigate }) {
             class="flex items-center justify-start w-full h-16 mt-auto mb-10 border-t border-blue-400 hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105"
           >
             <FaDoorOpen className="w-6 h-6 stroke-current ml-4" />
-            <span class="ml-2 text-sm font-medium text-gray-700">Log Out</span>
+            <span class="ml-2 text-sm font-medium text-gray-700">{isLogout ? "Logout...." : "Logout"}</span>
           </button>
         </div>
       </div>

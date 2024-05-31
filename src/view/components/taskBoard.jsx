@@ -7,7 +7,6 @@ import {
   sortByPriority,
   sortByDueDate,
   sortByStatus,
-  sortByWorkHoursRequired,
   sortByTaskName,
   sortByID,
 } from "../../utils/sortTask";

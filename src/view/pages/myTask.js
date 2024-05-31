@@ -105,28 +105,13 @@ const MyTask = () => {
 
   }
 
-
-
   return (
-    <div className="w-full h-full bg-glasses backdrop-blur-12 rounded-lg">
+    <div className="w-full h-full min-h-screen bg-glasses backdrop-blur-12 rounded-lg">
       {/* Header */}
       <div className="flex flex-row justify-start border-b border-gray-500  ">
         <div className="flex items-center p-3 ml-1">
           <div class="relative w-12 h-12 rounded-full md:block">
-            {user.photo_url === null ? (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full">
-                <UserProfilePic name={user.full_name} size={8}></UserProfilePic>
-              </div>
-            ) : (
-              // You can replace this with the desired content for true condition
-              <div className="flex h-10 w-10 items-center justify-center rounded-full">
-                <img
-                  src={user.photo_url}
-                  alt="plus-math"
-                  className="rounded-full"
-                />
-              </div>
-            )}
+              <FaClipboard className="absolute top-0 left-0 w-12 h-12 text-blue-500" />
           </div>
         </div>
         <div className="text-sm font-medium text-gray-500 flex flex-col justify-between">

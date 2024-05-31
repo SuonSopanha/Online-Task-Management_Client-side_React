@@ -39,10 +39,10 @@ const DropdownButton = ({ type, initState, handleChange }) => {
 
   const options =
     type === "status"
-      ? ["On Track", "On Hold", "Complete", "Off Track", "Cancelled"]
+      ? ["Pending", "In Progress", "Completed", "OverDue", "Cancelled"]
       : type === "category"
       ? ["To Do", "Done", "Working"]
-      : ["Low", "Medium", "High", "Very High"];
+      : ["Low", "Medium", "High", " Critical"];
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);

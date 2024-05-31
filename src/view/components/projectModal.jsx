@@ -23,20 +23,10 @@ import TaskDueDate from "./modalComponents/taskDueDate";
 import TaskStatus from "./modalComponents/taskStatus";
 import TaskProjectbox from "./modalComponents/taskProjectbox";
 import NumberInput from "./modalComponents/numberInput";
-import MemberDropdown from "./memberDropdown";
-import TagInput from "./modalComponents/taskTag";
 import Timer from "./modalComponents/timer";
 import UserProfilePic from "../../utils/photoGenerator";
 import TaskSeveritySelector from "./modalComponents/taskSeveritySelector";
 
-import { auth } from "../../firebase/config";
-import {
-  updateRtTaskByID,
-  deleteRtTaskByID,
-  createRtTask,
-} from "../../firebase/taskCRUD";
-import { getprojecByID } from "../../firebase/projectCRUD";
-import { getUserByID, getUserFullNameById } from "../../firebase/usersCRUD";
 import { apiRequest } from "../../api/api";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 

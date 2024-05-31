@@ -72,22 +72,35 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
       return response.data;
     },
     onMutate: async (newStage) => {
-      await queryClient.cancelQueries(["projectList_projectStageList"]);
-      await queryClient.cancelQueries(["projectBoard_projectStageList"]);
+      await queryClient.cancelQueries(["projectList_projectStageList",tabID]);
+      await queryClient.cancelQueries(["projectBoard_projectStageList",tabID]);
+
+      await queryClient.cancelQueries(["projectBoard_taskList",tabID]);
+      await queryClient.cancelQueries(["projectList_taskList",tabID]);
 
       const previousStagesList = queryClient.getQueryData([
-        "projectList_projectStageList",
+        "projectList_projectStageList",tabID
       ]);
       const previousStagesBoard = queryClient.getQueryData([
-        "projectBoard_projectStageList",
+        "projectBoard_projectStageList",tabID
       ]);
 
-      queryClient.setQueryData(["projectList_projectStageList"], (old) => {
+      queryClient.setQueryData(["projectBoard_taskList",tabID], (old) => {
         if (!old) return [newStage];
         return [...old, newStage];
       });
 
-      queryClient.setQueryData(["projectBoard_projectStageList"], (old) => {
+      queryClient.setQueryData(["projectBoard_taskList",tabID], (old) => {
+        if (!old) return [newStage];
+        return [...old, newStage];
+      });
+
+      queryClient.setQueryData(["projectList_projectStageList",tabID], (old) => {
+        if (!old) return [newStage];
+        return [...old, newStage];
+      });
+
+      queryClient.setQueryData(["projectBoard_projectStageList",tabID], (old) => {
         if (!old) return [newStage];
         return [...old, newStage];
       });
@@ -98,13 +111,26 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
       console.error("Error occurred:", err);
       if (context.previousStagesList) {
         queryClient.setQueryData(
-          ["projectList_projectStageList"],
+          ["projectList_projectStageList",tabID],
           context.previousStagesList
         );
       }
       if (context.previousStagesBoard) {
         queryClient.setQueryData(
-          ["projectBoard_projectStageList"],
+          ["projectBoard_projectStageList",tabID],
+          context.previousStagesBoard
+        );
+      }
+
+      if (context.previousStagesList) {
+        queryClient.setQueryData(
+          ["projectBoard_taskList",tabID],
+          context.previousStagesList
+        );
+      }
+      if (context.previousStagesBoard) {
+        queryClient.setQueryData(
+          ["projectBoard_taskList",tabID],
           context.previousStagesBoard
         );
       }
@@ -112,8 +138,11 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
       alert("An error occurred while saving the project stage.");
     },
     onSettled: () => {
-      queryClient.invalidateQueries(["projectList_projectStageList"]);
-      queryClient.invalidateQueries(["projectBoard_projectStageList"]);
+      queryClient.invalidateQueries(["projectList_projectStageList",tabID]);
+      queryClient.invalidateQueries(["projectBoard_projectStageList",tabID]);
+
+      queryClient.invalidateQueries(["projectBoard_taskList",tabID]);
+      queryClient.invalidateQueries(["projectList_taskList",tabID]);
     },
   });
 
@@ -154,7 +183,7 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
     mutationFn: async (updatedStage) => {
       const response = await apiRequest(
         "put",
-        `api/v1/project-stages/${updatedStage.id}`,
+        `api/v1/project-stages/${initialValue.id}`,
         updatedStage
       );
       if (!response || response.status !== "Request was successful") {
@@ -163,24 +192,48 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
       return response.data;
     },
     onMutate: async (updatedStage) => {
-      await queryClient.cancelQueries(["projectList_projectStageList"]);
-      await queryClient.cancelQueries(["projectBoard_projectStageList"]);
+      await queryClient.cancelQueries(["projectList_projectStageList",tabID]);
+      await queryClient.cancelQueries(["projectBoard_projectStageList",tabID]);
+
+      await queryClient.cancelQueries(["projectBoard_taskList",tabID]);
+      await queryClient.cancelQueries(["projectList_taskList",tabID]);
+
+    
 
       const previousStagesList = queryClient.getQueryData([
-        "projectList_projectStageList",
+        "projectList_projectStageList",tabID
       ]);
       const previousStagesBoard = queryClient.getQueryData([
-        "projectBoard_projectStageList",
+        "projectBoard_projectStageList",tabID
       ]);
 
-      queryClient.setQueryData(["projectList_stage"], (old) => {
+      
+
+
+      queryClient.setQueryData(["projectList_stage",tabID], (old) => {
         if (!old) return [];
         return old.map((stage) =>
           stage.id === updatedStage.id ? updatedStage : stage
         );
       });
 
-      queryClient.setQueryData(["projectBoard_projectStageList"], (old) => {
+      queryClient.setQueryData(["projectBoard_projectStageList",tabID], (old) => {
+        if (!old) return [];
+        return old.map((stage) =>
+          stage.id === updatedStage.id ? updatedStage : stage
+        );
+      });
+
+
+      
+      queryClient.setQueryData(["projectBoard_taskList",tabID], (old) => {
+        if (!old) return [];
+        return old.map((stage) =>
+          stage.id === updatedStage.id ? updatedStage : stage
+        );
+      });
+
+      queryClient.setQueryData(["projectList_taskList",tabID], (old) => {
         if (!old) return [];
         return old.map((stage) =>
           stage.id === updatedStage.id ? updatedStage : stage
@@ -193,13 +246,27 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
       console.error("Error occurred:", err);
       if (context.previousStagesList) {
         queryClient.setQueryData(
-          ["projectList_stage"],
+          ["projectList_stage",tabID],
           context.previousStagesList
         );
       }
       if (context.previousStagesBoard) {
         queryClient.setQueryData(
-          ["projectBoard_projectStageList"],
+          ["projectBoard_projectStageList",tabID],
+          context.previousStagesBoard
+        );
+      }
+
+      
+      if (context.previousStagesList) {
+        queryClient.setQueryData(
+          ["projectBoard_taskList",tabID],
+          context.previousStagesList
+        );
+      }
+      if (context.previousStagesBoard) {
+        queryClient.setQueryData(
+          ["projectList_taskList",tabID],
           context.previousStagesBoard
         );
       }
@@ -207,8 +274,11 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
       alert("An error occurred while updating the project stage.");
     },
     onSettled: () => {
-      queryClient.invalidateQueries(["projectList_stage"]);
-      queryClient.invalidateQueries(["projectBoard_projectStageList"]);
+      queryClient.invalidateQueries(["projectList_stage",tabID]);
+      queryClient.invalidateQueries(["projectBoard_projectStageList",tabID]);
+
+      queryClient.invalidateQueries(["projectBoard_taskList",tabID]);
+      queryClient.invalidateQueries(["projectList_taskList",tabID]);
     },
   });
 
@@ -222,8 +292,6 @@ const ProjectStageModal = ({ onClose, initialValue }) => {
 
     try {
       const updatedStage = {
-        id: initialValue.id, // Assuming you have a way to get the stage ID
-        project_id: project_id,
         stage_name: stageName,
         start_date: startDate,
         end_date: endDate,

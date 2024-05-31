@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -9,7 +9,6 @@ import { apiRequest } from "../../api/api";
 
 export default function HomePage() {
   const [isSignIn, setIsSignIn] = useState(false);
-
 
   return (
     <div className="w-full h-fit bg-gradient-to-r from-[#65A0FD] via-[#E8CCCC] to-[#FFA9F1B5]">

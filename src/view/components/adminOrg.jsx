@@ -1,36 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { formattedDate } from "../../utils/formatDate";
 import { Link } from "react-router-dom";
-import { FaOldRepublic,FaClipboard} from "react-icons/fa";
 import {apiRequest} from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
-import {  } from "react-icons/fa";
-import { query } from "firebase/firestore";
+
 
 const AdminOrg = () => {
-  // const users = [
-  //   {
-  //     id: 1,
-  //     name: "Jane Cooper",
-  //     title: "Regional Paradigm Technician",
-  //     department: "Optimization",
-  //     status: "Active",
-  //     role: "Admin",
-  //     email: "jane.cooper@example.com",
-  //     image: "https://i.pravatar.cc/150?img=1",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "John Doe",
-  //     title: "Lead Developer",
-  //     department: "Development",
-  //     status: "Inactive",
-  //     role: "User",
-  //     email: "john.doe@example.com",
-  //     image: "https://i.pravatar.cc/150?img=2",
-  //   },
-  //   // Add more user objects as needed
-  // ];
+
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);

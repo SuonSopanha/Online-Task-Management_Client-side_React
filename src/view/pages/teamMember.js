@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-// import { getUserByEmail } from "../../firebase/usersCRUD";
 import { useLocation } from "react-router-dom";
-// import { updateByPushNewMembers } from "../../firebase/projectCRUD";
 import { apiRequest } from "../../api/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const TeamMember = () => {
   const [members, setMembers] = useState([{ email: "", role: "" }]);
   const navigate = useNavigate();
-  
   const location = useLocation();
   const { state } = location;
   const { org_id } = state;
+  const queryClient = useQueryClient();
+
+  const [isContinue, setIsContinue] = useState(false);
+  const token = sessionStorage.getItem('token');
+
+
+  useEffect(() => {
+    if (token) {
+      console.log("isSignIn");
+
+    } else {
+      navigate("/login");
+    }
+      
+  }, [token]);
+
 
   const addInputRow = () => {
     setMembers([...members, { email: "", role: "" }]);
@@ -23,55 +37,66 @@ const TeamMember = () => {
     setMembers(newMembers);
   };
 
-
   const handleSkip = () => {
-    navigate("/app")
-  }
+    navigate("/app");
+  };
+
+  const mutation = useMutation({
+    mutationFn: async (validMembers) => {
+      const response = await apiRequest("post", "api/v1/add-organizations-members", {
+        org_id: org_id,
+        members: validMembers,
+      });
+      if (!response || !response.results) {
+        throw new Error("Invalid response data");
+      }
+      return response.data;
+    },
+    onMutate: async (validMembers) => {
+      await queryClient.cancelQueries(["teamOverview_teamMember", org_id]);
+
+      const previousMembers = queryClient.getQueryData(["teamOverview_teamMember", org_id]);
+
+      queryClient.setQueryData(["teamOverview_teamMember", org_id], (old) => {
+        if (!old) {
+          return validMembers;
+        }
+        return [...old, ...validMembers];
+      });
+
+      return { previousMembers };
+    },
+    onError: (err, validMembers, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousMembers) {
+        queryClient.setQueryData(
+          ["teamOverview_teamMember", org_id],
+          context.previousMembers
+        );
+      }
+
+      alert("Error occurred while adding organization members");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["teamOverview_teamMember", org_id]);
+      navigate("/app");
+    },
+  });
+
   const handleContinue = async () => {
-    // Filter out empty emails
+    setIsContinue(true);
     const nonEmptyMembers = members.filter(
       (member) => member.email.trim() !== ""
     );
 
-    // Use getUserByEmail for each non-empty email to get user ID
-    const userIds = await Promise.all(
-      nonEmptyMembers.map(async (member) => {
-        // const user = await getUserByEmail(member.email);
-        return member ? { email: member.email, role: member.role } : null;
-      })
-    );
+    const validMembers = nonEmptyMembers.map((member) => ({
+      email: member.email,
+      role: member.role,
+    }));
 
-    // Filter out null values (for emails that didn't match any user)
-    const validMembers = userIds.filter((userId) => userId !== null);
+    mutation.mutate(validMembers);
 
-    // Find invalid user IDs and corresponding emails
-    const invalidUsers = nonEmptyMembers
-      .map((member, index) =>
-        userIds[index] === null ? member.email : null
-      )
-      .filter(Boolean);
-
-    if (invalidUsers.length > 0) {
-      // Alert the user about invalid emails
-      alert(`Invalid emails: ${invalidUsers.join(", ")}`);
-    } else {
-      console.log(validMembers);
-      console.log(org_id);
-      // await updateByPushNewMembers(team_id, validMembers);
-      try {
-        const request = await apiRequest("post", "api/v1/add-organizations-members", {
-          org_id: org_id,
-          members: validMembers,
-        });
-        console.log(request);
-        navigate("/app");
-      } catch (error) {
-        console.error('Failed to add org members:', error);
-      }
-
-      // Navigate to the next page or perform any other logic
-      navigate("/app");
-    }
+    setIsContinue(false);
   };
 
   return (
@@ -79,9 +104,9 @@ const TeamMember = () => {
       <div className="p-10 h-screen">
         <div>
           <p className="mb-4 text-3xl font-medium">
-            Invite a organizations member to try PAS together
+            Invite an organization's member to try PAS together
           </p>
-          <p>You can start small by inviting a trusted organizations member to</p>
+          <p>You can start small by inviting a trusted organization member to</p>
           <p>learn how PAS works with you.</p>
         </div>
 
@@ -120,7 +145,7 @@ const TeamMember = () => {
           className="mt-4 h-10 w-28 rounded-xl bg-blue-700 text-white font-medium"
           onClick={handleContinue}
         >
-          Continue
+          {isContinue ? "Loading..." : "Continue"}
         </button>
         <button
           className="mt-4 h-10 w-28 rounded-xl bg-blue-700 text-white font-medium"

@@ -2,40 +2,21 @@
 import React from "react";
 import { useState, useEffect } from "react";
 
-import {
-  FaCheckCircle,
-  FaClock,
-  FaSave,
-  FaSortDown,
-  FaTimesCircle,
-  FaTrash,
-  FaTrashRestore,
-  FaCalendarAlt,
-  FaClipboardList,
-} from "react-icons/fa";
+import { FaSave, FaTimesCircle, FaCalendarAlt } from "react-icons/fa";
 
 import EditableBox from "./editableBox";
-import DropdownButton from "./dropdownState";
 import CompleteBox from "./modalComponents/completebox";
 import TaskName from "./modalComponents/taskName";
-import TaskAssignee from "./modalComponents/taskAssignee";
+
 import TaskDueDate from "./modalComponents/taskDueDate";
 import TaskStatus from "./modalComponents/taskStatus";
-import TaskProjectbox from "./modalComponents/taskProjectbox";
+
 import NumberInput from "./modalComponents/numberInput";
-import Timer from "./modalComponents/timer";
-import TagInput from "./modalComponents/taskTag";
+
 import TaskSeveritySelector from "./modalComponents/taskSeveritySelector";
 
-import { auth } from "../../firebase/config";
-import {
-  updateRtTaskByID,
-  deleteRtTaskByID,
-  createRtTask,
-} from "../../firebase/taskCRUD";
-import { createNotification } from "../../firebase/notification";
 import { apiRequest } from "../../api/api";
-import { useMutation ,useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
@@ -177,9 +158,7 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
       await queryClient.cancelQueries(["taskList_taskList"]);
       await queryClient.cancelQueries(["taskBoard_taskList"]);
 
-      const previousTasksList = queryClient.getQueryData([
-        "taskList_taskList",
-      ]);
+      const previousTasksList = queryClient.getQueryData(["taskList_taskList"]);
       const previousTasksBoard = queryClient.getQueryData([
         "taskBoard_taskList",
       ]);
@@ -223,21 +202,21 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
 
   const onSaveButton = async () => {
     setIsSaving(true);
-  
+
     try {
       // Find milestone id
       const milestone_object = taskData.milestone.find(
         (milestone) => milestone.milestone_name === selectedMilestone
       );
       const milestone_id = milestone_object ? milestone_object.id : null;
-  
+
       const newTask = {
         milestone_id: milestone_id,
         task_name: task.task_name,
         description: task.description,
         start_date: task.start_date,
         due_date: task.due_date,
-        task_category: selectedMilestone,
+        task_category: "random",
         tracking: false,
         work_hour_required: task.work_hour_required,
         status: task.status,
@@ -246,19 +225,20 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
         complete: false,
         severity: task.severity,
       };
-  
+
       console.log("New task data:", newTask);
-  
+
       createTaskMutation.mutate(newTask);
     } catch (error) {
       console.error("An error occurred while creating the task:", error);
-      alert("An error occurred while creating the task. Please try again later.");
+      alert(
+        "An error occurred while creating the task. Please try again later."
+      );
     } finally {
       setIsSaving(false);
       handleClose();
     }
   };
-  
 
   return (
     <>
@@ -290,7 +270,7 @@ const CreateTaskModal = ({ isOpen, isClose, taskData }) => {
                   handleChange={onCategoryChange}
                 /> */}
 
-                {taskData.milestone && (
+                {taskData.milestone.length > 0 && (
                   <select
                     className="border-0 bg-yellow-50 text-gray-600 text-sm leading-none rounded-md font-semibold hover:text-black"
                     onChange={handleMilestoneChange}

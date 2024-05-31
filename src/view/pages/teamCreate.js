@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../api/api";
 
@@ -9,6 +9,20 @@ const TeamCreate = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
+
+  const token = sessionStorage.getItem('token');
+
+
+  useEffect(() => {
+    if (token) {
+      console.log("isSignIn");
+
+    } else {
+      navigate("/login");
+    }
+      
+  }, [token]);
+
 
   const handleContinue = async () => {
     // Add any validation logic here before creating the project

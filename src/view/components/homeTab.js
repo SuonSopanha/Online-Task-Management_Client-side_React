@@ -91,8 +91,6 @@ const HomeTab = () => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <NotificationBar type="success" message="Your account has been saved." />
-      <NotificationBar type="error" message="Your email address is invalid." />
 
       <div className="container w-full">
         <div className="mt-8 text-center animate-in duration-300 ease-in-out">

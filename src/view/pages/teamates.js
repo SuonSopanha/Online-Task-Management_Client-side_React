@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserByEmail } from "../../firebase/usersCRUD";
 import { useLocation } from "react-router-dom";
-// import { updateByPushNewMembers } from "../../firebase/projectCRUD";
-import {apiRequest} from '../../api/api';
+import { apiRequest } from "../../api/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const Teamates = () => {
+const Teammates = () => {
   const [members, setMembers] = useState([{ email: "", role: "" }]);
   const location = useLocation();
   const { state } = location;
   const { project_id } = state;
-
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [isContinue, setIsContinue] = useState(false);
+
+  const token = sessionStorage.getItem('token');
+
+
+  useEffect(() => {
+    if (token) {
+      console.log("isSignIn");
+
+    } else {
+      navigate("/login");
+    }
+      
+  }, [token]);
+
 
   const addInputRow = () => {
     setMembers([...members, { email: "", role: "" }]);
@@ -30,11 +44,54 @@ const Teamates = () => {
   };
 
   const handleSkip = () => {
-    navigate("/app")
-  }
+    navigate("/app");
+  };
+
+  const mutation = useMutation({
+    mutationFn: async (validMembers) => {
+      const response = await apiRequest("post", "api/v1/add-project-members", {
+        project_id: project_id,
+        members: validMembers,
+      });
+      if (!response || !response.results) {
+        throw new Error("Invalid response data");
+      }
+      return response.data;
+    },
+    onMutate: async (validMembers) => {
+      await queryClient.cancelQueries(["projectMember_teamMembers", project_id]);
+
+      const previousMembers = queryClient.getQueryData(["projectMember_teamMembers", project_id]);
+
+      queryClient.setQueryData(["projectMember_teamMembers", project_id], (old) => {
+        if (!old) {
+          return validMembers;
+        }
+        return [...old, ...validMembers];
+      });
+
+      return { previousMembers };
+    },
+    onError: (err, validMembers, context) => {
+      console.error("Error occurred:", err);
+      if (context.previousMembers) {
+        queryClient.setQueryData(
+          ["projectMember_teamMembers", project_id],
+          context.previousMembers
+        );
+      }
+
+      alert("Error occurred while adding project members");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["projectMember_teamMembers", project_id]);
+      navigate("/app");
+    },
+  });
 
   const handleContinue = async () => {
-    const nonEmptyMembers = members.filter((member) => member.email.trim() !== '');
+    setIsContinue(true);
+    const nonEmptyMembers = members.filter((member) => member.email.trim() !== "");
 
     const userIds = await Promise.all(
       nonEmptyMembers.map(async (member) => {
@@ -49,23 +106,13 @@ const Teamates = () => {
       .filter(Boolean);
 
     if (invalidUsers.length > 0) {
-      alert(`Invalid emails: ${invalidUsers.join(', ')}`);
+      alert(`Invalid emails: ${invalidUsers.join(", ")}`);
     } else {
       console.log(project_id);
-      // // await updateByPushNewMembers(project_id, validMembers);
-      try {
-        const request = await apiRequest("post", "api/v1/add-project-members", {
-          project_id: project_id,
-          members: validMembers
-        });
-        console.log(request);
-        navigate("/app");
-      } catch (error) {
-        console.error('Failed to add project members:', error);
-      }
+      mutation.mutate(validMembers);
+      setIsContinue(false);
     }
   };
-
 
   return (
     <div className="p-10 h-screen">
@@ -107,7 +154,7 @@ const Teamates = () => {
         className="mt-4 h-10 w-28 rounded-xl bg-blue-700 text-white font-medium"
         onClick={handleContinue}
       >
-        Continue
+        {isContinue ? "Loading..." : "Continue"}
       </button>
       <button
         className="mt-4 h-10 w-28 rounded-xl bg-blue-700 text-white font-medium"
@@ -119,4 +166,4 @@ const Teamates = () => {
   );
 };
 
-export default Teamates;
+export default Teammates;

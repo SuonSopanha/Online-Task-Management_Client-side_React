@@ -3,23 +3,17 @@ import React from "react";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 
-import { auth } from "../../firebase/config";
 import { apiRequest } from "../../api/api";
 import { useQuery } from "@tanstack/react-query";
 
-import { getRtTaskByProjectID } from "../../firebase/taskCRUD";
-import { getUserFullNameById } from "../../firebase/usersCRUD";
 import LoadingBalls from "../../utils/loading";
-import UserProfilePic from "../../utils/photoGenerator";
+
 import ProjectStageModal from "./projectStageModal";
 import {
   sortByPriority,
   sortByDueDate,
   sortByStatus,
-  sortByWorkHoursRequired,
   sortByTaskName,
-  sortByID,
-  sortByAssignDate,
   sortByCreated_at,
 } from "../../utils/sortTask";
 

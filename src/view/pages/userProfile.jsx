@@ -1,15 +1,72 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "../../api/api";
+import UserProfilePic from "../../utils/photoGenerator";
 const UserProfile = () => {
-  const handleBack = () => {
-    //go back to previous page
-    window.history.back();
-    // Add functionality to go back to the previous page
-    // You can use history.goBack() or any routing library method
+  const [userData, setUserData] = useState({
+    username: "",
+    email: "",
+    bio: "",
+    description: "",
+  });
+
+  const {
+    data: user,
+    isLoading: userLoading,
+    error: userError,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: fetchUser,
+  });
+
+  async function fetchUser() {
+    const response = await apiRequest("get", "api/v1/users");
+    return response.data;
+  }
+
+  const token = sessionStorage.getItem("token");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      console.log("isSignIn");
+    } else {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setUserData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    try {
+      const response = apiRequest("put", "api/v1/users/" + user.id, {
+        full_name: userData.username,
+        email: userData.email,
+      });
+      if (response) {
+        console.log("User updated successfully");
+      }
+    } catch (error) {}
+  };
+
+  const handleBack = () => {
+    window.history.back();
+  };
+
+  if (userLoading) {
+    return <div className="h-screen">Loading...</div>;
+  }
   return (
-    <section className="p-4 w-full h-auto flex justify-center items-center">
+    <section className="p-4 w-full h-screen flex justify-center items-center">
       <div className="w-full md:w-3/4 h-full bg-glasses backdrop-blur-12 rounded-lg">
         <div className="flex flex-col md:flex-row w-full h-full">
           {/* Left Side */}
@@ -34,47 +91,6 @@ const UserProfile = () => {
             </button>
           </div>
 
-          {/* Profile Right Side */}
-          {/* <div className="w-3/4 h-full p-5 bg-white rounded-lg">
-            <div className="flex flex-col justify-start">
-              <h1 className=" flex text-xs font-bold border-b border-gray-500 py-4">
-                Profile Details
-              </h1>
-
-              <div className="border-b border-gray-500 py-3 flex flex-row justify-between items-center">
-                <p className="text-xs font-medium">Profile</p>
-                <div className="flex items-center space-x-4">
-                  <img
-                    className="inline-flex object-cover border-4 border-indigo-600 rounded-full w-20 h-20"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwyfHxoZWFkc2hvdHxlbnwwfDB8fHwxNjk1ODE3MjEzfDA&ixlib=rb-4.0.3&q=80&w=1080"
-                    alt="User Profile Picture"
-                  />
-                  <p className="text-xs font-medium">jaiidon dask</p>
-                </div>
-                <button className="flex justify-center items-center w-1/6 h-8 me-2 rounded hover:bg-glasses hover:backdrop-blur-sm transform transition-transform hover:scale-105">
-                  <span class="ml-2 text-xs font-medium text-gray-700">
-                    Edit profile
-                  </span>
-                </button>
-              </div>
-
-              <div className="border-b border-gray-500 py-3 flex flex-row justify-start">
-                <p className="text-xs font-medium py-3 mr-20">Email Address</p>
-                <p className="text-xs font-normal py-3 ps-2">jaiidon@gmail.com</p> 
-              </div>
-
-              <div className="border-b border-gray-500 py-3 flex flex-row justify-start">
-                <p className="text-xs font-medium py-3 mr-36">Bio</p>
-                <p className="text-xs font-normal py-3">If you are going through hell, keep going.</p> 
-              </div>
-              
-              <div className="py-3 flex flex-row justify-start">
-                <p className="text-xs font-medium py-3 mr-24">Description</p>
-                <p className="text-xs font-normal py-3 text-justify me-4">A quotation is the repetition of a sentence, phrase, or passage from speech or text that someone has said or written. In oral speech, it is the representation of an utterance that is introduced by a quotative marker, such as a verb of saying.</p> 
-              </div>
-            </div>
-          </div> */}
-
           {/* Account Right Side */}
           <div className="w-3/4 h-full p-5 bg-white rounded-lg">
             <div className="flex flex-col justify-start">
@@ -87,16 +103,27 @@ const UserProfile = () => {
 
               <div className="flex flex-col justify-start">
                 <div className="py-2 flex justify-start items-center">
-                  <div className="flex  flex-col items-center space-y-2">
+                  <div className="flex flex-col items-center space-y-2">
+                    <p className="text-lg font-medium justify-start">
+                      Username : {user.full_name}
+                    </p>
+                    <p className="text-lg font-medium justify-start">
+                      Email : {user.email}
+                    </p>
                     <p className="text-xs font-medium justify-start">
                       Profile picture
                     </p>
                     <div className="relative">
-                      <img
-                        className="inline-flex object-cover border-4 border-indigo-600 rounded-full w-20 h-20"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwyfHxoZWFkc2hvdHxlbnwwfDB8fHwxNjk1ODE3MjEzfDA&ixlib=rb-4.0.3&q=80&w=1080" // Replace with your image URL
-                        alt="Profile"
-                      />
+                      {user && user.photo_url ? (
+                        <img
+                          src={user.photo_url}
+                          alt={user.full_name}
+                          className="object-cover w-20 h-20 rounded-full"
+                        />
+                      ) : (
+                        <UserProfilePic name={user.full_name} size={20} />
+                      )}
+
                       <button className="absolute bottom-0 right-0 mb-2 mr-2 bg-gray-800 text-white rounded-full p-2 hover:bg-gray-700 focus:outline-none">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -117,11 +144,14 @@ const UserProfile = () => {
                   </div>
                 </div>
 
-                <form className="py-2 flex flex-col justify-start">
+                <form
+                  className="py-2 flex flex-col justify-start"
+                  onSubmit={handleSubmit}
+                >
                   <div className="py-1 flex flex-col justify-start">
                     <label
                       className="text-xs font-medium mr-20 pb-2"
-                      for="username"
+                      htmlFor="username"
                     >
                       Username
                     </label>
@@ -129,14 +159,16 @@ const UserProfile = () => {
                       className="w-3/4 h-7 px-3 border border-gray-500 rounded text-xs font-light"
                       type="text"
                       id="username"
-                      placeholder="Username"
+                      value={userData.username}
+                      onChange={handleInputChange}
+                      placeholder={user.full_name}
                     />
                   </div>
 
                   <div className="py-1 flex flex-col justify-start">
                     <label
                       className="text-xs font-medium mr-20 pb-2"
-                      for="email"
+                      htmlFor="email"
                     >
                       Email
                     </label>
@@ -144,43 +176,19 @@ const UserProfile = () => {
                       className="w-3/4 h-7 px-3 border border-gray-500 rounded text-xs font-light"
                       type="email"
                       id="email"
-                      placeholder="example@gmail.com"
+                      value={userData.email}
+                      onChange={handleInputChange}
+                      placeholder={user.email}
                     />
                   </div>
 
-                  <div className="py-1 flex flex-col justify-start">
-                    <label className="text-xs font-medium mr-20 pb-2" for="bio">
-                      Bio
-                    </label>
-                    <textarea
-                      className="block px-3 p-1.5 w-3/4 h-8 border border-gray-500 rounded text-xs font-light"
-                      type="text"
-                      id="bio"
-                      placeholder="whatever you want to write"
-                    />
-                  </div>
-
-                  <div className="py-1 flex flex-col justify-start">
-                    <label
-                      className="text-xs font-medium mr-20 pb-2"
-                      for="description"
-                    >
-                      Description
-                    </label>
-                    <textarea
-                      className="block px-3 p-1.5 w-3/4 h-15 border border-gray-500 rounded text-xs font-light"
-                      type="text"
-                      id="description"
-                      placeholder="description"
-                    />
-                  </div>
+                  <button
+                    className="h-8 w-1/4 rounded bg-indigo-600 hover:bg-indigo-700 font-medium text-xs text-white mt-4"
+                    type="submit"
+                  >
+                    Update
+                  </button>
                 </form>
-                <button
-                  className="h-8 w-1/4 rounded bg-indigo-600 hover:bg-indigo-700 font-medium text-xs text-white"
-                  type="submit"
-                >
-                  Update
-                </button>
               </div>
             </div>
           </div>
