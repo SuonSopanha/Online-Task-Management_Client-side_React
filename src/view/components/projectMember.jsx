@@ -25,7 +25,7 @@ const ProjectMember = () => {
     isLoading: teamMembersLoading,
     error: teamMembersError,
   } = useQuery({
-    queryKey: ["projectMember_teamMembers"],
+    queryKey: ["projectMember_teamMembers",tabID],
     queryFn: fetchTeamProjects,
   });
 

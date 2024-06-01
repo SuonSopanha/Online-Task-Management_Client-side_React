@@ -110,42 +110,6 @@ function Sidebar({ isOpen, TabNavigate }) {
     queryFn: fetchOrganizations,
   });
 
-  // useEffect(() => {
-  //   const fetchProject = async () => {
-  //     try {
-  //       const [ response1, response2 ] = await Promise.all([
-  //         apiRequest("get", "api/v1/projects-by-member"),
-  //         apiRequest("get", "api/v1/projects-by-owner")
-  //       ]);
-
-  //       const projectList = [...response1.data, ...response2.data];
-  //       setProjectList(projectList);
-  //       setLoading(false);
-
-  //     }catch(error) {
-  //       console.error("Error fetching project:", error);
-  //     }
-  //   }
-
-  //   const fetchOrganizatoin = async () => {
-  //     try {
-  //       const [ response1, response2 ] = await Promise.all([
-  //         apiRequest("get", "api/v1/organizations-by-member"),
-  //         apiRequest("get", "api/v1/organizations-by-owner")
-  //       ]);
-
-  //       const organizationList = [...response1.data, ...response2.data];
-  //       setOrganizationList(organizationList);
-  //       setLoading(false);
-  //     }catch(error) {
-  //       console.error("Error fetching organization:", error);
-  //     }
-  //   }
-
-  //   fetchProject();
-  //   fetchOrganizatoin();
-
-  // }, []);
 
   return (
     <>
