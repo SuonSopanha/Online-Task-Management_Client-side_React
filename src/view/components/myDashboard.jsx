@@ -16,6 +16,8 @@ import PieChartRate from "./chartComponents/pieChartRate";
 import VerticalBarChart from "./chartComponents/verticalBarChart";
 import LineChartComparison from "./chartComponents/lineChartComparison";
 
+import { useLocation } from "react-router-dom";
+
 
 
 
@@ -71,6 +73,14 @@ const MyDashboard = () => {
 
   const [previousYear, setPreviousYear] = useState(previous);
   const [currentYear, setCurrentYear] = useState(current);
+
+
+
+  const location = useLocation();
+  const { projectList, organizationList } = location.state || {
+    projectList: [],
+    organizationList: [],
+  };
 
 
   const convertMonthNumberToName = (monthNumber) => {
@@ -165,14 +175,14 @@ const MyDashboard = () => {
             <span className="mr-2">
               <FaClipboard />
             </span>
-            <span className="text-sm m-1">Total Project :</span>
+            <span className="text-sm m-1">Total Milestone :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">{taskCount}</span>
           </li>
           <li className="bg-glasses backdrop-blur-12 px-2 py-6  rounded flex justify-center items-center transition duration-300 transform hover:scale-105">
             <span className="mr-2">
               <FaClipboardList />
             </span>
-            <span className="text-sm m-1">Total Organization :</span>
+            <span className="text-sm m-1">Total Project :</span>
             <span className="text-3xl font-semibold mx-3 transition duration-300 transform hover:scale-125 hover:text-blue-600">
               {uncompletedTaskCount}
             </span>

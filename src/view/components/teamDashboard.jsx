@@ -64,6 +64,14 @@ const previous = [10, 80, 60, 100, 68, 23, 97, 51, 23, 48, 15, 39];
 
 const current = [90, 64, 49, 33, 167, 76, 23, 83, 54, 72, 19, 203];
 
+//Vertical Bar
+const barDistData = [
+  { status: "Project", quantity: [30, 20, 40, 50, 60, 70, 80] },
+  { status: "Task", quantity: [20, 10, 25, 40, 50, 65, 78] },
+  { status: "Member", quantity: [10, 10, 15, 10, 10, 5, 12] },
+];
+
+
 const progressData = [
   { title: "kola", percentage: 90, color: "primary" },
   { title: "malie", percentage: 20, color: "success" },
@@ -100,6 +108,7 @@ const TeamDashboard = () => {
   const [milestoneProgress, setMilestoneProgress] = useState(progressData);
 
   const [barData, setBarData] = useState(barMockData);
+  const [barDist, setBarDist] = useState(barDistData);
 
   const [previousYear, setPreviousYear] = useState(previous);
   const [currentYear, setCurrentYear] = useState(current);
@@ -376,7 +385,7 @@ const TeamDashboard = () => {
             <span className="mr-2">
               <FaCheckCircle />
             </span>
-            <span className="text-sm m-1">Total Milstone :</span>
+            <span className="text-sm m-1">Total Project :</span>
             <span className="text-3xl font-semibold mx-3">
               {completedTaskCount}
             </span>
@@ -424,7 +433,7 @@ const TeamDashboard = () => {
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
             <PieChart
               data={milestoneData}
-              title={"Milestone Completion Rate"}
+              title={"Project Completion Rate"}
             />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
@@ -433,7 +442,7 @@ const TeamDashboard = () => {
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
             {/* <LineChartCompare Data={monthlyWorkHours} /> */}
-            <p className="text-xs font-medium text-gray-800 flex justify-center font-sans p-4 mb-4">Progress Bars</p>
+            <p className="font-semibold text-gray-500 flex justify-center font-sans p-4 mb-4" style={{fontSize:"12px", fontFamily:"tahoma"}}>Project Listing Progress</p>
             {progressData.map((item, index) => (
               <ProgressBar
                 key={index}
@@ -446,8 +455,15 @@ const TeamDashboard = () => {
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
             {/* <LineChartCompare Data={monthlyWorkHours} /> */}
             <VerticalBarChart
-              data={barData}
+              data={barDist}
               title={"Organization Distribution Visualization Chart"}
+            />
+          </li>
+          <li className="bg-glasses backdrop-blur-lg p-2 rounded">
+            {/* <LineChartCompare Data={monthlyWorkHours} /> */}
+            <VerticalBarChart
+              data={barData}
+              title={"Organization Task Completion Chart"}
             />
           </li>
           <li className="bg-glasses backdrop-blur-lg p-2 rounded">
