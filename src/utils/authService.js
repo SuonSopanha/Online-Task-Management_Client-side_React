@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000'; // Replace with your backend URL
+const API_URL = 'https://online-task.rd-lab.work'; // Replace with your backend URL
 
 export const redirectToGoogle = () => {
     window.location.href = `${API_URL}/api/login/google`;
